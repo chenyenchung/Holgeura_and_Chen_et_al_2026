@@ -4,6 +4,8 @@ nextflow.preview.output = true
 params.presetf = 'data/viz_preset.csv'
 params.metaf = 'data/viz_meta.csv'
 params.annf = 'data/visual_neurons_20250602.csv'
+params.tsf = 'data/media-2.csv'
+params.tslutf = 'data/to_selector.csv'
 
 process Visualize {
   cpus '1'
@@ -20,7 +22,7 @@ process Visualize {
   val slimit
 
   output:
-  path '*.pdf'
+  tuple val("${np}"), val("${preset}"), path('*.pdf'), optional: true
 
   script:
   """
@@ -38,10 +40,42 @@ process Visualize {
   """
 }
 
+process VisualizeSelector {
+  cpus '1'
+  memory '8GB'
+  time '30m'
+  module 'r/gcc/4.4.0'
+
+  input:
+  tuple val(np), path(syn), val(stype), val(den), path(ts), path(tslut), val(gselection)
+  path ann
+  path meta
+  val subsample
+  val slimit
+
+  output:
+  tuple val("${np}"), val("${gselection}"), path('*.pdf'), optional: true
+
+  script:
+  """
+  v_selector.r \
+    --np ${np} \
+    --synf ${syn} \
+    --syn_type ${stype} \
+    --ts ${ts} \
+    --tslut ${tslut} \
+    --density ${den} \
+    --ann ${ann} \
+    --meta ${meta} \
+    --subsample ${subsample} \
+    --sparse_limit ${slimit}
+  """
+}
+
 workflow {
+  main:
   def NP = ['ME_L', 'ME_R', 'LOP_L', 'LOP_R', 'LO_L', 'LO_R']
   def STYPE = ['pre', 'post']
-  def PRESET = ['temporal', 'subsystem_ann', 'new_type']
   def DEN_ALGO = ['asis', 'pertype']
   def MAT_PREFIX = 'int/idv_mat/'
   def SUBSAMPLE_TO = 10000
@@ -53,7 +87,11 @@ workflow {
       return [it, file(synp)]
     }
     .combine(channel.fromList(STYPE))
-    .combine(channel.fromList(PRESET))
+    .combine(
+      channel.fromPath(file(params.presetf))
+        .splitCsv(header:true)
+        .map { row -> row.preset }
+    )
     .combine(channel.fromList(DEN_ALGO))
   out_ch = Visualize(
     cond_ch,
@@ -64,12 +102,58 @@ workflow {
     SPARSE_LIMIT,
   )
 
+  scond_ch = channel
+    .fromList(NP)
+    .map { it ->
+      def synp = MAT_PREFIX + it + '_rotated.csv.gz'
+      return [it, file(synp)]
+    }
+    .combine(channel.fromList(STYPE))
+    .combine(channel.fromList(DEN_ALGO))
+    
+  def TS_BIN = [file(params.tsf)]
+  def TS_LUT = [file(params.tslutf)]
+  def TS_LABEL = ['selector']
+  g_ch = channel.fromList(TS_BIN)
+    .merge(channel.fromList(TS_LUT))
+    .merge(channel.fromList(TS_LABEL))
+  sel_ch = VisualizeSelector(
+    scond_ch.combine(g_ch),
+    file(params.annf),
+    file(params.metaf),
+    SUBSAMPLE_TO,
+    SPARSE_LIMIT
+  )
+
   publish:
-  viz = out_ch
+  annov = out_ch
+  selv = sel_ch
 }
 
 output {
-  viz {
-    path '20250603'
+  annov {
+    path { input -> 
+      def subset_dict = [
+        'known': 'Previously_known',
+        'new': 'All_confidently_annotated_highlighting_new'
+      ]
+      def color_dict = [
+        'temporal': 'Color_by_temporal_origin',
+        'subsystem': 'Color_by_function_subsystem'
+      ]
+      def side = input[0].split('_')[1]
+      def ctype = input[1].split('_')[0]
+      def subset = input[1].split('_')[1]
+      def clabel = color_dict[ctype]
+      def slabel = subset_dict[subset]
+      return "${clabel}/${slabel}_${side}"
+    }
+  }
+  selv {
+    path { input ->
+      def side = input[0].split('_')[1]
+      def gsel = input[1]
+      return "${gsel}/${side}"
+    }
   }
 }

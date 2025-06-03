@@ -1,0 +1,5 @@
+preset,palette,color_guide,filter_func,color_by,notch_split,do_highlight,hl_type,hl_col,hl_val
+temporal_known,scale_color_nk2023,Temporal Origin,filter_temporal_known,temporal_label,TRUE,FALSE,none,none,none
+subsystem_known,scale_color_subsystem,Functional Subsystem,filter_subsystem_known,func,TRUE,FALSE,none,none,none
+temporal_new,scale_color_nk2023,Temporal Origin,filter_temporal_new,temporal_label,TRUE,TRUE,label,newly_ann,Y
+subsystem_new,scale_color_subsystem,Functional Subsystem,filter_subsystem_new,func,TRUE,TRUE,label,newly_ann,Y

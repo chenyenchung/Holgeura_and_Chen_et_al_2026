@@ -1,0 +1,223 @@
+cell_type,temporal_label,temporal_id,vDpp,vOptix,vVsx,dVsx,dOptix,dDpp,Confident_annotation,subsystem,Notch,newly_ann,func
+Am1,unknown,0,,,,,,,N,Motion,,"",Motion
+C2,unknown,0,,,,,,,N,Motion,,"",Motion
+C3,unknown,0,,,,,,,N,Motion,,"",Motion
+CT1,unknown,0,,,,,,,N,Motion,,"",Motion
+Dm19,unknown,0,,,,,,,N,Motion,,"",Motion
+Dm6,unknown,0,,,,,,,N,Motion,,"",Motion
+L1,unknown,0,,,,,,,N,Motion,,"",Motion
+L2,unknown,0,,,,,,,N,Motion,,"",Motion
+L3,unknown,0,,,,,,,N,Luminance,,"",Luminance
+L4,unknown,0,,,,,,,N,Motion,,"",Motion
+L5,unknown,0,,,,,,,N,Motion,,"",Motion
+Lat,unknown,0,,,,,,,N,Color,,"",Color
+Lawf1,unknown,0,,,,,,,N,Motion,,"",Motion
+Lawf2,unknown,0,,,,,,,N,Motion,,"",Motion
+Li01,unknown,0,,,,,,,N,Color,,"",Color
+Li03,unknown,0,,,,,,,N,Color,,"",Color
+Li24,unknown,0,,,,,,,N,Object,,"",Object
+Li11,unknown,0,,,,,,,N,Color,,"",Color
+Li26,unknown,0,,,,,,,N,Object,,"",Object
+Li07,unknown,0,,,,,,,N,Color,,"",Color
+Li21,unknown,0,,,,,,,N,Object,,"",Object
+Li20,unknown,0,,,,,,,N,Object,,"",Object
+Li15,unknown,0,,,,,,,N,Object,,"",Object
+Li17,unknown,0,,,,,,,N,Object,,"",Object
+Li12,unknown,0,,,,,,,N,Color,,"",Color
+Li25,unknown,0,,,,,,,N,Object,,"",Object
+Li09,unknown,0,,,,,,,N,Color,,"",Color
+Li18,unknown,0,,,,,,,N,Color,,"",Color
+Li02,unknown,0,,,,,,,N,Color,,"",Color
+Li04,unknown,0,,,,,,,N,Color,,"",Color
+Li08,unknown,0,,,,,,,N,Color,,"",Color
+Li28,unknown,0,,,,,,,N,Color,,"",Color
+Li10,unknown,0,,,,,,,N,Color,,"",Color
+Li30,unknown,0,,,,,,,N,Color,,"",Color
+Li27,unknown,0,,,,,,,N,Color,,"",Color
+Li31,unknown,0,,,,,,,N,Object,,"",Object
+Li22,unknown,0,,,,,,,N,Object,,"",Object
+Li16,unknown,0,,,,,,,N,Object,,"",Object
+Li05,unknown,0,,,,,,,N,Color,,"",Color
+Li13,unknown,0,,,,,,,N,Color,,"",Color
+Li32,unknown,0,,,,,,,N,Color,,"",Color
+LLPt,unknown,0,,,,,,,N,Color,,"",Color
+Li29,unknown,0,,,,,,,N,Color,,"",Color
+LM102a_L234-M89,unknown,0,,,,,,,N,Unannotated,,"",Unannotated
+LMa1,unknown,0,,,,,,,N,Object,,"",Object
+LMa2,unknown,0,,,,,,,N,Object,,"",Object
+LMa3,unknown,0,,,,,,,N,Object,,"",Object
+LMa4,unknown,0,,,,,,,N,Object,,"",Object
+LMa5,unknown,0,,,,,,,N,Object,,"",Object
+LMt1,unknown,0,,,,,,,N,Object,,"",Object
+LMt2,unknown,0,,,,,,,N,Object,,"",Object
+LMt3,unknown,0,,,,,,,N,Object,,"",Object
+LMt4,unknown,0,,,,,,,N,Object,,"",Object
+LPi14,unknown,0,,,,,,,N,Motion,,"",Motion
+LPi02,unknown,0,,,,,,,N,Motion,,"",Motion
+LPi01,unknown,0,,,,,,,N,Motion,,"",Motion
+LPi15,unknown,0,,,,,,,N,Motion,,"",Motion
+LPi12,unknown,0,,,,,,,N,Motion,,"",Motion
+LPi10,unknown,0,,,,,,,N,Motion,,"",Motion
+LPi05,unknown,0,,,,,,,N,Motion,,"",Motion
+LPi07,unknown,0,,,,,,,N,Motion,,"",Motion
+LPi08,unknown,0,,,,,,,N,Motion,,"",Motion
+LPi04,unknown,0,,,,,,,N,Motion,,"",Motion
+LPi11,unknown,0,,,,,,,N,Motion,,"",Motion
+LPi06,unknown,0,,,,,,,N,Motion,,"",Motion
+LPi13,unknown,0,,,,,,,N,Motion,,"",Motion
+Mi2,unknown,0,,,,,,,N,Object,,"",Object
+MLt1,unknown,0,,,,,,,N,Object,,"",Object
+MLt2,unknown,0,,,,,,,N,Color,,"",Color
+MLt3,unknown,0,,,,,,,N,Object,,"",Object
+MLt4,unknown,0,,,,,,,N,Object,,"",Object
+MLt5,unknown,0,,,,,,,N,Color,,"",Color
+MLt6,unknown,0,,,,,,,N,Color,,"",Color
+MLt7,unknown,0,,,,,,,N,Color,,"",Color
+MLt8,unknown,0,,,,,,,N,Color,,"",Color
+Sm12,unknown,0,,,,,,,N,Color,,"",Color
+Pm14,unknown,0,,,,,,,N,Color,,"",Color
+Sm41,unknown,0,,,,,,,N,Color,,"",Color
+Sm39,unknown,0,,,,,,,N,Luminance,,"",Luminance
+PDt,unknown,0,,,,,,,N,Object,,"",Object
+Sm29,unknown,0,,,,,,,N,Color,,"",Color
+Sm26,unknown,0,,,,,,,N,Color,,"",Color
+Sm28,unknown,0,,,,,,,N,Polarization,,"",Polarization
+Sm19,unknown,0,,,,,,,N,Color,,"",Color
+Sm21,unknown,0,,,,,,,N,Color,,"",Color
+Sm33,unknown,0,,,,,,,N,Color,,"",Color
+Sm25,unknown,0,,,,,,,N,Color,,"",Color
+Sm35,unknown,0,,,,,,,N,Color,,"",Color
+Sm18,unknown,0,,,,,,,N,Polarization,,"",Polarization
+Sm15,unknown,0,,,,,,,N,Color,,"",Color
+Sm38,unknown,0,,,,,,,N,Color,,"",Color
+Sm34,unknown,0,,,,,,,N,Color,,"",Color
+Sm17,unknown,0,,,,,,,N,Polarization,,"",Polarization
+Sm14,unknown,0,,,,,,,N,Color,,"",Color
+Sm24,unknown,0,,,,,,,N,Color,,"",Color
+Sm32,unknown,0,,,,,,,N,Color,,"",Color
+Sm04,unknown,0,,,,,,,N,Color,,"",Color
+Sm20,unknown,0,,,,,,,N,Color,,"",Color
+Sm09,unknown,0,,,,,,,N,Color,,"",Color
+Sm31,unknown,0,,,,,,,N,Color,,"",Color
+Sm40,unknown,0,,,,,,,N,Color,,"",Color
+Sm27,unknown,0,,,,,,,N,Color,,"",Color
+Sm36,unknown,0,,,,,,,N,Color,,"",Color
+Sm42,unknown,0,,,,,,,N,Color,,"",Color
+Sm13,unknown,0,,,,,,,N,Color,,"",Color
+Sm11,unknown,0,,,,,,,N,Color,,"",Color
+Sm06,unknown,0,,,,,,,N,Color,,"",Color
+Sm16,unknown,0,,,,,,,N,Color,,"",Color
+Sm07,unknown,0,,,,,,,N,Color,,"",Color
+Sm37,unknown,0,,,,,,,N,Color,,"",Color
+Sm23,unknown,0,,,,,,,N,Polarization,,"",Polarization
+Sm30,unknown,0,,,,,,,N,Luminance,,"",Luminance
+Sm08,unknown,0,,,,,,,N,Color,,"",Color
+Sm22,unknown,0,,,,,,,N,Color,,"",Color
+Sm10,unknown,0,,,,,,,N,Color,,"",Color
+Pm13,unknown,0,,,,,,,N,Color,,"",Color
+Sm05,unknown,0,,,,,,,N,Luminance,,"",Luminance
+Tm8b,unknown,0,,,,,,,N,Color,,"",Color
+TmY16,unknown,0,,,,,,,N,Object,,"",Object
+TmY20,unknown,0,,,,,,,N,Motion,,"",Motion
+TmY9q,unknown,0,,,,,,,N,Form,,"",Form
+TmY9q__perp,unknown,0,,,,,,,N,Unannotated,,"",Unannotated
+Y1,unknown,0,,,,,,,N,Motion,,"",Motion
+Y11,unknown,0,,,,,,,N,Motion,,"",Motion
+Y12,unknown,0,,,,,,,N,Motion,,"",Motion
+Y3,unknown,0,,,,,,,N,Object,,"",Object
+Y4,unknown,0,,,,,,,N,Object,,"",Object
+Dm13,unknown,0,,,,,,,N,Motion,,"",Motion
+Dm14,unknown,0,,,,,,,N,Motion,,"",Motion
+Dm16,unknown,0,,,,,,,N,Motion,,"",Motion
+Dm17,unknown,0,,,,,,,N,Motion,,"",Motion
+Dm18,unknown,0,,,,,,,N,Motion,,"",Motion
+Dm20,unknown,0,,,,,,,N,Luminance,,"",Luminance
+Mi13,unknown,0,,,,,,,N,Motion,,"",Motion
+Mi14,unknown,0,,,,,,,N,Object,,"",Object
+T2,unknown,0,,,,,,,N,Object,,"",Object
+T2a,unknown,0,,,,,,,N,Object,,"",Object
+T3,unknown,0,,,,,,,N,Object,,"",Object
+T4a,unknown,0,,,,,,,N,Motion,,"",Motion
+T4b,unknown,0,,,,,,,N,Motion,,"",Motion
+T4c,unknown,0,,,,,,,N,Motion,,"",Motion
+T4d,unknown,0,,,,,,,N,Motion,,"",Motion
+T5a,unknown,0,,,,,,,N,Motion,,"",Motion
+T5b,unknown,0,,,,,,,N,Motion,,"",Motion
+T5c,unknown,0,,,,,,,N,Motion,,"",Motion
+T5d,unknown,0,,,,,,,N,Motion,,"",Motion
+Tlp1,unknown,0,,,,,,,N,Motion,,"",Motion
+Tlp4,unknown,0,,,,,,,N,Motion,,"",Motion
+Tlp5,unknown,0,,,,,,,N,Motion,,"",Motion
+Tlp14,unknown,0,,,,,,,N,Motion,,"",Motion
+Tm16,unknown,0,,,,,,,N,Color,,"",Color
+Tm31,unknown,0,,,,,,,N,Color,,"",Color
+Tm32,unknown,0,,,,,,,N,Color,,"",Color
+Tm35,unknown,0,,,,,,,N,Color,,"",Color
+Tm36,unknown,0,,,,,,,N,Color,,"",Color
+Tm37,unknown,0,,,,,,,N,Color,,"",Color
+Tm34,unknown,0,,,,,,,N,Color,,"",Color
+Tm7,unknown,0,,,,,,,N,Color,,"",Color
+TmY31,unknown,0,,,,,,,N,Color,,"",Color
+Mi1,Hth,1,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion
+Pm01,Hth,1,0,1,0,0,0,0,Y,Object,Notch Off,N,Object
+Pm03,Hth,1,0,0,0,0,0,1,Y,Object,Notch Off,N,Object
+Pm04,Hth,1,0,0,1,1,0,0,Y,Object,Notch Off,N,Object
+Pm09,Hth,1,0,0,1,1,0,0,Y,Object,Notch Off,N,Object
+Li14,Hth,1,0,0,1,1,0,0,Y,Motion,Notch Off,N,Motion
+TmY15,Hth,1,0,0,1,1,0,0,Y,Object,Notch Off,N,Object
+Pm08,Between Hth & Hth/Opa,1,,,,,,,N,Object,Notch Off,"",Object
+Pm06,Between Hth & Hth/Opa,1,,,,,,,N,Object,Notch Off,"",Object
+Pm10,Between Hth & Hth/Opa,1,,,,,,,N,Object,Notch Off,"",Object
+Pm02,Between Hth & Hth/Opa,1,,,,,,,N,Object,Notch Off,"",Object
+Pm07,Between Hth & Hth/Opa,1,,,,,,,N,Object,Notch Off,"",Object
+Pm11,Between Hth & Hth/Opa,1,,,,,,,N,Object,Notch Off,"",Object
+Tm1,Hth/Opa,2,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion
+Tm4,Hth/Opa,2,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion
+Mi4,Hth/Opa,2,1,1,0,0,1,1,Y,Color,Notch Off,N,Color
+Pm05,Hth/Opa,2,0,0,1,1,0,0,Y,Object,Notch Off,N,Object
+Mi9,Opa/Erm,3,1,1,0,0,1,1,Y,Luminance,Notch Off,N,Luminance
+Tm5c,Opa/Erm,3,1,1,1,1,1,1,Y,Color,Notch Off,N,Color
+Tm9,Erm/Ey,4,0,1,1,0,1,1,Y,Motion,Notch On,N,Motion
+Tm3,Erm/Ey,4,0,1,1,1,1,0,Y,Motion,Notch On,N,Motion
+Mi10,Erm/Ey,4,0,1,0,0,0,0,Y,Color,Notch On,N,Color
+Tm27,Erm/Ey,4,0,0,1,1,1,0,Y,Object,Notch On,N,Object
+TmY3,Erm/Ey,4,0,1,1,1,1,0,Y,Object,Notch On,N,Object
+TmY5a,Erm/Ey,4,0,1,0,0,1,0,Y,Object,Notch Off,N,Object
+Tm5d,Erm/Ey,4,0,1,0,0,1,0,Y,Color,Notch Off,N,Color
+Tm5e,Erm/Ey,4,0,1,0,0,1,0,Y,Color,Notch Off,Y,Color
+Tm33,Erm/Ey,4,0,0,1,1,0,0,Y,Color,Notch Off,Y,Color
+Tm2,Ey/Hbn,5,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion
+Tm21,Ey/Hbn,5,1,1,1,1,1,1,Y,Object,Notch On,N,Object
+Dm10,Ey/Hbn,5,0,1,0,0,0,0,Y,Luminance,Notch Off,N,Luminance
+Tm20,Hbn/Opa/Slp,6,0,0,0,0,1,0,Y,Color,Notch On,N,Color
+Tm25,Hbn/Opa/Slp,6,0,0,0,1,1,0,Y,Object,Notch On,N,Object
+Tm5a,Hbn/Opa/Slp,6,0,0,0,1,1,0,Y,Color,Notch On,N,Color
+Tm5b,Hbn/Opa/Slp,6,0,0,0,1,1,0,Y,Color,Notch On,N,Color
+Tm5f,Hbn/Opa/Slp,6,0,0,0,0,1,0,Y,Color,Notch On,Y,Color
+Tm8a,Hbn/Opa/Slp,6,1,0,0,0,0,0,Y,Color,Notch On,Y,Color
+Li06,Hbn/Opa/Slp,6,0,0,0,1,1,0,Y,Color,Notch On,Y,Color
+TmY10,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Color,Notch On,Y,Color
+TmY11,Hbn/Opa/Slp,6,1,1,0,0,0,0,Y,Color,Notch On,Y,Color
+TmY14,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Object,Notch Off,N,Object
+MTe01a,Hbn/Opa/Slp,6,0,0,1,0,0,0,Y,Unannotated,Notch Off,N,Unannotated
+Dm8b,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Color,Notch Off,N,Color
+Dm8a,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Color,Notch Off,N,Color
+DmDRA1,Hbn/Opa/Slp,6,0,0,0,0,0,1,Y,Polarization,Notch Off,N,Polarization
+DmDRA2,Hbn/Opa/Slp,6,0,0,0,0,0,1,Y,Color,Notch Off,N,Color
+Sm03,Hbn/Opa/Slp,6,0,0,1,0,0,0,Y,Color,Notch Off,Y,Color
+Dm11,Hbn/Opa/Slp,6,0,0,0,0,1,1,Y,Color,Notch Off,N,Color
+Dm1,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Motion,Notch Off,N,Motion
+Dm4,Hbn/Opa/Slp,6,1,1,0,0,0,0,Y,Luminance,Notch Off,N,Luminance
+Dm12,Hbn/Opa/Slp,6,1,1,0,0,0,0,Y,Luminance,Notch Off,N,Luminance
+Dm9,Hbn/Opa/Slp,6,1,1,0,0,1,1,Y,Luminance,Notch Off,N,Luminance
+Lai,Hbn/Opa/Slp,6,1,0,0,0,0,1,Y,Motion,Notch Off,N,Motion
+TmY4,Slp/D,7,0,1,1,1,0,0,Y,Form,Notch On,N,Form
+Dm15,Slp/D,7,0,0,0,1,1,0,Y,Motion,Notch Off,N,Motion
+Dm3p,Slp/D,7,0,1,1,1,1,0,Y,Form,Notch Off,N,Form
+Dm3q,Slp/D,7,1,1,0,0,1,1,Y,Form,Notch Off,N,Form
+Dm3v,Slp/D,7,,,,,,,N,Form,Notch Off,N,Form
+T1,D/BH-1,8,1,1,1,1,1,1,Y,Motion,Notch Off,N,Motion
+Mi15,D/BH-1,8,0,0,0,0,1,1,Y,Luminance,Notch Off,N,Luminance
+Sm02,D/BH-1,8,1,1,0,0,0,0,Y,Color,Notch Off,Y,Color
+Sm01,D/BH-1,8,1,1,0,0,0,0,Y,Color,Notch Off,Y,Color
+Dm2,D/BH-1,8,1,1,1,1,1,1,Y,Luminance,Notch Off,N,Luminance

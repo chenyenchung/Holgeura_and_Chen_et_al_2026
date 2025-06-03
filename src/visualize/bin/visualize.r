@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(ggrastr))
 suppressPackageStartupMessages(library(patchwork))
 suppressPackageStartupMessages(library(cowplot))
 suppressPackageStartupMessages(library(data.table))
@@ -66,9 +67,26 @@ scale_color_type <- function() {
   )
 }
 
-filter_temporal <- function(coord, ann, syn_type = "pre") {
+filter_temporal_new <- function(coord, ann, syn_type = "pre") {
   by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
   ann <- ann[temporal_label != "unknown" & Confident_annotation == "Y"]
+  ann$temporal_label <- factor(
+    ann$temporal_label,
+    levels = unique(ann$temporal_label),
+    labels = unique(ann$temporal_label)
+  )
+  coord <- merge(
+    coord,
+    ann[, .(cell_type, temporal_label, Notch, newly_ann)],
+    by.x = by_x,
+    by.y = "cell_type"
+  )
+  return(coord)
+}
+
+filter_temporal_known <- function(coord, ann, syn_type = "pre") {
+  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
+  ann <- ann[temporal_label != "unknown" & newly_ann == "N"]
   ann$temporal_label <- factor(
     ann$temporal_label,
     levels = unique(ann$temporal_label),
@@ -83,9 +101,9 @@ filter_temporal <- function(coord, ann, syn_type = "pre") {
   return(coord)
 }
 
-filter_subsystem_ann <- function(coord, ann, syn_type = "pre") {
+filter_subsystem_known <- function(coord, ann, syn_type = "pre") {
   by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
-  ann <- ann[func != "unknown" & Confident_annotation == "Y"]
+  ann <- ann[func != "unknown" & newly_ann == "N"]
   ann <- ann[func != "Unannotated"]
   ann$func <- factor(ann$func)
   coord <- merge(
@@ -97,18 +115,20 @@ filter_subsystem_ann <- function(coord, ann, syn_type = "pre") {
   return(coord)
 }
 
-filter_new_type <- function(coord, ann, syn_type = "pre") {
+filter_subsystem_new <- function(coord, ann, syn_type = "pre") {
   by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
-  ann <- ann[new == "Y"]
+  ann <- ann[func != "unknown" & Confident_annotation == "Y"]
+  ann <- ann[func != "Unannotated"]
+  ann$func <- factor(ann$func)
   coord <- merge(
     coord,
-    ann[, .(cell_type, func, Notch)],
+    ann[, .(cell_type, func, Notch, newly_ann)],
     by.x = by_x,
     by.y = "cell_type"
   )
-  coord$cell_type <- coord[[by_x]]
   return(coord)
 }
+
 
 rsubsample <- function(x, n = 1e4, seed = 1) {
   if (!is.null(nrow) && nrow(x) > n) {
@@ -133,10 +153,10 @@ argvs <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
 
 ### TODO
 if (interactive()) {
-  argvs$np <- "ME_L"
-  argvs$syn_type <- "post"
-  argvs$use_preset <- "temporal"
-  argvs$density <- "per_type"
+  argvs$np <- "LOP_R"
+  argvs$syn_type <- "pre"
+  argvs$use_preset <- "temporal_known"
+  argvs$density <- "asis"
   argvs$ann <- "data/visual_neurons_20250602.csv"
   argvs$meta <- "data/viz_meta.csv"
   argvs$preset <- "data/viz_preset.csv"
@@ -171,6 +191,18 @@ y_axis <- paste(argvs$syn_type, plot_meta$y_axis, sep = "_")
 ## Filter by annotation and subsample
 np_coord <- filter_func(np_coord, opc_anno, syn_type = argvs$syn_type)
 
+if (preset$do_highlight && preset$hl_type == "label") {
+  np_coord[, highlight := get(preset$hl_col) == preset$hl_val]
+}
+if (preset$do_highlight && preset$hl_type == "path") {
+  if (!file.exists(preset$hl_val)) {
+    stop("Cannot find highlight label file.")
+  } else {
+    hl_labels <- readLines(preset$hl_val)
+  }
+  np_coord[, highlight := get(preset$hl_col) %in% hl_labels]
+}
+
 if (preset$notch_split) {
   np_coord <- filsplit(np_coord, np_coord$Notch, slimit = argvs$sparse_limit)
 } else {
@@ -178,16 +210,50 @@ if (preset$notch_split) {
 }
 
 for (i in names(np_coord)) {
+  if (preset$do_highlight) {
+    if (sum(np_coord[[i]]$highlight) <= argvs$sparse_limit) {
+      next
+    }
+  } else {
+    if (nrow(np_coord[[i]]) <= argvs$sparse_limit) {
+      next
+    }
+  }
+
+  
   np_plot <- rsubsample(np_coord[[i]], n = argvs$subsample)
+  if (preset$do_highlight && !any(np_plot$highlight)) {
+    # For rare synapses that are not subsampled, we add 5 synapses as
+    # representative synapses for visualization.
+    pos_dt <- np_coord[[i]][highlight == TRUE]
+    if (nrow(pos_dt) > 5) {
+      rep_syn <- rsubsample(pos_dt, n = 5)
+    } else {
+      rep_syn <- pos_dt
+    }
+    np_plot <- rbind(np_plot, rep_syn)
+  }
+  
   out_prefix <- paste(
     argvs$np, argvs$syn_type, argvs$use_preset, argvs$density, i,
     sep = "_"
   )
   
   ## Generate the dot plot
-  dotp <- np_plot |>
-    ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
-    geom_point(aes(color = .data[[preset$color_by]])) +
+  if (preset$do_highlight) {
+    dotp <- np_plot |>
+      ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
+      rasterize(geom_point(
+        aes(color = .data[[preset$color_by]], alpha = highlight)
+      )) +
+      guides(alpha = "none") +
+      scale_alpha_manual(values = c("TRUE" = 1, "FALSE" = 0.05))
+  } else {
+    dotp <- np_plot |>
+      ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
+      rasterize(geom_point(aes(color = .data[[preset$color_by]])))
+  }
+  dotp <- dotp +
     labs(color = preset$color_guide) +
     theme_ih2025() +
     scale_axis_1(limits = c(plot_meta$xmin, plot_meta$xmax)) +
@@ -210,11 +276,20 @@ for (i in names(np_coord)) {
   }
   
   ## Manual calculation and interpolation of density
-  np_den <- np_coord[[i]][ , .(
-    group = get(preset$color_by),
-    type = get(paste(argvs$syn_type, "type", sep = "_")),
-    depth = get(paste(argvs$syn_type, "rz", sep = "_"))
-  )]
+  if (preset$do_highlight) {
+    np_den <- np_coord[[i]][highlight == TRUE, .(
+      group = get(preset$color_by),
+      type = get(paste(argvs$syn_type, "type", sep = "_")),
+      depth = get(paste(argvs$syn_type, "rz", sep = "_"))
+    )]
+  } else {
+    np_den <- np_coord[[i]][ , .(
+      group = get(preset$color_by),
+      type = get(paste(argvs$syn_type, "type", sep = "_")),
+      depth = get(paste(argvs$syn_type, "rz", sep = "_"))
+    )]
+  }
+  
   
   if (plot_meta$zinvert) {
     np_den$depth <- np_den$depth * -1
