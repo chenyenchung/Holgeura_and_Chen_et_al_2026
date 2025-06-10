@@ -7,6 +7,8 @@ suppressPackageStartupMessages(library(cowplot))
 suppressPackageStartupMessages(library(data.table))
 suppressPackageStartupMessages(library(R.utils))
 
+options("ggrastr.default.dpi" = 450)
+
 argvs <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
 
 # Source utility functions (soft-linked by Nextflow)
@@ -100,7 +102,7 @@ for (i in ts_symbols) {
   ## Generate the dot plot
   dotp <- np_plot |>
     ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
-    rasterize(geom_point(aes(color = color_label)), dpi = 450) +
+    rasterize(geom_point(aes(color = color_label))) +
     labs(color = "Notch Status") +
     theme_ih2025() +
     color_func() +

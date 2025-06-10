@@ -125,7 +125,7 @@ filter_temporal_new <- function(coord, ann, syn_type = "pre") {
   )
   coord <- merge(
     coord,
-    ann[, .(cell_type, temporal_label, Notch, newly_ann)],
+    ann[, .(cell_type, temporal_label, Notch, newly_ann, ntype)],
     by.x = by_x,
     by.y = "cell_type"
   )
@@ -143,7 +143,7 @@ filter_temporal_known <- function(coord, ann, syn_type = "pre") {
   )
   coord <- merge(
     coord,
-    ann[, .(cell_type, temporal_label, Notch)],
+    ann[, .(cell_type, temporal_label, Notch, ntype)],
     by.x = by_x,
     by.y = "cell_type"
   )
@@ -158,7 +158,7 @@ filter_subsystem_known <- function(coord, ann, syn_type = "pre") {
   ann$func <- factor(ann$func)
   coord <- merge(
     coord,
-    ann[, .(cell_type, func, Notch)],
+    ann[, .(cell_type, func, Notch, ntype)],
     by.x = by_x,
     by.y = "cell_type"
   )
@@ -173,7 +173,7 @@ filter_subsystem_new <- function(coord, ann, syn_type = "pre") {
   ann$func <- factor(ann$func)
   coord <- merge(
     coord,
-    ann[, .(cell_type, func, Notch, newly_ann)],
+    ann[, .(cell_type, func, Notch, newly_ann, ntype)],
     by.x = by_x,
     by.y = "cell_type"
   )
@@ -207,7 +207,7 @@ filter_default <- function(coord, ann, ts, lut, syn_type = "pre") {
   
   coord <- merge(
     coord,
-    ann[, .(cell_type, Notch)],
+    ann[, .(cell_type, func, Notch, newly_ann, ntype)],
     by.x = by_x,
     by.y = "cell_type"
   )

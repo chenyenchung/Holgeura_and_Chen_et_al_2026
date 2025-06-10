@@ -76,39 +76,6 @@ process VisualizeSelector {
   """
 }
 
-process KSTest {
-  cpus '1'
-  memory '4GB'
-  time '10m'
-  module 'r/gcc/4.4.0'
-
-  input:
-  tuple val(np), path(syn), val(stype), val(preset), val(den)
-  path ann
-  path meta
-  path presetf
-  path utils
-  val slimit
-
-  output:
-  tuple val("${np}"), val("${preset}"), path('*_ks_tests.csv'), optional: true
-
-  script:
-  """
-  ks_test.r \
-    --np ${np} \
-    --synf ${syn} \
-    --syn_type ${stype} \
-    --use_preset ${preset} \
-    --density ${den} \
-    --ann ${ann} \
-    --meta ${meta} \
-    --preset ${presetf} \
-    --utils ${utils} \
-    --sparse_limit ${slimit}
-  """
-}
-
 workflow {
   main:
   def NP = ['ME_L', 'ME_R', 'LOP_L', 'LOP_R', 'LO_L', 'LO_R']
@@ -141,14 +108,6 @@ workflow {
     SPARSE_LIMIT,
   )
   
-  ks_ch = KSTest(
-    cond_ch,
-    file(params.annf),
-    file(params.metaf),
-    file(params.presetf),
-    utils_file,
-    SPARSE_LIMIT,
-  )
 
   scond_ch = channel
     .fromList(NP)
@@ -177,7 +136,6 @@ workflow {
   publish:
   annov = out_ch
   selv = sel_ch
-  ks_tests = ks_ch
 }
 
 output {
@@ -204,13 +162,6 @@ output {
       def side = input[0].split('_')[1]
       def gsel = input[1]
       return "${gsel}/${side}"
-    }
-  }
-  ks_tests {
-    path { input ->
-      def side = input[0].split('_')[1]
-      def preset = input[1]
-      return "ks_tests/${preset}_${side}"
     }
   }
 }

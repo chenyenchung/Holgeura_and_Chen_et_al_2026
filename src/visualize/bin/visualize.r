@@ -7,16 +7,7 @@ suppressPackageStartupMessages(library(cowplot))
 suppressPackageStartupMessages(library(data.table))
 suppressPackageStartupMessages(library(R.utils))
 
-
-
-
-
-
-
-
-
-
-
+options("ggrastr.default.dpi" = 450)
 
 argvs <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
 
@@ -27,6 +18,7 @@ if (file.exists("./utils.r")) {
 
 ### TODO
 if (interactive()) {
+  source("./src/utils.r", chdir = FALSE)
   argvs$np <- "LOP_R"
   argvs$syn_type <- "pre"
   argvs$use_preset <- "temporal_known"
@@ -78,7 +70,8 @@ if (preset$do_highlight && preset$hl_type == "path") {
 }
 
 if (preset$notch_split) {
-  np_coord <- filsplit(np_coord, np_coord$Notch, slimit = argvs$sparse_limit)
+  np_coord$notch_ntype <- paste(np_coord$Notch, np_coord$ntype, sep = "_")
+  np_coord <- filsplit(np_coord, np_coord$notch_ntype, slimit = argvs$sparse_limit)
 } else {
   np_coord <- list(all = np_coord)
 }
@@ -118,14 +111,14 @@ for (i in names(np_coord)) {
     dotp <- np_plot |>
       ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
       rasterize(geom_point(
-        aes(color = .data[[preset$color_by]], alpha = highlight), dpi = 450
+        aes(color = .data[[preset$color_by]], alpha = highlight)
       )) +
       guides(alpha = "none") +
       scale_alpha_manual(values = c("TRUE" = 1, "FALSE" = 0.05))
   } else {
     dotp <- np_plot |>
       ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
-      rasterize(geom_point(aes(color = .data[[preset$color_by]])), dpi = 450)
+      rasterize(geom_point(aes(color = .data[[preset$color_by]])))
   }
   dotp <- dotp +
     labs(color = preset$color_guide) +
