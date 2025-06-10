@@ -7,149 +7,23 @@ suppressPackageStartupMessages(library(cowplot))
 suppressPackageStartupMessages(library(data.table))
 suppressPackageStartupMessages(library(R.utils))
 
-theme_ih2025 <- function(xlim = NULL, ylim = NULL) {
-  f <- theme_minimal() %+replace%
-  theme(
-    plot.title = element_text(size = 16, face = "bold"),
-    plot.subtitle = element_text(face = "italic"),
-    axis.text = element_blank(),
-    axis.title = element_blank(),
-    strip.background = element_rect(color = "black", fill = "transparent"),
-    strip.text = element_text(size = 14, face = "bold"),
-    panel.background = element_rect(color = "black", fill = "transparent"),
-    legend.title = element_text(size = 14),
-    legend.text = element_text(size = 12),
-    legend.position = "bottom",
-    legend.byrow = TRUE
-  )
-  return(f)
-}
-
-scale_color_nk2023 <- function() {
-  f <- scale_color_manual(
-    values = c("Hth" = "#C76F6B",
-               "Between Hth & Hth/Opa" = "#EFA900",
-               "Hth/Opa" = "#EFC8B9",
-               "Opa/Erm" = "#FEE699",
-               "Erm/Ey" = "#79A68C",
-               "Ey/Hbn" = "#82C9C5",
-               "Hbn/Opa/Slp" = "#B4C6E6",
-               "Slp/D" = "#A6A1CD",
-               "D/BH-1" = "#A46690")
-  )
-  return(f)
-}
-
-scale_color_subsystem <- function() {
-  f <- scale_color_manual(
-    values = c(
-      Color = "#7FC97F",
-      Object = "#BEAED4",
-      Motion = "#FDC086",
-      Luminance = "#FFFF99",
-      Unannotated = "#386CB0",
-      Polarization = "#F0027F",
-      Form = "#BF5B17"
-    )
-  )
-  return(f)
-}
-
-scale_color_type <- function() {
-  types <- unique(opc_anno$cell_type)
-  hues <- seq(20, 380, length.out = length(types) + 1)[seq_along(types)]
-  palette <- hsv(h = (hues %% 360) / 360, s = 0.5, v = 0.5)
-  set.seed(1)
-  palette <- sample(palette)
-  names(palette) <- types
-  return(
-    scale_color_manual(values = palette)
-  )
-}
-
-filter_temporal_new <- function(coord, ann, syn_type = "pre") {
-  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
-  ann <- ann[temporal_label != "unknown" & Confident_annotation == "Y"]
-  ann$temporal_label <- factor(
-    ann$temporal_label,
-    levels = unique(ann$temporal_label),
-    labels = unique(ann$temporal_label)
-  )
-  coord <- merge(
-    coord,
-    ann[, .(cell_type, temporal_label, Notch, newly_ann)],
-    by.x = by_x,
-    by.y = "cell_type"
-  )
-  return(coord)
-}
-
-filter_temporal_known <- function(coord, ann, syn_type = "pre") {
-  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
-  ann <- ann[temporal_label != "unknown" & newly_ann == "N"]
-  ann$temporal_label <- factor(
-    ann$temporal_label,
-    levels = unique(ann$temporal_label),
-    labels = unique(ann$temporal_label)
-  )
-  coord <- merge(
-    coord,
-    ann[, .(cell_type, temporal_label, Notch)],
-    by.x = by_x,
-    by.y = "cell_type"
-  )
-  return(coord)
-}
-
-filter_subsystem_known <- function(coord, ann, syn_type = "pre") {
-  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
-  ann <- ann[func != "unknown" & newly_ann == "N"]
-  ann <- ann[func != "Unannotated"]
-  ann$func <- factor(ann$func)
-  coord <- merge(
-    coord,
-    ann[, .(cell_type, func, Notch)],
-    by.x = by_x,
-    by.y = "cell_type"
-  )
-  return(coord)
-}
-
-filter_subsystem_new <- function(coord, ann, syn_type = "pre") {
-  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
-  ann <- ann[func != "unknown" & Confident_annotation == "Y"]
-  ann <- ann[func != "Unannotated"]
-  ann$func <- factor(ann$func)
-  coord <- merge(
-    coord,
-    ann[, .(cell_type, func, Notch, newly_ann)],
-    by.x = by_x,
-    by.y = "cell_type"
-  )
-  return(coord)
-}
 
 
-rsubsample <- function(x, n = 1e4, seed = 1) {
-  if (!is.null(nrow) && nrow(x) > n) {
-    set.seed(seed)
-    if (is.data.table(x)) {
-      out <- x[sample(.N, n)]
-    } else {
-      out <- x[sample(seq_len(nrow(x)), n), , with = FALSE]
-    }
-    return(out)
-  }
-  return(x)
-}
 
-filsplit <- function(x, f, slimit = 100L) {
-  slist <- split(x, f)
-  to_keep <- vapply(slist, function(x) nrow(x) > slimit, FUN.VALUE = logical(1))
-  return(slist[to_keep])
-}
+
+
+
+
+
+
+
 
 argvs <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
+
+# Source utility functions (soft-linked by Nextflow)
+if (file.exists("./utils.r")) {
+  source("./utils.r", chdir = FALSE)
+}
 
 ### TODO
 if (interactive()) {
@@ -244,14 +118,14 @@ for (i in names(np_coord)) {
     dotp <- np_plot |>
       ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
       rasterize(geom_point(
-        aes(color = .data[[preset$color_by]], alpha = highlight)
+        aes(color = .data[[preset$color_by]], alpha = highlight), dpi = 450
       )) +
       guides(alpha = "none") +
       scale_alpha_manual(values = c("TRUE" = 1, "FALSE" = 0.05))
   } else {
     dotp <- np_plot |>
       ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
-      rasterize(geom_point(aes(color = .data[[preset$color_by]])))
+      rasterize(geom_point(aes(color = .data[[preset$color_by]])), dpi = 450)
   }
   dotp <- dotp +
     labs(color = preset$color_guide) +

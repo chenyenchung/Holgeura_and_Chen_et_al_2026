@@ -18,6 +18,7 @@ process Visualize {
   path ann
   path meta
   path presetf
+  path utils
   val subsample
   val slimit
 
@@ -35,6 +36,7 @@ process Visualize {
     --ann ${ann} \
     --meta ${meta} \
     --preset ${presetf} \
+    --utils ${utils} \
     --subsample ${subsample} \
     --sparse_limit ${slimit}
   """
@@ -50,6 +52,7 @@ process VisualizeSelector {
   tuple val(np), path(syn), val(stype), val(den), path(ts), path(tslut), val(gselection)
   path ann
   path meta
+  path utils
   val subsample
   val slimit
 
@@ -67,6 +70,7 @@ process VisualizeSelector {
     --density ${den} \
     --ann ${ann} \
     --meta ${meta} \
+    --utils ${utils} \
     --subsample ${subsample} \
     --sparse_limit ${slimit}
   """
@@ -83,6 +87,7 @@ process KSTest {
   path ann
   path meta
   path presetf
+  path utils
   val slimit
 
   output:
@@ -99,6 +104,7 @@ process KSTest {
     --ann ${ann} \
     --meta ${meta} \
     --preset ${presetf} \
+    --utils ${utils} \
     --sparse_limit ${slimit}
   """
 }
@@ -124,11 +130,13 @@ workflow {
         .map { row -> row.preset }
     )
     .combine(channel.fromList(DEN_ALGO))
+  utils_file = file('src/utils.r')
   out_ch = Visualize(
     cond_ch,
     file(params.annf),
     file(params.metaf),
     file(params.presetf),
+    utils_file,
     SUBSAMPLE_TO,
     SPARSE_LIMIT,
   )
@@ -138,6 +146,7 @@ workflow {
     file(params.annf),
     file(params.metaf),
     file(params.presetf),
+    utils_file,
     SPARSE_LIMIT,
   )
 
@@ -160,6 +169,7 @@ workflow {
     scond_ch.combine(g_ch),
     file(params.annf),
     file(params.metaf),
+    utils_file,
     SUBSAMPLE_TO,
     SPARSE_LIMIT
   )

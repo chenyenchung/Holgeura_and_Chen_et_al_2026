@@ -5,6 +5,11 @@ suppressPackageStartupMessages(library(R.utils))
 
 argvs <- commandArgs(trailingOnly = TRUE, asValue = TRUE)
 
+# Source utility functions (soft-linked by Nextflow)
+if (file.exists("./utils.r")) {
+  source("./utils.r", chdir = FALSE)
+}
+
 if (is.null(argvs$syn) || !file.exists(argvs$syn)) {
   stop("Cannot find the feather file containing synases.")
 }

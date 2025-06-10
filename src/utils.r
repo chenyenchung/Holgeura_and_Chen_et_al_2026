@@ -1,0 +1,215 @@
+# Consolidated utility functions for flyem analysis
+# This file contains shared utility functions used across multiple R scripts
+
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(data.table))
+
+# ============================================================================
+# PLOTTING UTILITIES
+# ============================================================================
+
+#' Custom ggplot theme for flyem visualizations
+theme_ih2025 <- function(xlim = NULL, ylim = NULL) {
+  f <- theme_minimal() %+replace%
+    theme(
+      plot.title = element_text(size = 16, face = "bold"),
+      plot.subtitle = element_text(face = "italic"),
+      axis.text = element_blank(),
+      axis.title = element_blank(),
+      strip.background = element_rect(color = "black", fill = "transparent"),
+      strip.text = element_text(size = 14, face = "bold"),
+      panel.background = element_rect(color = "black", fill = "transparent"),
+      legend.title = element_text(size = 14),
+      legend.text = element_text(size = 12),
+      legend.position = "bottom",
+      legend.byrow = TRUE
+    )
+  return(f)
+}
+
+# ============================================================================
+# COLOR SCALE FUNCTIONS
+# ============================================================================
+
+#' Color scale for NK 2023 data
+scale_color_nk2023 <- function() {
+  f <- scale_color_manual(
+    values = c("Hth" = "#C76F6B",
+               "Between Hth & Hth/Opa" = "#EFA900",
+               "Hth/Opa" = "#EFC8B9",
+               "Opa/Erm" = "#FEE699",
+               "Erm/Ey" = "#79A68C",
+               "Ey/Hbn" = "#82C9C5",
+               "Hbn/Opa/Slp" = "#B4C6E6",
+               "Slp/D" = "#A6A1CD",
+               "D/BH-1" = "#A46690")
+  )
+  return(f)
+}
+
+#' Color scale for subsystem annotations
+scale_color_subsystem <- function() {
+  f <- scale_color_manual(
+    values = c(
+      Color = "#7FC97F",
+      Object = "#BEAED4",
+      Motion = "#FDC086",
+      Luminance = "#FFFF99",
+      Unannotated = "#386CB0",
+      Polarization = "#F0027F",
+      Form = "#BF5B17"
+    )
+  )
+  return(f)
+}
+
+#' Color scale for cell types
+scale_color_type <- function() {
+  types <- unique(opc_anno$cell_type)
+  hues <- seq(20, 380, length.out = length(types) + 1)[seq_along(types)]
+  palette <- hsv(h = (hues %% 360) / 360, s = 0.5, v = 0.5)
+  set.seed(1)
+  palette <- sample(palette)
+  names(palette) <- types
+  return(
+    scale_color_manual(values = palette)
+  )
+}
+
+# ============================================================================
+# DATA PROCESSING UTILITIES
+# ============================================================================
+
+#' Random subsample data with optional seed
+#' @param x Data frame or data.table to subsample
+#' @param n Maximum number of rows to keep
+#' @param seed Random seed for reproducibility
+#' @return Subsampled data
+rsubsample <- function(x, n = 1e4, seed = 1) {
+  if (!is.null(nrow(x)) && nrow(x) > n) {
+    set.seed(seed)
+    if (is.data.table(x)) {
+      out <- x[sample(.N, n)]
+    } else {
+      out <- x[sample(seq_len(nrow(x)), n), , drop = FALSE]
+    }
+    return(out)
+  }
+  return(x)
+}
+
+#' Split data by factor and filter by minimum group size
+#' @param x Data frame to split
+#' @param f Factor to split by
+#' @param slimit Minimum number of rows per group
+#' @return List of data frames with sufficient size
+filsplit <- function(x, f, slimit = 100L) {
+  slist <- split(x, f)
+  to_keep <- vapply(slist, function(x) nrow(x) > slimit, FUN.VALUE = logical(1))
+  return(slist[to_keep])
+}
+
+# ============================================================================
+# FILTERING FUNCTIONS
+# ============================================================================
+
+#' Filter coordinates by temporal annotations (new)
+filter_temporal_new <- function(coord, ann, syn_type = "pre") {
+  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
+  ann <- ann[temporal_label != "unknown" & Confident_annotation == "Y"]
+  ann$temporal_label <- factor(
+    ann$temporal_label,
+    levels = unique(ann$temporal_label),
+    labels = unique(ann$temporal_label)
+  )
+  coord <- merge(
+    coord,
+    ann[, .(cell_type, temporal_label, Notch, newly_ann)],
+    by.x = by_x,
+    by.y = "cell_type"
+  )
+  return(coord)
+}
+
+#' Filter coordinates by temporal annotations (known)
+filter_temporal_known <- function(coord, ann, syn_type = "pre") {
+  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
+  ann <- ann[temporal_label != "unknown" & newly_ann == "N"]
+  ann$temporal_label <- factor(
+    ann$temporal_label,
+    levels = unique(ann$temporal_label),
+    labels = unique(ann$temporal_label)
+  )
+  coord <- merge(
+    coord,
+    ann[, .(cell_type, temporal_label, Notch)],
+    by.x = by_x,
+    by.y = "cell_type"
+  )
+  return(coord)
+}
+
+#' Filter coordinates by subsystem annotations (known)
+filter_subsystem_known <- function(coord, ann, syn_type = "pre") {
+  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
+  ann <- ann[func != "unknown" & newly_ann == "N"]
+  ann <- ann[func != "Unannotated"]
+  ann$func <- factor(ann$func)
+  coord <- merge(
+    coord,
+    ann[, .(cell_type, func, Notch)],
+    by.x = by_x,
+    by.y = "cell_type"
+  )
+  return(coord)
+}
+
+#' Filter coordinates by subsystem annotations (new)
+filter_subsystem_new <- function(coord, ann, syn_type = "pre") {
+  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
+  ann <- ann[func != "unknown" & Confident_annotation == "Y"]
+  ann <- ann[func != "Unannotated"]
+  ann$func <- factor(ann$func)
+  coord <- merge(
+    coord,
+    ann[, .(cell_type, func, Notch, newly_ann)],
+    by.x = by_x,
+    by.y = "cell_type"
+  )
+  return(coord)
+}
+
+#' Default filter for selector analysis
+filter_default <- function(coord, ann, ts, lut, syn_type = "pre") {
+  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
+  
+  # Prepare lookup table for conversion between FlyWire types
+  # and Ozel et al. (2020) types.
+  lut <- subset(lut, ts_type %in% colnames(ts))
+  ts_symbols <- ts$V1
+  
+  # Subset selector table to keep only types that we can map
+  ts <- t(ts[, lut$ts_type, with = FALSE]) |>
+    as.data.frame()
+  colnames(ts) <- ts_symbols
+  tlut <- lut$cell_type
+  names(tlut) <- lut$ts_type
+  row.names(ts) <- tlut[row.names(ts)]
+  ts <- ts[, colSums(ts) > 0]
+  ts_symbols <- colnames(ts)
+  ts <- ts == 1
+  ts <- as.data.frame(ts)
+  ts$cell_type <- row.names(ts)
+  
+  # Annotate synapses with selector expression status
+  coord <- merge(coord, ts, by.x = by_x, by.y = "cell_type")
+  
+  coord <- merge(
+    coord,
+    ann[, .(cell_type, Notch)],
+    by.x = by_x,
+    by.y = "cell_type"
+  )
+  return(coord)
+}

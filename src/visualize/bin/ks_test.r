@@ -2,6 +2,8 @@
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(data.table))
 suppressPackageStartupMessages(library(R.utils))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(reshape2))
 
 #' Perform pairwise Kolmogorov-Smirnov tests between groups
 #' @param data Data frame with depth and group columns
@@ -44,10 +46,69 @@ perform_ks_tests <- function(data, sparse_limit = 100) {
   return(ks_results)
 }
 
-# Load helper functions from visualize.r
-source("src/visualize/bin/visualize.r", chdir = FALSE)
+#' Generate adjusted p-value heatmap for K-S test results
+#' @param ks_results Data frame with columns: group1, group2, p_adj
+#' @param title Title for the heatmap
+#' @return ggplot object
+generate_pvalue_heatmap <- function(ks_results, title = "K-S Test Adjusted P-values") {
+  # Get all unique groups
+  all_groups <- unique(c(ks_results$group1, ks_results$group2))
+  
+  # Create a full matrix with all pairwise combinations
+  pvalue_matrix <- matrix(NA, nrow = length(all_groups), ncol = length(all_groups))
+  rownames(pvalue_matrix) <- all_groups
+  colnames(pvalue_matrix) <- all_groups
+  
+  # Fill diagonal with 1 (groups compared to themselves)
+  diag(pvalue_matrix) <- 1
+  
+  # Fill the matrix with adjusted p-values
+  for (i in 1:nrow(ks_results)) {
+    g1 <- ks_results$group1[i]
+    g2 <- ks_results$group2[i]
+    p_adj <- ks_results$p_adj[i]
+    
+    # Fill both upper and lower triangles for symmetry
+    pvalue_matrix[g1, g2] <- p_adj
+    pvalue_matrix[g2, g1] <- p_adj
+  }
+  
+  # Convert to long format for ggplot
+  pvalue_df <- melt(pvalue_matrix, varnames = c("Group1", "Group2"), value.name = "p_adj")
+  pvalue_df <- pvalue_df[!is.na(pvalue_df$p_adj), ]
+  
+  # Create heatmap
+  p <- ggplot(pvalue_df, aes(x = Group1, y = Group2, fill = p_adj)) +
+    geom_tile(color = "white", size = 0.5) +
+    scale_fill_gradient2(
+      low = "red", mid = "white", high = "blue",
+      midpoint = 0.05, 
+      name = "Adjusted\nP-value",
+      trans = "log10",
+      breaks = c(0.001, 0.01, 0.05, 0.1, 1),
+      labels = c("0.001", "0.01", "0.05", "0.1", "1")
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+      axis.text.y = element_text(size = 10),
+      axis.title = element_blank(),
+      plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+      legend.position = "right",
+      panel.grid = element_blank()
+    ) +
+    labs(title = title) +
+    coord_fixed()
+  
+  return(p)
+}
 
 argvs <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
+
+# Source utility functions (soft-linked by Nextflow)
+if (file.exists("./utils.r")) {
+  source("./utils.r", chdir = FALSE)
+}
 
 # Interactive testing setup
 if (interactive()) {
@@ -155,6 +216,32 @@ if (length(all_ks_results) > 0) {
   # Print summary
   sig_count <- sum(final_results$p_adj < 0.05, na.rm = TRUE)
   cat("Significant comparisons (p_adj < 0.05):", sig_count, "\n")
+  
+  # Generate and save heatmap for each split
+  for (split_name in unique(final_results$split)) {
+    split_data <- final_results[final_results$split == split_name, ]
+    
+    if (nrow(split_data) > 0) {
+      # Create heatmap title
+      heatmap_title <- paste(
+        "K-S Test Adjusted P-values",
+        paste(argvs$np, argvs$syn_type, argvs$use_preset, split_name, sep = " | "),
+        sep = "\n"
+      )
+      
+      # Generate heatmap
+      heatmap_plot <- generate_pvalue_heatmap(split_data, heatmap_title)
+      
+      # Save heatmap
+      heatmap_file <- paste0(
+        gsub("_ks_tests.csv$", "", output_file),
+        "_", split_name, "_heatmap.png"
+      )
+      
+      ggsave(heatmap_file, heatmap_plot, width = 8, height = 6, dpi = 300)
+      cat("Heatmap saved to:", heatmap_file, "\n")
+    }
+  }
 } else {
   cat("No valid comparisons could be performed\n")
 }

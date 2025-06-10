@@ -9,75 +9,14 @@ suppressPackageStartupMessages(library(R.utils))
 
 argvs <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
 
-theme_ih2025 <- function(xlim = NULL, ylim = NULL) {
-  f <- theme_minimal() %+replace%
-    theme(
-      plot.title = element_text(size = 16, face = "bold"),
-      plot.subtitle = element_text(face = "italic"),
-      axis.text = element_blank(),
-      axis.title = element_blank(),
-      strip.background = element_rect(color = "black", fill = "transparent"),
-      strip.text = element_text(size = 14, face = "bold"),
-      panel.background = element_rect(color = "black", fill = "transparent"),
-      legend.title = element_text(size = 14),
-      legend.text = element_text(size = 12),
-      legend.position = "bottom",
-      legend.byrow = TRUE
-    )
-  return(f)
+# Source utility functions (soft-linked by Nextflow)
+if (file.exists("./utils.r")) {
+  source("./utils.r", chdir = FALSE)
 }
 
-rsubsample <- function(x, n = 1e4, seed = 1) {
-  if (!is.null(nrow) && nrow(x) > n) {
-    set.seed(seed)
-    if (is.data.table(x)) {
-      out <- x[sample(.N, n)]
-    } else {
-      out <- x[sample(seq_len(nrow(x)), n), , with = FALSE]
-    }
-    return(out)
-  }
-  return(x)
-}
 
-filsplit <- function(x, f, slimit = 100L) {
-  slist <- split(x, f)
-  to_keep <- vapply(slist, function(x) nrow(x) > slimit, FUN.VALUE = logical(1))
-  return(slist[to_keep])
-}
 
-filter_default <- function(coord, ann, ts, lut, syn_type = "pre") {
-  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
-  
-  # Prepare lookup table for conversion between FlyWire types
-  # and Ozel et al. (2020) types.
-  lut <- subset(lut, ts_type %in% colnames(ts))
-  ts_symbols <- ts$V1
-  
-  # Subset selector table to keep only types that we can map
-  ts <- t(ts[, lut$ts_type, with = FALSE]) |>
-    as.data.frame()
-  colnames(ts) <- ts_symbols
-  tlut <- lut$cell_type
-  names(tlut) <- lut$ts_type
-  row.names(ts) <- tlut[row.names(ts)]
-  ts <- ts[, colSums(ts) > 0]
-  ts_symbols <- colnames(ts)
-  ts <- ts == 1
-  ts <- as.data.frame(ts)
-  ts$cell_type <- row.names(ts)
-  
-  # Annotate synapses with selector expression status
-  coord <- merge(coord, ts, by.x = by_x, by.y = "cell_type")
-  
-  coord <- merge(
-    coord,
-    ann[, .(cell_type, Notch)],
-    by.x = by_x,
-    by.y = "cell_type"
-  )
-  return(coord)
-}
+
 
 if (interactive()) {
   argvs$np <- "LOP_R"
@@ -161,7 +100,7 @@ for (i in ts_symbols) {
   ## Generate the dot plot
   dotp <- np_plot |>
     ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
-    rasterize(geom_point(aes(color = color_label))) +
+    rasterize(geom_point(aes(color = color_label)), dpi = 450) +
     labs(color = "Notch Status") +
     theme_ih2025() +
     color_func() +

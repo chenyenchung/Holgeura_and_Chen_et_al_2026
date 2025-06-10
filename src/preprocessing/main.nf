@@ -11,6 +11,7 @@ process AnnotateNeuropil {
   path syn
   path ann
   path type
+  path utils
 
   output:
   path "ol_passed_filter.csv.gz"
@@ -20,7 +21,8 @@ process AnnotateNeuropil {
   filter_synapses.R \
     --syn ${syn} \
     --ann ${ann} \
-    --type ${type}
+    --type ${type} \
+    --utils ${utils}
   """
 }
 
@@ -32,13 +34,14 @@ process SplitNeuropil {
 
   input:
   path syn
+  path utils
 
   output:
   path "*.csv.gz"
 
   script:
   """
-  split_neuropil.R --syn ${syn}
+  split_neuropil.R --syn ${syn} --utils ${utils}
   """
 }
 
@@ -49,14 +52,14 @@ process RotateNeuropil {
   module 'r/gcc/4.4.0'
 
   input:
-  path syn
+  tuple path(syn), path(utils)
 
   output:
   path "*_rotated.csv.gz"
 
   script:
   """
-  rotate.R --syn ${syn}
+  rotate.R --syn ${syn} --utils ${utils}
   """
 }
 
@@ -66,8 +69,10 @@ workflow {
   SYN_FEATHER = 'data/flywire_synapses_783.feather'
   SYN_ANN = 'data/connections_princeton_no_threshold.csv.gz'
   TYPE_ANN = 'data/consolidated_cell_types.csv.gz'
-  syn_ch = AnnotateNeuropil(file(SYN_FEATHER), file(SYN_ANN), file(TYPE_ANN))
-  npl_ch = SplitNeuropil(syn_ch).flatten()
+  utils_file = file('src/utils.r')
+  syn_ch = AnnotateNeuropil(file(SYN_FEATHER), file(SYN_ANN), file(TYPE_ANN), utils_file)
+  npl_ch = SplitNeuropil(syn_ch, utils_file).flatten()
+    | map { it -> [it, utils_file] }
     | RotateNeuropil
  
   publish:
