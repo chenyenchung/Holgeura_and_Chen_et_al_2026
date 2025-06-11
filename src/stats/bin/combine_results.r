@@ -1,11 +1,12 @@
 #!/usr/bin/env Rscript
+suppressPackageStartupMessages(library(R.utils))
 suppressPackageStartupMessages(library(data.table))
 
 #' Combine multiple depth statistics result files
 #' @param pattern Pattern to match result files (default "^results_.*\\.csv$")
 #' @param output_file Output filename for combined results
 #' @param summary_file Output filename for statistical summary
-combine_depth_stats_results <- function(pattern = "^results_.*\\.csv$",
+combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
                                        output_file = "combined_depth_stats_results.csv",
                                        summary_file = "statistical_summary.txt") {
   
@@ -84,7 +85,7 @@ combine_depth_stats_results <- function(pattern = "^results_.*\\.csv$",
 argvs <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
 
 # Set defaults
-pattern <- if (is.null(argvs$pattern)) "^results_.*\\.csv$" else argvs$pattern
+pattern <- if (is.null(argvs$pattern)) "_depth_stats\\.csv$" else argvs$pattern
 output_file <- if (is.null(argvs$output)) "combined_depth_stats_results.csv" else argvs$output
 summary_file <- if (is.null(argvs$summary)) "statistical_summary.txt" else argvs$summary
 

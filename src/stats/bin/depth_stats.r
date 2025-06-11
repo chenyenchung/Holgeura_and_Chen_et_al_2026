@@ -7,91 +7,91 @@ suppressPackageStartupMessages(library(reshape2))
 suppressPackageStartupMessages(library(Rcpp))
 
 
-#' Perform Quantile Wasserstein test between two samples
-#' @param sample1 Numeric vector of first sample
-#' @param sample2 Numeric vector of second sample
-#' @param n_quantiles Number of quantiles to use (default 100)
-#' @param n_bootstrap Number of bootstrap iterations (default 1000)
-#' @param conf_int Confidence interval percentage (default 95)
-#' @return List with test statistic and confidence intervals
-quantile_wasserstein_test <- function(sample1, sample2, 
-                                     n_quantiles = 100, 
-                                     n_bootstrap = 1000,
-                                     conf_int = 95) {
-  # Input validation
-  if (length(sample1) < 10 || length(sample2) < 10) {
-    stop("Samples must have at least 10 observations each")
-  }
-  
-  if (conf_int <= 0 || conf_int >= 100) {
-    stop("Confidence interval must be between 0 and 100")
-  }
-  
-  # Use C++ implementation
-  result <- quantile_wasserstein_bootstrap(sample1, sample2, 
-                                          n_quantiles, n_bootstrap, conf_int)
-  return(list(
-    observed_statistic = result$observed_statistic,
-    bootstrap_stats = list(
-      median = result$bootstrap_median,
-      lower = result$bootstrap_lower,
-      upper = result$bootstrap_upper,
-      conf_level = result$conf_level
-    ),
-    null_distribution = result$null_distribution
-  ))
-}
+#' #' Perform Quantile Wasserstein test between two samples
+#' #' @param sample1 Numeric vector of first sample
+#' #' @param sample2 Numeric vector of second sample
+#' #' @param n_quantiles Number of quantiles to use (default 100)
+#' #' @param n_bootstrap Number of bootstrap iterations (default 1000)
+#' #' @param conf_int Confidence interval percentage (default 95)
+#' #' @return List with test statistic and confidence intervals
+#' quantile_wasserstein_test <- function(sample1, sample2, 
+#'                                       n_quantiles = 100, 
+#'                                       n_bootstrap = 1000,
+#'                                       conf_int = 95) {
+#'   # Input validation
+#'   if (length(sample1) < 10 || length(sample2) < 10) {
+#'     stop("Samples must have at least 10 observations each")
+#'   }
+#'   
+#'   if (conf_int <= 0 || conf_int >= 100) {
+#'     stop("Confidence interval must be between 0 and 100")
+#'   }
+#'   
+#'   # Use C++ implementation
+#'   result <- quantile_wasserstein_bootstrap(sample1, sample2, 
+#'                                            n_quantiles, n_bootstrap, conf_int)
+#'   return(list(
+#'     observed_statistic = result$observed_statistic,
+#'     bootstrap_stats = list(
+#'       median = result$bootstrap_median,
+#'       lower = result$bootstrap_lower,
+#'       upper = result$bootstrap_upper,
+#'       conf_level = result$conf_level
+#'     ),
+#'     null_distribution = result$null_distribution
+#'   ))
+#' }
 
-#' Plot quantile differences between two samples
-#' @param sample1 Numeric vector of first sample
-#' @param sample2 Numeric vector of second sample
-#' @param n_quantiles Number of quantiles to use (default 100)
-#' @param title Title for the plot
-#' @return List of ggplot objects
-plot_quantile_differences <- function(sample1, sample2, n_quantiles = 100, 
-                                     title = "Quantile Differences") {
-  # Generate quantile probabilities
-  probs <- seq(1/(n_quantiles+1), n_quantiles/(n_quantiles+1), length.out = n_quantiles)
-  
-  # Compute quantiles
-  q1 <- quantile(sample1, probs = probs, type = 7)
-  q2 <- quantile(sample2, probs = probs, type = 7)
-  
-  # Create data frame for plotting
-  plot_data <- data.frame(
-    quantile = probs,
-    sample1 = q1,
-    sample2 = q2,
-    difference = q1 - q2,
-    abs_diff = abs(q1 - q2)
-  )
-  
-  # Plot quantile functions
-  p1 <- ggplot(plot_data, aes(x = quantile)) +
-    geom_line(aes(y = sample1, color = "Sample 1"), linewidth = 1) +
-    geom_line(aes(y = sample2, color = "Sample 2"), linewidth = 1) +
-    labs(
-      title = paste(title, "- Quantile Functions"),
-      x = "Quantile",
-      y = "Value",
-      color = "Sample"
-    ) +
-    theme_minimal() +
-    theme(legend.position = "bottom")
-  
-  # Plot absolute differences
-  p2 <- ggplot(plot_data, aes(x = quantile, y = abs_diff)) +
-    geom_line(color = "red", linewidth = 1) +
-    geom_area(alpha = 0.3, fill = "red") +
-    labs(
-      title = paste(title, "- Absolute Differences"),
-      x = "Quantile",
-      y = "Absolute Difference"
-    ) +
-    theme_minimal()
-  
-  return(list(quantile_plot = p1, difference_plot = p2))
-}
+#' #' Plot quantile differences between two samples
+#' #' @param sample1 Numeric vector of first sample
+#' #' @param sample2 Numeric vector of second sample
+#' #' @param n_quantiles Number of quantiles to use (default 100)
+#' #' @param title Title for the plot
+#' #' @return List of ggplot objects
+#' plot_quantile_differences <- function(sample1, sample2, n_quantiles = 100, 
+#'                                       title = "Quantile Differences") {
+#'   # Generate quantile probabilities
+#'   probs <- seq(1/(n_quantiles+1), n_quantiles/(n_quantiles+1), length.out = n_quantiles)
+#'   
+#'   # Compute quantiles
+#'   q1 <- quantile(sample1, probs = probs, type = 7)
+#'   q2 <- quantile(sample2, probs = probs, type = 7)
+#'   
+#'   # Create data frame for plotting
+#'   plot_data <- data.frame(
+#'     quantile = probs,
+#'     sample1 = q1,
+#'     sample2 = q2,
+#'     difference = q1 - q2,
+#'     abs_diff = abs(q1 - q2)
+#'   )
+#'   
+#'   # Plot quantile functions
+#'   p1 <- ggplot(plot_data, aes(x = quantile)) +
+#'     geom_line(aes(y = sample1, color = "Sample 1"), linewidth = 1) +
+#'     geom_line(aes(y = sample2, color = "Sample 2"), linewidth = 1) +
+#'     labs(
+#'       title = paste(title, "- Quantile Functions"),
+#'       x = "Quantile",
+#'       y = "Value",
+#'       color = "Sample"
+#'     ) +
+#'     theme_minimal() +
+#'     theme(legend.position = "bottom")
+#'   
+#'   # Plot absolute differences
+#'   p2 <- ggplot(plot_data, aes(x = quantile, y = abs_diff)) +
+#'     geom_line(color = "red", linewidth = 1) +
+#'     geom_area(alpha = 0.3, fill = "red") +
+#'     labs(
+#'       title = paste(title, "- Absolute Differences"),
+#'       x = "Quantile",
+#'       y = "Absolute Difference"
+#'     ) +
+#'     theme_minimal()
+#'   
+#'   return(list(quantile_plot = p1, difference_plot = p2))
+#' }
 
 #' Perform pairwise Quantile Wasserstein tests between groups
 #' @param data Data frame with depth and group columns
@@ -103,9 +103,8 @@ plot_quantile_differences <- function(sample1, sample2, n_quantiles = 100,
 #' @param use_cpp Use C++ implementation (default TRUE)
 #' @return Data frame with test results
 perform_quantile_wasserstein_tests <- function(data, sparse_limit = 100, 
-                                              n_quantiles = 100, n_bootstrap = 1000,
-                                              conf_int = 95, 
-                                              correction_method = "bonferroni") {
+                                               n_quantiles = 100, n_bootstrap = 1000,
+                                               conf_int = 95) {
   # Filter groups with sufficient data
   group_counts <- table(data$group)
   valid_groups <- names(group_counts)[group_counts > sparse_limit]
@@ -128,39 +127,39 @@ perform_quantile_wasserstein_tests <- function(data, sparse_limit = 100,
   })
   
   cpp_results <- pairwise_wasserstein_tests(group_data, valid_groups,
-                                           n_quantiles, n_bootstrap, conf_int)
+                                            n_quantiles, n_bootstrap, conf_int)
   
   cpp_results$conf_level <- conf_int
   
   return(cpp_results)
 }
 
-#' Compare multiple distributions using Quantile Wasserstein test
-#' @param distributions List of numeric vectors
-#' @param names Optional vector of names for distributions
-#' @param correction_method Multiple testing correction method (default "bonferroni")
-#' @param n_quantiles Number of quantiles to use (default 100)
-#' @param n_bootstrap Number of bootstrap iterations (default 1000)
-#' @param conf_int Confidence interval percentage (default 95)
-#' @param use_cpp Use C++ implementation (default TRUE)
-#' @return Data frame with pairwise comparison results
-compare_multiple_distributions <- function(distributions, names = NULL, 
-                                         correction_method = "bonferroni",
-                                         n_quantiles = 100, n_bootstrap = 1000,
-                                         conf_int = 95) {
-  n_dist <- length(distributions)
-  
-  # Set names if not provided
-  if (is.null(names)) {
-    names <- paste0("Dist", 1:n_dist)
-  }
-  
-  # Use C++ implementation
-  results <- pairwise_wasserstein_tests(distributions, names,
-                                       n_quantiles, n_bootstrap, conf_int)
-  results$conf_level <- conf_int
-  return(results)
-}
+#' #' Compare multiple distributions using Quantile Wasserstein test
+#' #' @param distributions List of numeric vectors
+#' #' @param names Optional vector of names for distributions
+#' #' @param correction_method Multiple testing correction method (default "bonferroni")
+#' #' @param n_quantiles Number of quantiles to use (default 100)
+#' #' @param n_bootstrap Number of bootstrap iterations (default 1000)
+#' #' @param conf_int Confidence interval percentage (default 95)
+#' #' @param use_cpp Use C++ implementation (default TRUE)
+#' #' @return Data frame with pairwise comparison results
+#' compare_multiple_distributions <- function(distributions, names = NULL, 
+#'                                            correction_method = "bonferroni",
+#'                                            n_quantiles = 100, n_bootstrap = 1000,
+#'                                            conf_int = 95) {
+#'   n_dist <- length(distributions)
+#'   
+#'   # Set names if not provided
+#'   if (is.null(names)) {
+#'     names <- paste0("Dist", 1:n_dist)
+#'   }
+#'   
+#'   # Use C++ implementation
+#'   results <- pairwise_wasserstein_tests(distributions, names,
+#'                                         n_quantiles, n_bootstrap, conf_int)
+#'   results$conf_level <- conf_int
+#'   return(results)
+#' }
 
 #' Perform subsampled Kolmogorov-Smirnov test
 #' @param sample1 Numeric vector of first sample
@@ -170,8 +169,8 @@ compare_multiple_distributions <- function(distributions, names = NULL,
 #' @param correction_methods Vector of correction methods to apply
 #' @return List with raw and corrected p-value statistics
 subsampled_ks_test <- function(sample1, sample2, subsample_size = 1000, 
-                              n_iterations = 1000, 
-                              correction_methods = c("bonferroni", "holm", "fdr")) {
+                               n_iterations = 1000, 
+                               correction_methods = "bonferroni") {
   
   # Input validation
   if (length(sample1) < 10 || length(sample2) < 10) {
@@ -230,8 +229,8 @@ subsampled_ks_test <- function(sample1, sample2, subsample_size = 1000,
 #' @param correction_methods Vector of correction methods to apply
 #' @return Data frame with KS test results
 perform_subsampled_ks_tests <- function(data, sparse_limit = 100,
-                                       subsample_size = 1000, n_iterations = 1000,
-                                       correction_methods = c("bonferroni", "holm", "fdr")) {
+                                        subsample_size = 1000, n_iterations = 1000,
+                                        correction_methods = c("bonferroni", "holm", "fdr")) {
   
   # Filter groups with sufficient data
   group_counts <- table(data$group)
@@ -257,7 +256,7 @@ perform_subsampled_ks_tests <- function(data, sparse_limit = 100,
     
     # Perform subsampled KS test
     ks_result <- subsampled_ks_test(sample1, sample2, subsample_size, 
-                                   n_iterations, correction_methods)
+                                    n_iterations, correction_methods)
     
     # Create result row for each correction method
     for (method in correction_methods) {
@@ -304,7 +303,6 @@ if (interactive()) {
   argvs$np <- "LOP_L"
   argvs$syn_type <- "pre"
   argvs$use_preset <- "temporal_known"
-  argvs$density <- "asis"
   argvs$ann <- "data/visual_neurons_20250602.csv"
   argvs$meta <- "data/viz_meta.csv"
   argvs$preset <- "data/viz_preset.csv"
@@ -315,7 +313,7 @@ if (interactive()) {
   argvs$correction_method <- "bonferroni"
   argvs$ks_subsample_size <- 1000L
   argvs$ks_n_iterations <- 1000L
-  argvs$ks_correction_methods <- "bonferroni,holm,fdr"
+  argvs$ks_correction_methods <- "bonferroni"
   argvs$cppsrc <- "./src/stats/bin/depth_stats.cpp"
   syn_path <- file.path("int/idv_mat/", paste0(argvs$np, "_rotated.csv.gz"))
 } else {
@@ -358,12 +356,13 @@ if (preset$do_highlight && preset$hl_type == "path") {
 
 # Split by Notch if required
 if (preset$notch_split) {
-  np_coord_list <- filsplit(np_coord, np_coord$Notch, slimit = argvs$sparse_limit)
+  np_coord$notch_ntype <- paste(np_coord$Notch, np_coord$ntype, sep = "_")
+  np_coord_list <- filsplit(np_coord, np_coord$notch_ntype, slimit = argvs$sparse_limit)
 } else {
   np_coord_list <- list(all = np_coord)
 }
 
-# Perform Quantile L2 Wasserstein tests for each split
+# Calculate Quantile Wasserstein distance for each split
 all_test_results <- list()
 
 for (i in names(np_coord_list)) {
@@ -398,8 +397,7 @@ for (i in names(np_coord_list)) {
     sparse_limit = argvs$sparse_limit,
     n_quantiles = argvs$n_quantiles,
     n_bootstrap = argvs$n_bootstrap,
-    conf_int = argvs$conf_int,
-    correction_method = argvs$correction_method
+    conf_int = argvs$conf_int
   )
   
   if (nrow(wasserstein_results) == 0) {
@@ -407,20 +405,19 @@ for (i in names(np_coord_list)) {
   }
   
   # Perform subsampled KS tests
-  ks_correction_methods <- strsplit(argvs$ks_correction_methods, ",")[[1]]
   ks_results <- perform_subsampled_ks_tests(
     test_data,
     sparse_limit = argvs$sparse_limit,
     subsample_size = argvs$ks_subsample_size,
     n_iterations = argvs$ks_n_iterations,
-    correction_methods = ks_correction_methods
+    correction_methods = argvs$ks_correction_method
   )
   
   # Combine results
   if (nrow(ks_results) > 0) {
     # Merge Wasserstein and KS results by group pairs
     combined_results <- merge(wasserstein_results, ks_results, 
-                             by = c("group1", "group2"), all.x = TRUE)
+                              by = c("group1", "group2"), all.x = TRUE)
   } else {
     # If no KS results, add empty KS columns
     combined_results <- wasserstein_results
@@ -449,7 +446,7 @@ if (length(all_test_results) > 0) {
   
   # Generate output filename
   out_prefix <- paste(
-    argvs$np, argvs$syn_type, argvs$use_preset, argvs$density,
+    argvs$np, argvs$syn_type, argvs$use_preset,
     sep = "_"
   )
   output_file <- paste0(out_prefix, "_depth_stats.csv")

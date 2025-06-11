@@ -16,10 +16,6 @@ if (file.exists("./utils.r")) {
   source("./utils.r", chdir = FALSE)
 }
 
-
-
-
-
 if (interactive()) {
   argvs$np <- "LOP_R"
   argvs$syn_type <- "post"

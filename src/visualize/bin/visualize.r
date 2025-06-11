@@ -19,10 +19,10 @@ if (file.exists("./utils.r")) {
 ### TODO
 if (interactive()) {
   source("./src/utils.r", chdir = FALSE)
-  argvs$np <- "LOP_R"
+  argvs$np <- "LO_L"
   argvs$syn_type <- "pre"
-  argvs$use_preset <- "temporal_known"
-  argvs$density <- "asis"
+  argvs$use_preset <- "temporal_new"
+  argvs$density <- "pertype"
   argvs$ann <- "data/visual_neurons_20250602.csv"
   argvs$meta <- "data/viz_meta.csv"
   argvs$preset <- "data/viz_preset.csv"
@@ -69,11 +69,24 @@ if (preset$do_highlight && preset$hl_type == "path") {
   np_coord[, highlight := get(preset$hl_col) %in% hl_labels]
 }
 
+
+np_raw <- np_coord
+if (grepl("^ME", argvs$np)) {
+  np_coord <- rsubsample(np_coord, n = argvs$subsample * 4)
+} else {
+  np_coord <- np_coord[!grepl("^(Mi|Dm|Pm)", get(paste0(argvs$syn_type, "_type")))]
+  np_coord <- rsubsample(np_coord, n = argvs$subsample * 2)
+}
+
+
 if (preset$notch_split) {
   np_coord$notch_ntype <- paste(np_coord$Notch, np_coord$ntype, sep = "_")
   np_coord <- filsplit(np_coord, np_coord$notch_ntype, slimit = argvs$sparse_limit)
+  np_raw$notch_ntype <- paste(np_raw$Notch, np_raw$ntype, sep = "_")
+  np_raw <- filsplit(np_raw, np_raw$notch_ntype, slimit = argvs$sparse_limit)
 } else {
   np_coord <- list(all = np_coord)
+  np_raw <- list(all = np_raw)
 }
 
 for (i in names(np_coord)) {
@@ -86,19 +99,18 @@ for (i in names(np_coord)) {
       next
     }
   }
-
   
-  np_plot <- rsubsample(np_coord[[i]], n = argvs$subsample)
-  if (preset$do_highlight && !any(np_plot$highlight)) {
+
+  if (preset$do_highlight && !any(np_coord[[i]]$highlight)) {
     # For rare synapses that are not subsampled, we add 5 synapses as
     # representative synapses for visualization.
-    pos_dt <- np_coord[[i]][highlight == TRUE]
+    pos_dt <- np_raw[[i]][highlight == TRUE]
     if (nrow(pos_dt) > 5) {
       rep_syn <- rsubsample(pos_dt, n = 5)
     } else {
       rep_syn <- pos_dt
     }
-    np_plot <- rbind(np_plot, rep_syn)
+    np_coord[[i]] <- rbind(np_coord[[i]], rep_syn)
   }
   
   out_prefix <- paste(
@@ -108,7 +120,7 @@ for (i in names(np_coord)) {
   
   ## Generate the dot plot
   if (preset$do_highlight) {
-    dotp <- np_plot |>
+    dotp <- np_coord[[i]] |>
       ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
       rasterize(geom_point(
         aes(color = .data[[preset$color_by]], alpha = highlight)
@@ -116,7 +128,7 @@ for (i in names(np_coord)) {
       guides(alpha = "none") +
       scale_alpha_manual(values = c("TRUE" = 1, "FALSE" = 0.05))
   } else {
-    dotp <- np_plot |>
+    dotp <- np_coord[[i]] |>
       ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
       rasterize(geom_point(aes(color = .data[[preset$color_by]])))
   }
@@ -163,6 +175,8 @@ for (i in names(np_coord)) {
   }
   
   np_den <- filsplit(np_den, np_den$group, slimit = argvs$sparse_limit)
+  
+  
   den_grid <- seq(plot_meta$minz, plot_meta$maxz, length.out = 1024)
   if (argvs$density == "asis") {
     np_den <- lapply(np_den, function(x) return(density(x$depth)))
@@ -173,9 +187,19 @@ for (i in names(np_coord)) {
     })
     inter <- do.call(rbind, interpolated)
   } else {
+    # Drop ones that are too sparse to calculate
+    type_count <- vapply(np_den, function(i) {
+      return(any(table(i$type) > argvs$sparse_limit / 2))
+    }, FUN.VALUE = logical(1))
+    
+    np_den <- np_den[type_count]
+    
+    if (length(np_den) < 1) {
+      next
+    }
     type_avg <- lapply(names(np_den), function(tn) {
       x <- np_den[[tn]]
-      id_type <- filsplit(x, x$type, slimit = argvs$sparse_limit)
+      id_type <- filsplit(x, x$type, slimit = argvs$sparse_limit / 5)
       den_type <- lapply(id_type, function(idt) return(density(idt$depth)))
       interpolated <- lapply(names(den_type), function(type) {
         d <- den_type[[type]]
@@ -217,16 +241,3 @@ for (i in names(np_coord)) {
     plot = legendsp, paste0(out_prefix, "_legend.pdf")
   )
 }
-
-
-
-# TODO: Get test results
-# kwt <- readRDS(args$test)
-# syn_type <- args$syn
-# color_by <- args$color_by
-# min <- as.integer(args$min)
-
-
-
-
-

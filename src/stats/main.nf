@@ -11,21 +11,20 @@ params.combine_scriptf = 'src/stats/bin/combine_results.r'
 params.n_quantiles = 100
 params.n_bootstrap = 1000
 params.conf_int = 95
-params.correction_method = 'bonferroni'
 params.ks_subsample_size = 1000
 params.ks_n_iterations = 1000
-params.ks_correction_methods = 'bonferroni,holm,fdr'
+params.ks_correction_methods = 'bonferroni'
 params.subsample = 10000
 params.sparse_limit = 100
 
 process DepthStatsAnalysis {
-  cpus '2'
-  memory '16GB'
+  cpus '1'
+  memory '8GB'
   time '1h'
   module 'r/gcc/4.4.0'
 
   input:
-  tuple val(np), path(syn), val(stype), val(preset), val(den)
+  tuple val(np), path(syn), val(stype), val(preset)
   path ann
   path meta
   path presetf
@@ -40,7 +39,7 @@ process DepthStatsAnalysis {
   val ks_correction_methods
 
   output:
-  tuple val("${np}"), val("${preset}"), val("${stype}"), val("${den}"), 
+  tuple val("${np}"), val("${preset}"), val("${stype}"), 
         path('*_depth_stats.csv'), optional: true
 
   script:
@@ -50,7 +49,6 @@ process DepthStatsAnalysis {
     --synf ${syn} \
     --syn_type ${stype} \
     --use_preset ${preset} \
-    --density ${den} \
     --ann ${ann} \
     --meta ${meta} \
     --preset ${presetf} \
@@ -66,33 +64,27 @@ process DepthStatsAnalysis {
   """
 }
 
-process GenerateHeatmaps {
+process VisualizeStatSummary {
   cpus '1'
   memory '8GB'
   time '30m'
   module 'r/gcc/4.4.0'
 
   input:
-  tuple val(np), val(preset), val(stype), val(den), path(results_csv)
+  tuple val(np), val(preset), val(stype), path(results_csv)
   path meta
+  path utils
 
   output:
-  tuple val("${np}"), val("${preset}"), val("${stype}"), 
-        path('*_effect_size_heatmap.pdf'),
-        path('*_confidence_intervals.pdf'), optional: true
+  tuple val("${np}"), val("${preset}"), val("${stype}"), path('*.pdf'), optional: true
 
   script:
   def output_prefix = results_csv.baseName.replaceAll('_depth_stats', '')
   """
-  # Get plot dimensions from metadata
-  META_WIDTH=\$(Rscript -e "library(data.table); meta <- fread('${meta}'); cat(meta[neuropil == '${np}', outd1])")
-  META_HEIGHT=\$(Rscript -e "library(data.table); meta <- fread('${meta}'); cat(meta[neuropil == '${np}', outd2])")
-  
-  generate_heatmaps.r \
+  visualize_stat_summary.r \
     --input_file ${results_csv} \
     --output_prefix ${output_prefix} \
-    --width \${META_WIDTH} \
-    --height \${META_HEIGHT}
+    --utils ${utils}
   """
 }
 
@@ -103,12 +95,12 @@ process CombineResults {
   module 'r/gcc/4.4.0'
 
   input:
-  path 'results_*.csv'
+  path csvs
   path combine_script
 
   output:
-  path 'combined_depth_stats_results.csv'
-  path 'statistical_summary.txt'
+  path 'combined_depth_stats_results.csv', emit: csv
+  path 'statistical_summary.txt', emit: summary
 
   script:
   """
@@ -121,7 +113,6 @@ workflow {
   // Define analysis parameters
   def NP = ['ME_L', 'ME_R', 'LOP_L', 'LOP_R', 'LO_L', 'LO_R']
   def STYPE = ['pre', 'post']
-  def DEN_ALGO = ['asis', 'pertype']
   def MAT_PREFIX = 'int/idv_mat/'
   def SUBSAMPLE_TO = params.subsample
   def SPARSE_LIMIT = params.sparse_limit
@@ -139,7 +130,6 @@ workflow {
         .splitCsv(header:true)
         .map { row -> row.preset }
     )
-    .combine(channel.fromList(DEN_ALGO))
 
   // Perform statistical analysis
   analysis_ch = DepthStatsAnalysis(
@@ -159,9 +149,10 @@ workflow {
   )
 
   // Generate visualizations
-  viz_ch = GenerateHeatmaps(
+  viz_ch = VisualizeStatSummary(
     analysis_ch,
-    file(params.metaf)
+    file(params.metaf),
+    file(params.utilsf)
   )
 
   // Combine all results
@@ -171,21 +162,12 @@ workflow {
   )
 
   publish:
-  stats_results = analysis_ch
   stats_plots = viz_ch
-  summary = combined_ch
+  summary = combined_ch.summary
+  csv = combined_ch.csv
 }
 
 output {
-  stats_results {
-    path { input ->
-      def np = input[0]
-      def preset = input[1]
-      def stype = input[2]
-      def den = input[3]
-      return "results/${preset}/${np}_${stype}_${den}"
-    }
-  }
   stats_plots {
     path { input ->
       def np = input[0]
@@ -194,7 +176,6 @@ output {
       return "plots/${preset}/${np}_${stype}"
     }
   }
-  summary {
-    path "summary"
-  }
+  summary {}
+  csv {}
 }

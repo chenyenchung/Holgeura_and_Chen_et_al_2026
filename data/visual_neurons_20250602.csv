@@ -1,223 +1,223 @@
-cell_type,temporal_label,temporal_id,vDpp,vOptix,vVsx,dVsx,dOptix,dDpp,Confident_annotation,subsystem,Notch,newly_ann,func,ntype
-Am1,unknown,0,,,,,,,N,Motion,,,Motion,
-C2,unknown,0,,,,,,,N,Motion,,,Motion,
-C3,unknown,0,,,,,,,N,Motion,,,Motion,
-CT1,unknown,0,,,,,,,N,Motion,,,Motion,
-Dm19,unknown,0,,,,,,,N,Motion,,,Motion,
-Dm6,unknown,0,,,,,,,N,Motion,,,Motion,
-L1,unknown,0,,,,,,,N,Motion,,,Motion,
-L2,unknown,0,,,,,,,N,Motion,,,Motion,
-L3,unknown,0,,,,,,,N,Luminance,,,Luminance,
-L4,unknown,0,,,,,,,N,Motion,,,Motion,
-L5,unknown,0,,,,,,,N,Motion,,,Motion,
-Lat,unknown,0,,,,,,,N,Color,,,Color,
-Lawf1,unknown,0,,,,,,,N,Motion,,,Motion,
-Lawf2,unknown,0,,,,,,,N,Motion,,,Motion,
-Li01,unknown,0,,,,,,,N,Color,,,Color,
-Li03,unknown,0,,,,,,,N,Color,,,Color,
-Li24,unknown,0,,,,,,,N,Object,,,Object,
-Li11,unknown,0,,,,,,,N,Color,,,Color,
-Li26,unknown,0,,,,,,,N,Object,,,Object,
-Li07,unknown,0,,,,,,,N,Color,,,Color,
-Li21,unknown,0,,,,,,,N,Object,,,Object,
-Li20,unknown,0,,,,,,,N,Object,,,Object,
-Li15,unknown,0,,,,,,,N,Object,,,Object,
-Li17,unknown,0,,,,,,,N,Object,,,Object,
-Li12,unknown,0,,,,,,,N,Color,,,Color,
-Li25,unknown,0,,,,,,,N,Object,,,Object,
-Li09,unknown,0,,,,,,,N,Color,,,Color,
-Li18,unknown,0,,,,,,,N,Color,,,Color,
-Li02,unknown,0,,,,,,,N,Color,,,Color,
-Li04,unknown,0,,,,,,,N,Color,,,Color,
-Li08,unknown,0,,,,,,,N,Color,,,Color,
-Li28,unknown,0,,,,,,,N,Color,,,Color,
-Li10,unknown,0,,,,,,,N,Color,,,Color,
-Li30,unknown,0,,,,,,,N,Color,,,Color,
-Li27,unknown,0,,,,,,,N,Color,,,Color,
-Li31,unknown,0,,,,,,,N,Object,,,Object,
-Li22,unknown,0,,,,,,,N,Object,,,Object,
-Li16,unknown,0,,,,,,,N,Object,,,Object,
-Li05,unknown,0,,,,,,,N,Color,,,Color,
-Li13,unknown,0,,,,,,,N,Color,,,Color,
-Li32,unknown,0,,,,,,,N,Color,,,Color,
-LLPt,unknown,0,,,,,,,N,Color,,,Color,
-Li29,unknown,0,,,,,,,N,Color,,,Color,
-LM102a_L234-M89,unknown,0,,,,,,,N,Unannotated,,,Unannotated,
-LMa1,unknown,0,,,,,,,N,Object,,,Object,
-LMa2,unknown,0,,,,,,,N,Object,,,Object,
-LMa3,unknown,0,,,,,,,N,Object,,,Object,
-LMa4,unknown,0,,,,,,,N,Object,,,Object,
-LMa5,unknown,0,,,,,,,N,Object,,,Object,
-LMt1,unknown,0,,,,,,,N,Object,,,Object,
-LMt2,unknown,0,,,,,,,N,Object,,,Object,
-LMt3,unknown,0,,,,,,,N,Object,,,Object,
-LMt4,unknown,0,,,,,,,N,Object,,,Object,
-LPi14,unknown,0,,,,,,,N,Motion,,,Motion,
-LPi02,unknown,0,,,,,,,N,Motion,,,Motion,
-LPi01,unknown,0,,,,,,,N,Motion,,,Motion,
-LPi15,unknown,0,,,,,,,N,Motion,,,Motion,
-LPi12,unknown,0,,,,,,,N,Motion,,,Motion,
-LPi10,unknown,0,,,,,,,N,Motion,,,Motion,
-LPi05,unknown,0,,,,,,,N,Motion,,,Motion,
-LPi07,unknown,0,,,,,,,N,Motion,,,Motion,
-LPi08,unknown,0,,,,,,,N,Motion,,,Motion,
-LPi04,unknown,0,,,,,,,N,Motion,,,Motion,
-LPi11,unknown,0,,,,,,,N,Motion,,,Motion,
-LPi06,unknown,0,,,,,,,N,Motion,,,Motion,
-LPi13,unknown,0,,,,,,,N,Motion,,,Motion,
-Mi2,unknown,0,,,,,,,N,Object,,,Object,
-MLt1,unknown,0,,,,,,,N,Object,,,Object,
-MLt2,unknown,0,,,,,,,N,Color,,,Color,
-MLt3,unknown,0,,,,,,,N,Object,,,Object,
-MLt4,unknown,0,,,,,,,N,Object,,,Object,
-MLt5,unknown,0,,,,,,,N,Color,,,Color,
-MLt6,unknown,0,,,,,,,N,Color,,,Color,
-MLt7,unknown,0,,,,,,,N,Color,,,Color,
-MLt8,unknown,0,,,,,,,N,Color,,,Color,
-Sm12,unknown,0,,,,,,,N,Color,,,Color,
-Pm14,unknown,0,,,,,,,N,Color,,,Color,
-Sm41,unknown,0,,,,,,,N,Color,,,Color,
-Sm39,unknown,0,,,,,,,N,Luminance,,,Luminance,
-PDt,unknown,0,,,,,,,N,Object,,,Object,
-Sm29,unknown,0,,,,,,,N,Color,,,Color,
-Sm26,unknown,0,,,,,,,N,Color,,,Color,
-Sm28,unknown,0,,,,,,,N,Polarization,,,Polarization,
-Sm19,unknown,0,,,,,,,N,Color,,,Color,
-Sm21,unknown,0,,,,,,,N,Color,,,Color,
-Sm33,unknown,0,,,,,,,N,Color,,,Color,
-Sm25,unknown,0,,,,,,,N,Color,,,Color,
-Sm35,unknown,0,,,,,,,N,Color,,,Color,
-Sm18,unknown,0,,,,,,,N,Polarization,,,Polarization,
-Sm15,unknown,0,,,,,,,N,Color,,,Color,
-Sm38,unknown,0,,,,,,,N,Color,,,Color,
-Sm34,unknown,0,,,,,,,N,Color,,,Color,
-Sm17,unknown,0,,,,,,,N,Polarization,,,Polarization,
-Sm14,unknown,0,,,,,,,N,Color,,,Color,
-Sm24,unknown,0,,,,,,,N,Color,,,Color,
-Sm32,unknown,0,,,,,,,N,Color,,,Color,
-Sm04,unknown,0,,,,,,,N,Color,,,Color,
-Sm20,unknown,0,,,,,,,N,Color,,,Color,
-Sm09,unknown,0,,,,,,,N,Color,,,Color,
-Sm31,unknown,0,,,,,,,N,Color,,,Color,
-Sm40,unknown,0,,,,,,,N,Color,,,Color,
-Sm27,unknown,0,,,,,,,N,Color,,,Color,
-Sm36,unknown,0,,,,,,,N,Color,,,Color,
-Sm42,unknown,0,,,,,,,N,Color,,,Color,
-Sm13,unknown,0,,,,,,,N,Color,,,Color,
-Sm11,unknown,0,,,,,,,N,Color,,,Color,
-Sm06,unknown,0,,,,,,,N,Color,,,Color,
-Sm16,unknown,0,,,,,,,N,Color,,,Color,
-Sm07,unknown,0,,,,,,,N,Color,,,Color,
-Sm37,unknown,0,,,,,,,N,Color,,,Color,
-Sm23,unknown,0,,,,,,,N,Polarization,,,Polarization,
-Sm30,unknown,0,,,,,,,N,Luminance,,,Luminance,
-Sm08,unknown,0,,,,,,,N,Color,,,Color,
-Sm22,unknown,0,,,,,,,N,Color,,,Color,
-Sm10,unknown,0,,,,,,,N,Color,,,Color,
-Pm13,unknown,0,,,,,,,N,Color,,,Color,
-Sm05,unknown,0,,,,,,,N,Luminance,,,Luminance,
-Tm8b,unknown,0,,,,,,,N,Color,,,Color,
-TmY16,unknown,0,,,,,,,N,Object,,,Object,
-TmY20,unknown,0,,,,,,,N,Motion,,,Motion,
-TmY9q,unknown,0,,,,,,,N,Form,,,Form,
-TmY9q__perp,unknown,0,,,,,,,N,Unannotated,,,Unannotated,
-Y1,unknown,0,,,,,,,N,Motion,,,Motion,
-Y11,unknown,0,,,,,,,N,Motion,,,Motion,
-Y12,unknown,0,,,,,,,N,Motion,,,Motion,
-Y3,unknown,0,,,,,,,N,Object,,,Object,
-Y4,unknown,0,,,,,,,N,Object,,,Object,
-Dm13,unknown,0,,,,,,,N,Motion,,,Motion,
-Dm14,unknown,0,,,,,,,N,Motion,,,Motion,
-Dm16,unknown,0,,,,,,,N,Motion,,,Motion,
-Dm17,unknown,0,,,,,,,N,Motion,,,Motion,
-Dm18,unknown,0,,,,,,,N,Motion,,,Motion,
-Dm20,unknown,0,,,,,,,N,Luminance,,,Luminance,
-Mi13,unknown,0,,,,,,,N,Motion,,,Motion,
-Mi14,unknown,0,,,,,,,N,Object,,,Object,
-T2,unknown,0,,,,,,,N,Object,,,Object,
-T2a,unknown,0,,,,,,,N,Object,,,Object,
-T3,unknown,0,,,,,,,N,Object,,,Object,
-T4a,unknown,0,,,,,,,N,Motion,,,Motion,
-T4b,unknown,0,,,,,,,N,Motion,,,Motion,
-T4c,unknown,0,,,,,,,N,Motion,,,Motion,
-T4d,unknown,0,,,,,,,N,Motion,,,Motion,
-T5a,unknown,0,,,,,,,N,Motion,,,Motion,
-T5b,unknown,0,,,,,,,N,Motion,,,Motion,
-T5c,unknown,0,,,,,,,N,Motion,,,Motion,
-T5d,unknown,0,,,,,,,N,Motion,,,Motion,
-Tlp1,unknown,0,,,,,,,N,Motion,,,Motion,
-Tlp4,unknown,0,,,,,,,N,Motion,,,Motion,
-Tlp5,unknown,0,,,,,,,N,Motion,,,Motion,
-Tlp14,unknown,0,,,,,,,N,Motion,,,Motion,
-Tm16,unknown,0,,,,,,,N,Color,,,Color,
-Tm31,unknown,0,,,,,,,N,Color,,,Color,
-Tm32,unknown,0,,,,,,,N,Color,,,Color,
-Tm35,unknown,0,,,,,,,N,Color,,,Color,
-Tm36,unknown,0,,,,,,,N,Color,,,Color,
-Tm37,unknown,0,,,,,,,N,Color,,,Color,
-Tm34,unknown,0,,,,,,,N,Color,,,Color,
-Tm7,unknown,0,,,,,,,N,Color,,,Color,
-TmY31,unknown,0,,,,,,,N,Color,,,Color,
-Mi1,Hth,1,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,intrinsic
-Pm01,Hth,1,0,1,0,0,0,0,Y,Object,Notch Off,N,Object,intrinsic
-Pm03,Hth,1,0,0,0,0,0,1,Y,Object,Notch Off,N,Object,intrinsic
-Pm04,Hth,1,0,0,1,1,0,0,Y,Object,Notch Off,N,Object,intrinsic
-Pm09,Hth,1,0,0,1,1,0,0,Y,Object,Notch Off,N,Object,intrinsic
-Li14,Hth,1,0,0,1,1,0,0,Y,Motion,Notch Off,N,Motion,projection
-TmY15,Hth,1,0,0,1,1,0,0,Y,Object,Notch Off,N,Object,projection
-Pm08,Between Hth & Hth/Opa,1,,,,,,,N,Object,Notch Off,,Object,intrinsic
-Pm06,Between Hth & Hth/Opa,1,,,,,,,N,Object,Notch Off,,Object,intrinsic
-Pm10,Between Hth & Hth/Opa,1,,,,,,,N,Object,Notch Off,,Object,intrinsic
-Pm02,Between Hth & Hth/Opa,1,,,,,,,N,Object,Notch Off,,Object,intrinsic
-Pm07,Between Hth & Hth/Opa,1,,,,,,,N,Object,Notch Off,,Object,intrinsic
-Pm11,Between Hth & Hth/Opa,1,,,,,,,N,Object,Notch Off,,Object,intrinsic
-Tm1,Hth/Opa,2,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,projection
-Tm4,Hth/Opa,2,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,projection
-Mi4,Hth/Opa,2,1,1,0,0,1,1,Y,Color,Notch Off,N,Color,intrinsic
-Pm05,Hth/Opa,2,0,0,1,1,0,0,Y,Object,Notch Off,N,Object,intrinsic
-Mi9,Opa/Erm,3,1,1,0,0,1,1,Y,Luminance,Notch Off,N,Luminance,intrinsic
-Tm5c,Opa/Erm,3,1,1,1,1,1,1,Y,Color,Notch Off,N,Color,projection
-Tm9,Erm/Ey,4,0,1,1,0,1,1,Y,Motion,Notch On,N,Motion,projection
-Tm3,Erm/Ey,4,0,1,1,1,1,0,Y,Motion,Notch On,N,Motion,projection
-Mi10,Erm/Ey,4,0,1,0,0,0,0,Y,Color,Notch On,N,Color,intrinsic
-Tm27,Erm/Ey,4,0,0,1,1,1,0,Y,Object,Notch On,N,Object,projection
-TmY3,Erm/Ey,4,0,1,1,1,1,0,Y,Object,Notch On,N,Object,projection
-TmY5a,Erm/Ey,4,0,1,0,0,1,0,Y,Object,Notch Off,N,Object,projection
-Tm5d,Erm/Ey,4,0,1,0,0,1,0,Y,Color,Notch Off,N,Color,projection
-Tm5e,Erm/Ey,4,0,1,0,0,1,0,Y,Color,Notch Off,Y,Color,projection
-Tm33,Erm/Ey,4,0,0,1,1,0,0,Y,Color,Notch Off,Y,Color,projection
-Tm2,Ey/Hbn,5,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,projection
-Tm21,Ey/Hbn,5,1,1,1,1,1,1,Y,Object,Notch On,N,Object,projection
-Dm10,Ey/Hbn,5,0,1,0,0,0,0,Y,Luminance,Notch Off,N,Luminance,intrinsic
-Tm20,Hbn/Opa/Slp,6,0,0,0,0,1,0,Y,Color,Notch On,N,Color,projection
-Tm25,Hbn/Opa/Slp,6,0,0,0,1,1,0,Y,Object,Notch On,N,Object,projection
-Tm5a,Hbn/Opa/Slp,6,0,0,0,1,1,0,Y,Color,Notch On,N,Color,projection
-Tm5b,Hbn/Opa/Slp,6,0,0,0,1,1,0,Y,Color,Notch On,N,Color,projection
-Tm5f,Hbn/Opa/Slp,6,0,0,0,0,1,0,Y,Color,Notch On,Y,Color,projection
-Tm8a,Hbn/Opa/Slp,6,1,0,0,0,0,0,Y,Color,Notch On,Y,Color,projection
-Li06,Hbn/Opa/Slp,6,0,0,0,1,1,0,Y,Color,Notch On,Y,Color,intrinsic
-TmY10,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Color,Notch On,Y,Color,projection
-TmY11,Hbn/Opa/Slp,6,1,1,0,0,0,0,Y,Color,Notch On,Y,Color,projection
-TmY14,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Object,Notch Off,N,Object,projection
-MTe01a,Hbn/Opa/Slp,6,0,0,1,0,0,0,Y,Unannotated,Notch Off,N,Unannotated,projection
-Dm8b,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Color,Notch Off,N,Color,intrinsic
-Dm8a,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Color,Notch Off,N,Color,intrinsic
-DmDRA1,Hbn/Opa/Slp,6,0,0,0,0,0,1,Y,Polarization,Notch Off,N,Polarization,intrinsic
-DmDRA2,Hbn/Opa/Slp,6,0,0,0,0,0,1,Y,Color,Notch Off,N,Color,intrinsic
-Sm03,Hbn/Opa/Slp,6,0,0,1,0,0,0,Y,Color,Notch Off,Y,Color,intrinsic
-Dm11,Hbn/Opa/Slp,6,0,0,0,0,1,1,Y,Color,Notch Off,N,Color,intrinsic
-Dm1,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Motion,Notch Off,N,Motion,intrinsic
-Dm4,Hbn/Opa/Slp,6,1,1,0,0,0,0,Y,Luminance,Notch Off,N,Luminance,intrinsic
-Dm12,Hbn/Opa/Slp,6,1,1,0,0,0,0,Y,Luminance,Notch Off,N,Luminance,intrinsic
-Dm9,Hbn/Opa/Slp,6,1,1,0,0,1,1,Y,Luminance,Notch Off,N,Luminance,intrinsic
-Lai,Hbn/Opa/Slp,6,1,0,0,0,0,1,Y,Motion,Notch Off,N,Motion,intrinsic
-TmY4,Slp/D,7,0,1,1,1,0,0,Y,Form,Notch On,N,Form,projection
-Dm15,Slp/D,7,0,0,0,1,1,0,Y,Motion,Notch Off,N,Motion,intrinsic
-Dm3p,Slp/D,7,0,1,1,1,1,0,Y,Form,Notch Off,N,Form,intrinsic
-Dm3q,Slp/D,7,1,1,0,0,1,1,Y,Form,Notch Off,N,Form,intrinsic
-Dm3v,Slp/D,7,,,,,,,N,Form,Notch Off,N,Form,intrinsic
-T1,D/BH-1,8,1,1,1,1,1,1,Y,Motion,Notch Off,N,Motion,projection
-Mi15,D/BH-1,8,0,0,0,0,1,1,Y,Luminance,Notch Off,N,Luminance,intrinsic
-Sm02,D/BH-1,8,1,1,0,0,0,0,Y,Color,Notch Off,Y,Color,intrinsic
-Sm01,D/BH-1,8,1,1,0,0,0,0,Y,Color,Notch Off,Y,Color,intrinsic
-Dm2,D/BH-1,8,1,1,1,1,1,1,Y,Luminance,Notch Off,N,Luminance,intrinsic
+"cell_type","temporal_label","temporal_id","vDpp","vOptix","vVsx","dVsx","dOptix","dDpp","Confident_annotation","subsystem","Notch","newly_ann","func","ntype","putative_OPC"
+"Am1","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"C2","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"C3","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"CT1","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Dm19","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",TRUE
+"Dm6","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",TRUE
+"L1","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"L2","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"L3","unknown",0,NA,NA,NA,NA,NA,NA,"N","Luminance","","","Luminance","",FALSE
+"L4","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"L5","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Lat","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Lawf1","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Lawf2","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Li01","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li03","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li24","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Li11","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li26","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Li07","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li21","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Li20","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Li15","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Li17","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Li12","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li25","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Li09","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li18","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li02","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li04","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li08","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li28","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li10","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li30","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li27","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li31","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Li22","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Li16","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Li05","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li13","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li32","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"LLPt","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Li29","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"LM102a_L234-M89","unknown",0,NA,NA,NA,NA,NA,NA,"N","Unannotated","","","Unannotated","",FALSE
+"LMa1","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"LMa2","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",TRUE
+"LMa3","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",TRUE
+"LMa4","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",TRUE
+"LMa5","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"LMt1","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"LMt2","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"LMt3","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"LMt4","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"LPi14","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"LPi02","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"LPi01","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"LPi15","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"LPi12","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"LPi10","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"LPi05","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"LPi07","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"LPi08","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"LPi04","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"LPi11","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"LPi06","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"LPi13","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Mi2","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",TRUE
+"MLt1","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",TRUE
+"MLt2","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"MLt3","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",TRUE
+"MLt4","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",TRUE
+"MLt5","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"MLt6","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"MLt7","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"MLt8","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm12","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Pm14","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Sm41","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm39","unknown",0,NA,NA,NA,NA,NA,NA,"N","Luminance","","","Luminance","",FALSE
+"PDt","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Sm29","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm26","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm28","unknown",0,NA,NA,NA,NA,NA,NA,"N","Polarization","","","Polarization","",TRUE
+"Sm19","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm21","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm33","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm25","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm35","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm18","unknown",0,NA,NA,NA,NA,NA,NA,"N","Polarization","","","Polarization","",TRUE
+"Sm15","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm38","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Sm34","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm17","unknown",0,NA,NA,NA,NA,NA,NA,"N","Polarization","","","Polarization","",TRUE
+"Sm14","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm24","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm32","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm04","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm20","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm09","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm31","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm40","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm27","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm36","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm42","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm13","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm11","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm06","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm16","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm07","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm37","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm23","unknown",0,NA,NA,NA,NA,NA,NA,"N","Polarization","","","Polarization","",TRUE
+"Sm30","unknown",0,NA,NA,NA,NA,NA,NA,"N","Luminance","","","Luminance","",TRUE
+"Sm08","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm22","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Sm10","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Pm13","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",FALSE
+"Sm05","unknown",0,NA,NA,NA,NA,NA,NA,"N","Luminance","","","Luminance","",TRUE
+"Tm8b","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"TmY16","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",TRUE
+"TmY20","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",TRUE
+"TmY9q","unknown",0,NA,NA,NA,NA,NA,NA,"N","Form","","","Form","",TRUE
+"TmY9q__perp","unknown",0,NA,NA,NA,NA,NA,NA,"N","Unannotated","","","Unannotated","",TRUE
+"Y1","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Y11","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Y12","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Y3","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Y4","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"Dm13","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",TRUE
+"Dm14","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",TRUE
+"Dm16","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",TRUE
+"Dm17","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",TRUE
+"Dm18","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",TRUE
+"Dm20","unknown",0,NA,NA,NA,NA,NA,NA,"N","Luminance","","","Luminance","",TRUE
+"Mi13","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",TRUE
+"Mi14","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",TRUE
+"T2","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"T2a","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"T3","unknown",0,NA,NA,NA,NA,NA,NA,"N","Object","","","Object","",FALSE
+"T4a","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"T4b","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"T4c","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"T4d","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"T5a","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"T5b","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"T5c","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"T5d","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Tlp1","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Tlp4","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Tlp5","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Tlp14","unknown",0,NA,NA,NA,NA,NA,NA,"N","Motion","","","Motion","",FALSE
+"Tm16","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Tm31","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Tm32","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Tm35","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Tm36","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Tm37","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Tm34","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Tm7","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"TmY31","unknown",0,NA,NA,NA,NA,NA,NA,"N","Color","","","Color","",TRUE
+"Mi1","Hth",1,1,1,1,1,1,1,"Y","Motion","Notch On","N","Motion","intrinsic",FALSE
+"Pm01","Hth",1,0,1,0,0,0,0,"Y","Object","Notch Off","N","Object","intrinsic",FALSE
+"Pm03","Hth",1,0,0,0,0,0,1,"Y","Object","Notch Off","N","Object","intrinsic",FALSE
+"Pm04","Hth",1,0,0,1,1,0,0,"Y","Object","Notch Off","N","Object","intrinsic",FALSE
+"Pm09","Hth",1,0,0,1,1,0,0,"Y","Object","Notch Off","N","Object","intrinsic",FALSE
+"Li14","Hth",1,0,0,1,1,0,0,"Y","Motion","Notch Off","N","Motion","projection",FALSE
+"TmY15","Hth",1,0,0,1,1,0,0,"Y","Object","Notch Off","N","Object","projection",FALSE
+"Pm08","Between Hth & Hth/Opa",1,NA,NA,NA,NA,NA,NA,"N","Object","Notch Off","","Object","intrinsic",TRUE
+"Pm06","Between Hth & Hth/Opa",1,NA,NA,NA,NA,NA,NA,"N","Object","Notch Off","","Object","intrinsic",TRUE
+"Pm10","Between Hth & Hth/Opa",1,NA,NA,NA,NA,NA,NA,"N","Object","Notch Off","","Object","intrinsic",TRUE
+"Pm02","Between Hth & Hth/Opa",1,NA,NA,NA,NA,NA,NA,"N","Object","Notch Off","","Object","intrinsic",TRUE
+"Pm07","Between Hth & Hth/Opa",1,NA,NA,NA,NA,NA,NA,"N","Object","Notch Off","","Object","intrinsic",TRUE
+"Pm11","Between Hth & Hth/Opa",1,NA,NA,NA,NA,NA,NA,"N","Object","Notch Off","","Object","intrinsic",TRUE
+"Tm1","Hth/Opa",2,1,1,1,1,1,1,"Y","Motion","Notch On","N","Motion","projection",FALSE
+"Tm4","Hth/Opa",2,1,1,1,1,1,1,"Y","Motion","Notch On","N","Motion","projection",FALSE
+"Mi4","Hth/Opa",2,1,1,0,0,1,1,"Y","Color","Notch Off","N","Color","intrinsic",FALSE
+"Pm05","Hth/Opa",2,0,0,1,1,0,0,"Y","Object","Notch Off","N","Object","intrinsic",FALSE
+"Mi9","Opa/Erm",3,1,1,0,0,1,1,"Y","Luminance","Notch Off","N","Luminance","intrinsic",FALSE
+"Tm5c","Opa/Erm",3,1,1,1,1,1,1,"Y","Color","Notch Off","N","Color","projection",FALSE
+"Tm9","Erm/Ey",4,0,1,1,0,1,1,"Y","Motion","Notch On","N","Motion","projection",FALSE
+"Tm3","Erm/Ey",4,0,1,1,1,1,0,"Y","Motion","Notch On","N","Motion","projection",FALSE
+"Mi10","Erm/Ey",4,0,1,0,0,0,0,"Y","Color","Notch On","N","Color","intrinsic",FALSE
+"Tm27","Erm/Ey",4,0,0,1,1,1,0,"Y","Object","Notch On","N","Object","projection",FALSE
+"TmY3","Erm/Ey",4,0,1,1,1,1,0,"Y","Object","Notch On","N","Object","projection",FALSE
+"TmY5a","Erm/Ey",4,0,1,0,0,1,0,"Y","Object","Notch Off","N","Object","projection",FALSE
+"Tm5d","Erm/Ey",4,0,1,0,0,1,0,"Y","Color","Notch Off","N","Color","projection",FALSE
+"Tm5e","Erm/Ey",4,0,1,0,0,1,0,"Y","Color","Notch Off","Y","Color","projection",FALSE
+"Tm33","Erm/Ey",4,0,0,1,1,0,0,"Y","Color","Notch Off","Y","Color","projection",FALSE
+"Tm2","Ey/Hbn",5,1,1,1,1,1,1,"Y","Motion","Notch On","N","Motion","projection",FALSE
+"Tm21","Ey/Hbn",5,1,1,1,1,1,1,"Y","Object","Notch On","N","Object","projection",FALSE
+"Dm10","Ey/Hbn",5,0,1,0,0,0,0,"Y","Luminance","Notch Off","N","Luminance","intrinsic",FALSE
+"Tm20","Hbn/Opa/Slp",6,0,0,0,0,1,0,"Y","Color","Notch On","N","Color","projection",FALSE
+"Tm25","Hbn/Opa/Slp",6,0,0,0,1,1,0,"Y","Object","Notch On","N","Object","projection",FALSE
+"Tm5a","Hbn/Opa/Slp",6,0,0,0,1,1,0,"Y","Color","Notch On","N","Color","projection",FALSE
+"Tm5b","Hbn/Opa/Slp",6,0,0,0,1,1,0,"Y","Color","Notch On","N","Color","projection",FALSE
+"Tm5f","Hbn/Opa/Slp",6,0,0,0,0,1,0,"Y","Color","Notch On","Y","Color","projection",FALSE
+"Tm8a","Hbn/Opa/Slp",6,1,0,0,0,0,0,"Y","Color","Notch On","Y","Color","projection",FALSE
+"Li06","Hbn/Opa/Slp",6,0,0,0,1,1,0,"Y","Color","Notch On","Y","Color","projection",FALSE
+"TmY10","Hbn/Opa/Slp",6,0,1,0,0,0,0,"Y","Color","Notch On","Y","Color","projection",FALSE
+"TmY11","Hbn/Opa/Slp",6,1,1,0,0,0,0,"Y","Color","Notch On","Y","Color","projection",FALSE
+"TmY14","Hbn/Opa/Slp",6,0,1,0,0,0,0,"Y","Object","Notch Off","N","Object","projection",FALSE
+"MTe01a","Hbn/Opa/Slp",6,0,0,1,0,0,0,"Y","Unannotated","Notch Off","N","Unannotated","projection",FALSE
+"Dm8b","Hbn/Opa/Slp",6,0,1,0,0,0,0,"Y","Color","Notch Off","N","Color","intrinsic",FALSE
+"Dm8a","Hbn/Opa/Slp",6,0,1,0,0,0,0,"Y","Color","Notch Off","N","Color","intrinsic",FALSE
+"DmDRA1","Hbn/Opa/Slp",6,0,0,0,0,0,1,"Y","Polarization","Notch Off","N","Polarization","intrinsic",FALSE
+"DmDRA2","Hbn/Opa/Slp",6,0,0,0,0,0,1,"Y","Color","Notch Off","N","Color","intrinsic",FALSE
+"Sm03","Hbn/Opa/Slp",6,0,0,1,0,0,0,"Y","Color","Notch Off","Y","Color","intrinsic",FALSE
+"Dm11","Hbn/Opa/Slp",6,0,0,0,0,1,1,"Y","Color","Notch Off","N","Color","intrinsic",FALSE
+"Dm1","Hbn/Opa/Slp",6,0,1,0,0,0,0,"Y","Motion","Notch Off","N","Motion","intrinsic",FALSE
+"Dm4","Hbn/Opa/Slp",6,1,1,0,0,0,0,"Y","Luminance","Notch Off","N","Luminance","intrinsic",FALSE
+"Dm12","Hbn/Opa/Slp",6,1,1,0,0,0,0,"Y","Luminance","Notch Off","N","Luminance","intrinsic",FALSE
+"Dm9","Hbn/Opa/Slp",6,1,1,0,0,1,1,"Y","Luminance","Notch Off","N","Luminance","intrinsic",FALSE
+"Lai","Hbn/Opa/Slp",6,1,0,0,0,0,1,"Y","Motion","Notch Off","N","Motion","intrinsic",FALSE
+"TmY4","Slp/D",7,0,1,1,1,0,0,"Y","Form","Notch On","N","Form","projection",FALSE
+"Dm15","Slp/D",7,0,0,0,1,1,0,"Y","Motion","Notch Off","N","Motion","intrinsic",FALSE
+"Dm3p","Slp/D",7,0,1,1,1,1,0,"Y","Form","Notch Off","N","Form","intrinsic",FALSE
+"Dm3q","Slp/D",7,1,1,0,0,1,1,"Y","Form","Notch Off","N","Form","intrinsic",FALSE
+"Dm3v","Slp/D",7,NA,NA,NA,NA,NA,NA,"N","Form","Notch Off","N","Form","intrinsic",FALSE
+"T1","D/BH-1",8,1,1,1,1,1,1,"Y","Motion","Notch Off","N","Motion","projection",FALSE
+"Mi15","D/BH-1",8,0,0,0,0,1,1,"Y","Luminance","Notch Off","N","Luminance","intrinsic",FALSE
+"Sm02","D/BH-1",8,1,1,0,0,0,0,"Y","Color","Notch Off","Y","Color","intrinsic",FALSE
+"Sm01","D/BH-1",8,1,1,0,0,0,0,"Y","Color","Notch Off","Y","Color","intrinsic",FALSE
+"Dm2","D/BH-1",8,1,1,1,1,1,1,"Y","Luminance","Notch Off","N","Luminance","intrinsic",FALSE
