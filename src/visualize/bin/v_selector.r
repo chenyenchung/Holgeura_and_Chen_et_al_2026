@@ -59,6 +59,24 @@ np_coord <- fread(syn_path)
 ts <- fread(argvs$ts)
 tslut <- fread(argvs$tslut)
 
+## Validate that all data points fall within specified axis limits
+x_values <- np_coord[[x_axis]]
+y_values <- np_coord[[y_axis]]
+
+# Check X axis bounds
+x_out_of_bounds <- sum(x_values < plot_meta$xmin | x_values > plot_meta$xmax, na.rm = TRUE)
+if (x_out_of_bounds > 0) {
+  stop(sprintf("ERROR: %d data points fall outside X-axis limits [%.2f, %.2f]. Check plot_meta boundaries for %s.", 
+               x_out_of_bounds, plot_meta$xmin, plot_meta$xmax, argvs$np))
+}
+
+# Check Y axis bounds  
+y_out_of_bounds <- sum(y_values < plot_meta$ymin | y_values > plot_meta$ymax, na.rm = TRUE)
+if (y_out_of_bounds > 0) {
+  stop(sprintf("ERROR: %d data points fall outside Y-axis limits [%.2f, %.2f]. Check plot_meta boundaries for %s.", 
+               y_out_of_bounds, plot_meta$ymin, plot_meta$ymax, argvs$np))
+}
+
 # Annotate and filter to keep only annotated synapses
 npp <- filter_default(np_coord, opc_anno, ts, tslut, syn_type = argvs$syn_type)
 np_plot <- rsubsample(npp, n = argvs$subsample)
