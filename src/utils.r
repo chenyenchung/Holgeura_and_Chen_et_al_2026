@@ -116,6 +116,7 @@ rsubsample <- function(x, n = 1e4, seed = 1, syn_type) {
 
 #' Filter for type sparseness and the lack of variation
 filter_type <- function(x, syn_type, sparse_limit) {
+  x <- x[, .row_id := .I]
   # Filter out types with too few synapses for consistent visualization
   type_col <- paste0(syn_type, "_type")
   type_counts <- x[, .N, by = c(type_col)]
@@ -137,6 +138,8 @@ filter_type <- function(x, syn_type, sparse_limit) {
                       nrow(depth_variation) - length(valid_types)))
     }
     x <- x[get(type_col) %in% valid_types]
+    setorder(x, .row_id)
+    x[, .row_id := NULL]
     return(x)
   }
 }
@@ -150,12 +153,15 @@ filter_temporal_new <- function(coord, ann, syn_type = "pre") {
     levels = unique(ann$temporal_label),
     labels = unique(ann$temporal_label)
   )
+  coord[, .row_id := .I]
   coord <- merge(
     coord,
     ann[, .(cell_type, temporal_label, Notch, newly_ann, ntype)],
     by.x = by_x,
     by.y = "cell_type"
   )
+  setorder(coord, .row_id)
+  coord[, .row_id := NULL]
   return(coord)
 }
 
@@ -168,12 +174,16 @@ filter_temporal_known <- function(coord, ann, syn_type = "pre") {
     levels = unique(ann$temporal_label),
     labels = unique(ann$temporal_label)
   )
+  coord[, .row_id := .I]
   coord <- merge(
     coord,
     ann[, .(cell_type, temporal_label, Notch, ntype)],
     by.x = by_x,
     by.y = "cell_type"
   )
+  setorder(coord, .row_id)
+  coord[, .row_id := NULL]
+  
   return(coord)
 }
 
@@ -183,12 +193,16 @@ filter_subsystem_known <- function(coord, ann, syn_type = "pre") {
   ann <- ann[func != "unknown" & newly_ann == "N"]
   ann <- ann[func != "Unannotated"]
   ann$func <- factor(ann$func)
+  coord[, .row_id := .I]
   coord <- merge(
     coord,
     ann[, .(cell_type, func, Notch, ntype)],
     by.x = by_x,
     by.y = "cell_type"
   )
+  setorder(coord, .row_id)
+  coord[, .row_id := NULL]
+  
   return(coord)
 }
 
@@ -196,14 +210,16 @@ filter_subsystem_known <- function(coord, ann, syn_type = "pre") {
 filter_subsystem_new <- function(coord, ann, syn_type = "pre") {
   by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
   ann <- ann[func != "unknown" & Confident_annotation == "Y"]
-  ann <- ann[func != "Unannotated"]
   ann$func <- factor(ann$func)
+  coord[, .row_id := .I]
   coord <- merge(
     coord,
     ann[, .(cell_type, func, Notch, newly_ann, ntype)],
     by.x = by_x,
     by.y = "cell_type"
   )
+  setorder(coord, .row_id)
+  coord[, .row_id := NULL]
   return(coord)
 }
 
@@ -230,6 +246,7 @@ filter_default <- function(coord, ann, ts, lut, syn_type = "pre") {
   ts$cell_type <- row.names(ts)
   
   # Annotate synapses with selector expression status
+  coord[, .row_id := .I]
   coord <- merge(coord, ts, by.x = by_x, by.y = "cell_type")
   
   coord <- merge(
@@ -238,5 +255,8 @@ filter_default <- function(coord, ann, ts, lut, syn_type = "pre") {
     by.x = by_x,
     by.y = "cell_type"
   )
+  setorder(coord, .row_id)
+  coord[, .row_id := NULL]
+  
   return(coord)
 }

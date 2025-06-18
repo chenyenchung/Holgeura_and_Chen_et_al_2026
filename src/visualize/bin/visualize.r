@@ -45,7 +45,7 @@ if (file.exists("./utils.r")) {
 ### TODO
 if (interactive()) {
   source("./src/utils.r", chdir = FALSE)
-  argvs$np <- "ME_R"
+  argvs$np <- "LOP_L"
   argvs$syn_type <- "post"
   argvs$use_preset <- "subsystem_new"
   argvs$density <- "asis"
@@ -166,6 +166,10 @@ if (grepl("^ME", argvs$np)) {
   )
 }
 
+if (preset$hl_col == "func") {
+  np_coord <- np_coord[func != "Unannotated"]
+  np_raw <- np_raw[func != "Unannotated"]
+}
 
 if (preset$notch_split) {
   required_notch_cols <- c("Notch", "ntype")
