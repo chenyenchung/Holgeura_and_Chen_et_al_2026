@@ -441,18 +441,17 @@ for (i in names(np_coord_list)) {
 }
 
 # Combine all results
+# Generate output filename
+out_prefix <- paste(
+  argvs$np, argvs$syn_type, argvs$use_preset,
+  sep = "_"
+)
+output_file <- paste0(out_prefix, "_depth_stats.csv")
+
 if (length(all_test_results) > 0) {
   final_results <- do.call(rbind, all_test_results)
   
-  # Generate output filename
-  out_prefix <- paste(
-    argvs$np, argvs$syn_type, argvs$use_preset,
-    sep = "_"
-  )
-  output_file <- paste0(out_prefix, "_depth_stats.csv")
-  
   # Write results
-  fwrite(final_results, output_file)
   cat("Depth statistics (Wasserstein + KS) results written to:", output_file, "\n")
   cat("Number of comparisons:", nrow(final_results), "\n")
   cat("Confidence interval:", unique(final_results$conf_level), "%\n")
@@ -479,5 +478,28 @@ if (length(all_test_results) > 0) {
   }
   
 } else {
+  final_results <- data.frame(
+    group1 = logical(0),
+    group2 = logical(0),
+    test_statistic_median = logical(0),
+    test_statistic_lower = logical(0),
+    test_statistic_upper = logical(0),
+    conf_level = logical(0),
+    ks_pval_raw_median = logical(0),
+    ks_pval_raw_q25 = logical(0),
+    ks_pval_raw_q75 = logical(0),
+    ks_pval_corrected_median = logical(0),
+    ks_pval_corrected_q25 = logical(0),
+    ks_pval_corrected_q75 = logical(0),
+    ks_correction_method = logical(0),
+    ks_subsample_size = logical(0),
+    ks_n_iterations = logical(0),
+    split = logical(0),
+    neuropil = logical(0),
+    syn_type = logical(0),
+    preset = logical(0)
+  )
   cat("No valid comparisons could be performed\n")
 }
+
+fwrite(final_results, output_file)

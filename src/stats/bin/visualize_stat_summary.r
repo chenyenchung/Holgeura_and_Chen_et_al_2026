@@ -133,6 +133,7 @@ plot_wasserstein_ci <- function(data) {
     ) +
     theme_minimal() +
     theme(
+      axis.title.x = element_blank(),
       axis.text.x = element_text(angle = 45, hjust = 1),
       plot.title = element_text(size = 14, face = "bold")
     )
@@ -181,9 +182,11 @@ plot_ks_boxplot <- function(data) {
       title = "Subsampled Kolmogorov-Smirnov P-values",
       y = "P-value (median with quartiles)"
     ) +
-    scale_y_continuous(trans = "log10", labels = scales::comma) +
+    scale_y_continuous(transform = c("log10", "reverse"),
+                       labels = scales::comma) +
     theme_minimal() +
     theme(
+      axis.title.x = element_blank(),
       axis.text.x = element_text(angle = 45, hjust = 1),
       plot.title = element_text(size = 14, face = "bold")
     )
@@ -322,8 +325,9 @@ generate_depth_stats_report <- function(test_results, output_prefix) {
 argvs <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
 
 if (interactive()) {
-  argvs$input_file <- "./LOP_L_pre_temporal_known_depth_stats.csv"
+  argvs$input_file <- list.files(pattern = ".*\\.csv")[[1]]
   argvs$output_prefix <- "test_depth_viz"
+  source("./src/utils.r")
 }
 
 # Check if running as standalone script
@@ -355,7 +359,9 @@ if (!is.null(argvs$input_file)) {
   # Check if split column exists and split data accordingly
   if ("split" %in% colnames(test_results)) {
     cat("Split column detected. Splitting data by:", paste(unique(test_results$split), collapse = ", "), "\n")
-    test_results_list <- filsplit(test_results, test_results$split, slimit = 0)
+    test_results_list <- split(test_results, test_results$split)
+    test_results_list_keep <- sapply(test_results_list, function(x) nrow(x) > 0)
+    test_results_list <- test_results_list[test_results_list_keep]
   } else {
     test_results_list <- list(all = test_results)
   }

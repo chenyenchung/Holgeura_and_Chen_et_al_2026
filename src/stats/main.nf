@@ -40,7 +40,7 @@ process DepthStatsAnalysis {
 
   output:
   tuple val("${np}"), val("${preset}"), val("${stype}"), 
-        path('*_depth_stats.csv'), optional: true
+        path('*.csv')
 
   script:
   """
@@ -157,7 +157,7 @@ workflow {
 
   // Combine all results
   combined_ch = CombineResults(
-    analysis_ch.map { it -> it[4] }.collect(),
+    analysis_ch.map { it -> it[3] }.collect(),
     file(params.combine_scriptf)
   )
 
