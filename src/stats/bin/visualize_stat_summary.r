@@ -359,9 +359,7 @@ if (!is.null(argvs$input_file)) {
   # Check if split column exists and split data accordingly
   if ("split" %in% colnames(test_results)) {
     cat("Split column detected. Splitting data by:", paste(unique(test_results$split), collapse = ", "), "\n")
-    test_results_list <- split(test_results, test_results$split)
-    test_results_list_keep <- sapply(test_results_list, function(x) nrow(x) > 0)
-    test_results_list <- test_results_list[test_results_list_keep]
+    test_results_list <- split(test_results, test_results$split, drop = TRUE)
   } else {
     test_results_list <- list(all = test_results)
   }

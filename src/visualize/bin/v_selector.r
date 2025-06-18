@@ -26,6 +26,7 @@ if (interactive()) {
   argvs$density <- "pertype"
   argvs$subsample <- 10000L
   argvs$sparse_limit <- 100L
+  source("./src/utils.r")
   syn_path <- file.path("int/idv_mat/", paste0(argvs$np, "_rotated.csv.gz"))
 } else {
   argvs$subsample <- as.integer(argvs$subsample)
@@ -78,8 +79,11 @@ if (y_out_of_bounds > 0) {
 }
 
 # Annotate and filter to keep only annotated synapses
+np_coord <- filter_type(
+  np_coord, syn_type = argvs$syn_type, sparse_limit = argvs$sparse_limit
+)
 npp <- filter_default(np_coord, opc_anno, ts, tslut, syn_type = argvs$syn_type)
-np_plot <- rsubsample(npp, n = argvs$subsample)
+np_plot <- rsubsample(npp, n = argvs$subsample, syn_type = argvs$syn_type)
 
 ts_symbols <- colnames(np_plot)[
   # Assuming the only logical columns are all selector statuses
@@ -98,20 +102,6 @@ for (i in ts_symbols) {
   
   np_plot$color_label <- np_plot$Notch
   np_plot$color_label[!np_plot[[i]]] <- "nil"
-  
-  if (all(!np_plot[[i]])) {
-    # For rare synapses that are not subsampled, we add 5 synapses as
-    # representative synapses for visualization.
-    pos_dt <- npp[get(i) == TRUE]
-    if (nrow(pos_dt) > 5) {
-      rep_syn <- rsubsample(pos_dt, n = 5)
-    } else {
-      rep_syn <- pos_dt
-    }
-    rep_syn$color_label <- rep_syn$Notch
-    rep_syn$color_label[!rep_syn[[i]]] <- "nil"
-    np_plot <- rbind(np_plot, rep_syn)
-  }
   
   ## Generate the dot plot
   dotp <- np_plot |>
@@ -149,7 +139,8 @@ for (i in ts_symbols) {
   if (plot_meta$zinvert) {
     np_den$depth <- np_den$depth * -1
   }
-  np_den <- filsplit(np_den, np_den$group, slimit = argvs$sparse_limit)
+  np_den <- split(np_den, np_den$group, drop = TRUE)
+  
   den_grid <- seq(plot_meta$minz, plot_meta$maxz, length.out = 1024)
   if (argvs$density == "asis") {
     np_den <- lapply(np_den, function(x) return(density(x$depth)))
@@ -162,7 +153,7 @@ for (i in ts_symbols) {
   } else {
     type_avg <- lapply(names(np_den), function(tn) {
       x <- np_den[[tn]]
-      id_type <- filsplit(x, x$type, slimit = argvs$sparse_limit)
+      id_type <- split(x, x$type, drop = TRUE)
       den_type <- lapply(id_type, function(idt) return(density(idt$depth)))
       if (length(den_type) > 0) {
         interpolated <- lapply(names(den_type), function(type) {

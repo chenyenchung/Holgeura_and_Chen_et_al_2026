@@ -86,7 +86,9 @@ scale_color_type <- function() {
 #' @param n Maximum number of rows to keep
 #' @param seed Random seed for reproducibility
 #' @return Subsampled data
-rsubsample <- function(x, n = 1e4, seed = 1) {
+rsubsample <- function(x, n = 1e4, seed = 1, syn_type) {
+  type_col <- paste(syn_type, "type", sep = "_")
+  all_types <- unique(x[, get(type_col)])
   if (!is.null(nrow(x)) && nrow(x) > n) {
     set.seed(seed)
     if (is.data.table(x)) {
@@ -94,25 +96,50 @@ rsubsample <- function(x, n = 1e4, seed = 1) {
     } else {
       out <- x[sample(seq_len(nrow(x)), n), , drop = FALSE]
     }
+    out_types <- unique(out[, get(type_col)])
+    # If rare types were dropped, we re-sample 10 synapses for representation
+    # for each type.
+    dropped_types <- setdiff(all_types, out_types)
+    if (length(dropped_types) > 0) {
+      dropped_coords <- x[get(type_col) %in% dropped_types]
+      reinsert_coords <- x[, .SD[sample(.N, min(.N, 5))], by = type_col]
+      out <- rbind(out, reinsert_coords)
+    }
     return(out)
   }
   return(x)
 }
 
-#' Split data by factor and filter by minimum group size
-#' @param x Data frame to split
-#' @param f Factor to split by
-#' @param slimit Minimum number of rows per group
-#' @return List of data frames with sufficient size
-filsplit <- function(x, f, slimit = 100L) {
-  slist <- split(x, f)
-  to_keep <- vapply(slist, function(x) nrow(x) > slimit, FUN.VALUE = logical(1))
-  return(slist[to_keep])
-}
-
 # ============================================================================
 # FILTERING FUNCTIONS
 # ============================================================================
+
+#' Filter for type sparseness and the lack of variation
+filter_type <- function(x, syn_type, sparse_limit) {
+  # Filter out types with too few synapses for consistent visualization
+  type_col <- paste0(syn_type, "_type")
+  type_counts <- x[, .N, by = c(type_col)]
+  keep_types <- type_counts[N >= sparse_limit, get(type_col)]
+  dropped_types <- type_counts[N < sparse_limit]
+  if (nrow(dropped_types) > 0) {
+    message(sprintf("Dropped %d %s types with < %d synapses", 
+                    nrow(dropped_types), syn_type, sparse_limit))
+  }
+  x <- x[get(type_col) %in% keep_types]
+  
+  # Filter out types with insufficient variation for density calculation
+  depth_col <- paste0(syn_type, "_rz")
+  if (depth_col %in% colnames(x)) {
+    depth_variation <- x[, .(unique_depths = length(unique(get(depth_col)))), by = c(type_col)]
+    valid_types <- depth_variation[unique_depths >= 2, get(type_col)]
+    if (length(valid_types) < nrow(depth_variation)) {
+      message(sprintf("Dropped %d types with insufficient depth variation for density calculation", 
+                      nrow(depth_variation) - length(valid_types)))
+    }
+    x <- x[get(type_col) %in% valid_types]
+    return(x)
+  }
+}
 
 #' Filter coordinates by temporal annotations (new)
 filter_temporal_new <- function(coord, ann, syn_type = "pre") {

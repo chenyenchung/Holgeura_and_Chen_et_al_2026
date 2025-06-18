@@ -45,10 +45,10 @@ if (file.exists("./utils.r")) {
 ### TODO
 if (interactive()) {
   source("./src/utils.r", chdir = FALSE)
-  argvs$np <- "LO_L"
-  argvs$syn_type <- "pre"
-  argvs$use_preset <- "temporal_new"
-  argvs$density <- "pertype"
+  argvs$np <- "ME_R"
+  argvs$syn_type <- "post"
+  argvs$use_preset <- "subsystem_new"
+  argvs$density <- "asis"
   argvs$ann <- "data/visual_neurons_anno.csv"
   argvs$meta <- "data/viz_meta.csv"
   argvs$preset <- "data/viz_preset.csv"
@@ -61,15 +61,25 @@ if (interactive()) {
   syn_path <- argvs$synf
 }
 
-## Generate
-
-
 ## Load plot metadata and presets with validation
-plot_meta_all <- validate_config_file(argvs$meta, c("neuropil", "axis_1_func", "axis_2_func", "x_axis", "y_axis", "xmin", "xmax", "ymin", "ymax", "minz", "maxz", "zinvert", "zid", "outlayout", "outr1", "outr2", "outd1", "outd2"))
+plot_meta_all <- validate_config_file(
+  argvs$meta,
+  c(
+    "neuropil", "x_axis", "y_axis", "axis_1_func", "axis_2_func", "min1",
+    "max1", "min2", "max2", "zid", "zinvert", "minz", "maxz", "outlayout",
+     "outr1", "outr2", "outd1", "outd2"
+  )
+  )
 plot_meta <- plot_meta_all[neuropil == argvs$np]
 if (nrow(plot_meta) == 0) stop(sprintf("No metadata found for neuropil: %s", argvs$np))
 
-preset_all <- validate_config_file(argvs$preset, c("preset", "filter_func", "palette", "color_by", "color_guide", "do_highlight", "hl_type", "hl_col", "hl_val", "notch_split"))
+preset_all <- validate_config_file(
+  argvs$preset,
+  c(
+     "preset", "palette", "color_guide", "filter_func", "color_by",
+      "notch_split", "do_highlight", "hl_type", "hl_col", "hl_val"
+  )
+  )
 preset <- preset_all[preset == argvs$use_preset]
 if (nrow(preset) == 0) stop(sprintf("No preset found: %s", argvs$use_preset))
 
@@ -102,6 +112,9 @@ x_axis <- paste(argvs$syn_type, plot_meta$x_axis, sep = "_")
 y_axis <- paste(argvs$syn_type, plot_meta$y_axis, sep = "_")
 
 ## Filter by annotation and subsample
+np_coord <- filter_type(
+  np_coord, syn_type = argvs$syn_type, sparse_limit = argvs$sparse_limit
+)
 np_coord <- filter_func(np_coord, opc_anno, syn_type = argvs$syn_type)
 
 ## Validate that all data points fall within specified axis limits
@@ -120,29 +133,6 @@ y_out_of_bounds <- sum(y_values < plot_meta$ymin | y_values > plot_meta$ymax, na
 if (y_out_of_bounds > 0) {
   stop(sprintf("ERROR: %d data points fall outside Y-axis limits [%.2f, %.2f]. Check plot_meta boundaries for %s.", 
                y_out_of_bounds, plot_meta$ymin, plot_meta$ymax, argvs$np))
-}
-
-# Filter out types with too few synapses for consistent visualization
-type_col <- paste0(argvs$syn_type, "_type")
-type_counts <- np_coord[, .N, by = c(type_col)]
-keep_types <- type_counts[N >= argvs$sparse_limit, get(type_col)]
-dropped_types <- type_counts[N < argvs$sparse_limit]
-if (nrow(dropped_types) > 0) {
-  message(sprintf("Dropped %d %s types with < %d synapses", 
-                  nrow(dropped_types), argvs$syn_type, argvs$sparse_limit))
-}
-np_coord <- np_coord[get(type_col) %in% keep_types]
-
-# Filter out types with insufficient variation for density calculation
-depth_col <- paste0(argvs$syn_type, "_rz")
-if (depth_col %in% colnames(np_coord)) {
-  depth_variation <- np_coord[, .(unique_depths = length(unique(get(depth_col)))), by = c(type_col)]
-  valid_types <- depth_variation[unique_depths >= 2, get(type_col)]
-  if (length(valid_types) < nrow(depth_variation)) {
-    message(sprintf("Dropped %d types with insufficient depth variation for density calculation", 
-                    nrow(depth_variation) - length(valid_types)))
-  }
-  np_coord <- np_coord[get(type_col) %in% valid_types]
 }
 
 if (preset$do_highlight && preset$hl_type == "label") {
@@ -166,10 +156,14 @@ if (preset$do_highlight && preset$hl_type == "path") {
 
 np_raw <- np_coord
 if (grepl("^ME", argvs$np)) {
-  np_coord <- rsubsample(np_coord, n = argvs$subsample * 4)
+  np_coord <- rsubsample(
+    np_coord, n = argvs$subsample * 4, syn_type = argvs$syn_type
+  )
 } else {
   np_coord <- np_coord[!grepl("^(Mi|Dm|Pm)", get(paste0(argvs$syn_type, "_type")))]
-  np_coord <- rsubsample(np_coord, n = argvs$subsample * 2)
+  np_coord <- rsubsample(
+    np_coord, n = argvs$subsample * 2, syn_type = argvs$syn_type
+  )
 }
 
 
@@ -180,9 +174,9 @@ if (preset$notch_split) {
     stop(sprintf("Missing columns for notch_split: %s", paste(missing_notch_cols, collapse=", ")))
   }
   np_coord$notch_ntype <- paste(np_coord$Notch, np_coord$ntype, sep = "_")
-  np_coord <- split(np_coord, np_coord$notch_ntype)
+  np_coord <- split(np_coord, np_coord$notch_ntype, drop = TRUE)
   np_raw$notch_ntype <- paste(np_raw$Notch, np_raw$ntype, sep = "_")
-  np_raw <- split(np_raw, np_raw$notch_ntype)
+  np_raw <- split(np_raw, np_raw$notch_ntype, drop = TRUE)
 } else {
   np_coord <- list(all = np_coord)
   np_raw <- list(all = np_raw)
@@ -192,19 +186,6 @@ for (i in names(np_coord)) {
   # Skip if no data after filtering
   if (nrow(np_coord[[i]]) == 0) {
     next
-  }
-  
-
-  if (preset$do_highlight && !any(np_coord[[i]]$highlight)) {
-    # For rare synapses that are not subsampled, we add 5 synapses as
-    # representative synapses for visualization.
-    pos_dt <- np_raw[[i]][highlight == TRUE]
-    if (nrow(pos_dt) > 5) {
-      rep_syn <- rsubsample(pos_dt, n = 5)
-    } else {
-      rep_syn <- pos_dt
-    }
-    np_coord[[i]] <- rbind(np_coord[[i]], rep_syn)
   }
   
   out_prefix <- paste(
@@ -250,26 +231,27 @@ for (i in names(np_coord)) {
   
   ## Manual calculation and interpolation of density
   if (preset$do_highlight) {
-    np_den <- np_coord[[i]][highlight == TRUE, .(
+    np_den <- np_raw[[i]][highlight == TRUE, .(
       group = get(preset$color_by),
       type = get(paste(argvs$syn_type, "type", sep = "_")),
       depth = get(paste(argvs$syn_type, "rz", sep = "_"))
     )]
   } else {
-    np_den <- np_coord[[i]][ , .(
+    np_den <- np_raw[[i]][ , .(
       group = get(preset$color_by),
       type = get(paste(argvs$syn_type, "type", sep = "_")),
       depth = get(paste(argvs$syn_type, "rz", sep = "_"))
     )]
   }
+  
+  if (nrow(np_den) == 0) next
   
   
   if (plot_meta$zinvert) {
     np_den$depth <- np_den$depth * -1
   }
   
-  np_den <- split(np_den, np_den$group)
-  
+  np_den <- split(np_den, np_den$group, drop = TRUE)
   
   den_grid <- seq(plot_meta$minz, plot_meta$maxz, length.out = 1024)
   if (argvs$density == "asis") {
@@ -287,7 +269,7 @@ for (i in names(np_coord)) {
     }
     type_avg <- lapply(names(np_den), function(tn) {
       x <- np_den[[tn]]
-      id_type <- split(x, x$type)
+      id_type <- split(x, x$type, drop = TRUE)
       den_type <- lapply(id_type, function(idt) return(density(idt$depth)))
       interpolated <- lapply(names(den_type), function(type) {
         d <- den_type[[type]]
