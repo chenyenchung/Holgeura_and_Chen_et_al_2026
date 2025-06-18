@@ -19,7 +19,7 @@ if (file.exists("./utils.r")) {
 if (interactive()) {
   argvs$np <- "LOP_R"
   argvs$syn_type <- "post"
-  argvs$ann <- "data/visual_neurons_20250602.csv"
+  argvs$ann <- "data/visual_neurons_anno.csv"
   argvs$ts <- "data/media-2.csv"
   argvs$meta <- "data/viz_meta.csv"
   argvs$tslut <- "data/to_selector.csv"

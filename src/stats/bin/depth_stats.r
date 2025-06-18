@@ -303,7 +303,7 @@ if (interactive()) {
   argvs$np <- "LOP_L"
   argvs$syn_type <- "pre"
   argvs$use_preset <- "temporal_known"
-  argvs$ann <- "data/visual_neurons_20250602.csv"
+  argvs$ann <- "data/visual_neurons_anno.csv"
   argvs$meta <- "data/viz_meta.csv"
   argvs$preset <- "data/viz_preset.csv"
   argvs$sparse_limit <- 100L

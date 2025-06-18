@@ -49,7 +49,7 @@ if (interactive()) {
   argvs$syn_type <- "pre"
   argvs$use_preset <- "temporal_new"
   argvs$density <- "pertype"
-  argvs$ann <- "data/visual_neurons_20250602.csv"
+  argvs$ann <- "data/visual_neurons_anno.csv"
   argvs$meta <- "data/viz_meta.csv"
   argvs$preset <- "data/viz_preset.csv"
   argvs$subsample <- 10000L

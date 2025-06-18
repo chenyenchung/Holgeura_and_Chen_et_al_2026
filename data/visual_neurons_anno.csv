@@ -1,0 +1,223 @@
+cell_type,temporal_label,temporal_id,vDpp,vOptix,vVsx,dVsx,dOptix,dDpp,Confident_annotation,subsystem,Notch,newly_ann,func,ntype,putative_OPC
+Am1,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+C2,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+C3,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+CT1,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Dm19,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,intrinsic,TRUE
+Dm6,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,intrinsic,TRUE
+L1,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+L2,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+L3,unknown,0,NA,NA,NA,NA,NA,NA,N,Luminance,,,Luminance,,FALSE
+L4,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+L5,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Lat,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+Lawf1,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Lawf2,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Li01,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li03,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li24,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Li11,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li26,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Li07,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li21,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Li20,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Li15,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Li17,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Li12,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li25,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Li09,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li18,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li02,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li04,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li08,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li28,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li10,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li30,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li27,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li31,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Li22,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Li16,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Li05,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li13,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li32,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+LLPt,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Li29,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+LM102a_L234-M89,unknown,0,NA,NA,NA,NA,NA,NA,N,Unannotated,,,Unannotated,,FALSE
+LMa1,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+LMa2,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,projection,TRUE
+LMa3,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,projection,TRUE
+LMa4,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,projection,TRUE
+LMa5,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+LMt1,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+LMt2,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+LMt3,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+LMt4,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+LPi14,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+LPi02,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+LPi01,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+LPi15,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+LPi12,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+LPi10,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+LPi05,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+LPi07,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+LPi08,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+LPi04,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+LPi11,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+LPi06,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+LPi13,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Mi2,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,intrinsic,TRUE
+MLt1,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,projection,TRUE
+MLt2,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+MLt3,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,projection,TRUE
+MLt4,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,projection,TRUE
+MLt5,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+MLt6,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+MLt7,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+MLt8,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+Sm12,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Pm14,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Sm41,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm39,unknown,0,NA,NA,NA,NA,NA,NA,N,Luminance,,,Luminance,,FALSE
+PDt,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Sm29,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm26,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm28,unknown,0,NA,NA,NA,NA,NA,NA,N,Polarization,,,Polarization,intrinsic,TRUE
+Sm19,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm21,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm33,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm25,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm35,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm18,unknown,0,NA,NA,NA,NA,NA,NA,N,Polarization,,,Polarization,intrinsic,TRUE
+Sm15,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm38,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Sm34,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm17,unknown,0,NA,NA,NA,NA,NA,NA,N,Polarization,,,Polarization,intrinsic,TRUE
+Sm14,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm24,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm32,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm04,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm20,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm09,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm31,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm40,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm27,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm36,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm42,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm13,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm11,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm06,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm16,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm07,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm37,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm23,unknown,0,NA,NA,NA,NA,NA,NA,N,Polarization,,,Polarization,intrinsic,TRUE
+Sm30,unknown,0,NA,NA,NA,NA,NA,NA,N,Luminance,,,Luminance,intrinsic,TRUE
+Sm08,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm22,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Sm10,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,intrinsic,TRUE
+Pm13,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,,FALSE
+Sm05,unknown,0,NA,NA,NA,NA,NA,NA,N,Luminance,,,Luminance,intrinsic,TRUE
+Tm8b,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+TmY16,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,projection,TRUE
+TmY20,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,projection,TRUE
+TmY9q,unknown,0,NA,NA,NA,NA,NA,NA,N,Form,,,Form,projection,TRUE
+TmY9q__perp,unknown,0,NA,NA,NA,NA,NA,NA,N,Unannotated,,,Unannotated,projection,TRUE
+Y1,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Y11,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Y12,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Y3,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Y4,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+Dm13,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,intrinsic,TRUE
+Dm14,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,intrinsic,TRUE
+Dm16,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,intrinsic,TRUE
+Dm17,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,intrinsic,TRUE
+Dm18,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,intrinsic,TRUE
+Dm20,unknown,0,NA,NA,NA,NA,NA,NA,N,Luminance,,,Luminance,intrinsic,TRUE
+Mi13,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,intrinsic,TRUE
+Mi14,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,intrinsic,TRUE
+T2,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+T2a,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+T3,unknown,0,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE
+T4a,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+T4b,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+T4c,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+T4d,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+T5a,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+T5b,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+T5c,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+T5d,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Tlp1,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Tlp4,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Tlp5,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Tlp14,unknown,0,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE
+Tm16,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+Tm31,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+Tm32,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+Tm35,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+Tm36,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+Tm37,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+Tm34,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+Tm7,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+TmY31,unknown,0,NA,NA,NA,NA,NA,NA,N,Color,,,Color,projection,TRUE
+Mi1,Hth,1,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,intrinsic,FALSE
+Pm01,Hth,1,0,1,0,0,0,0,Y,Object,Notch Off,N,Object,intrinsic,FALSE
+Pm03,Hth,1,0,0,0,0,0,1,Y,Object,Notch Off,N,Object,intrinsic,FALSE
+Pm04,Hth,1,0,0,1,1,0,0,Y,Object,Notch Off,N,Object,intrinsic,FALSE
+Pm09,Hth,1,0,0,1,1,0,0,Y,Object,Notch Off,N,Object,intrinsic,FALSE
+Li14,Hth,1,0,0,1,1,0,0,Y,Motion,Notch Off,N,Motion,projection,FALSE
+TmY15,Hth,1,0,0,1,1,0,0,Y,Object,Notch Off,N,Object,projection,FALSE
+Pm08,Between Hth & Hth/Opa,1,NA,NA,NA,NA,NA,NA,N,Object,Notch Off,,Object,intrinsic,TRUE
+Pm06,Between Hth & Hth/Opa,1,NA,NA,NA,NA,NA,NA,N,Object,Notch Off,,Object,intrinsic,TRUE
+Pm10,Between Hth & Hth/Opa,1,NA,NA,NA,NA,NA,NA,N,Object,Notch Off,,Object,intrinsic,TRUE
+Pm02,Between Hth & Hth/Opa,1,NA,NA,NA,NA,NA,NA,N,Object,Notch Off,,Object,intrinsic,TRUE
+Pm07,Between Hth & Hth/Opa,1,NA,NA,NA,NA,NA,NA,N,Object,Notch Off,,Object,intrinsic,TRUE
+Pm11,Between Hth & Hth/Opa,1,NA,NA,NA,NA,NA,NA,N,Object,Notch Off,,Object,intrinsic,TRUE
+Tm1,Hth/Opa,2,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,projection,FALSE
+Tm4,Hth/Opa,2,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,projection,FALSE
+Mi4,Hth/Opa,2,1,1,0,0,1,1,Y,Color,Notch Off,N,Color,intrinsic,FALSE
+Pm05,Hth/Opa,2,0,0,1,1,0,0,Y,Object,Notch Off,N,Object,intrinsic,FALSE
+Mi9,Opa/Erm,3,1,1,0,0,1,1,Y,Luminance,Notch Off,N,Luminance,intrinsic,FALSE
+Tm5c,Opa/Erm,3,1,1,1,1,1,1,Y,Color,Notch Off,N,Color,projection,FALSE
+Tm9,Erm/Ey,4,0,1,1,0,1,1,Y,Motion,Notch On,N,Motion,projection,FALSE
+Tm3,Erm/Ey,4,0,1,1,1,1,0,Y,Motion,Notch On,N,Motion,projection,FALSE
+Mi10,Erm/Ey,4,0,1,0,0,0,0,Y,Color,Notch On,N,Color,intrinsic,FALSE
+Tm27,Erm/Ey,4,0,0,1,1,1,0,Y,Object,Notch On,N,Object,projection,FALSE
+TmY3,Erm/Ey,4,0,1,1,1,1,0,Y,Object,Notch On,N,Object,projection,FALSE
+TmY5a,Erm/Ey,4,0,1,0,0,1,0,Y,Object,Notch Off,N,Object,projection,FALSE
+Tm5d,Erm/Ey,4,0,1,0,0,1,0,Y,Color,Notch Off,N,Color,projection,FALSE
+Tm5e,Erm/Ey,4,0,1,0,0,1,0,Y,Color,Notch Off,Y,Color,projection,FALSE
+Tm33,Erm/Ey,4,0,0,1,1,0,0,Y,Color,Notch Off,Y,Color,projection,FALSE
+Tm2,Ey/Hbn,5,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,projection,FALSE
+Tm21,Ey/Hbn,5,1,1,1,1,1,1,Y,Object,Notch On,N,Object,projection,FALSE
+Dm10,Ey/Hbn,5,0,1,0,0,0,0,Y,Luminance,Notch Off,N,Luminance,intrinsic,FALSE
+Tm20,Hbn/Opa/Slp,6,0,0,0,0,1,0,Y,Color,Notch On,N,Color,projection,FALSE
+Tm25,Hbn/Opa/Slp,6,0,0,0,1,1,0,Y,Object,Notch On,N,Object,projection,FALSE
+Tm5a,Hbn/Opa/Slp,6,0,0,0,1,1,0,Y,Color,Notch On,N,Color,projection,FALSE
+Tm5b,Hbn/Opa/Slp,6,0,0,0,1,1,0,Y,Color,Notch On,N,Color,projection,FALSE
+Tm5f,Hbn/Opa/Slp,6,0,0,0,0,1,0,Y,Color,Notch On,Y,Color,projection,FALSE
+Tm8a,Hbn/Opa/Slp,6,1,0,0,0,0,0,Y,Color,Notch On,Y,Color,projection,FALSE
+Li06,Hbn/Opa/Slp,6,0,0,0,1,1,0,Y,Color,Notch On,Y,Color,projection,FALSE
+TmY10,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Color,Notch On,Y,Color,projection,FALSE
+TmY11,Hbn/Opa/Slp,6,1,1,0,0,0,0,Y,Color,Notch On,Y,Color,projection,FALSE
+TmY14,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Object,Notch Off,N,Object,projection,FALSE
+MTe01a,Hbn/Opa/Slp,6,0,0,1,0,0,0,Y,Unannotated,Notch Off,N,Unannotated,projection,FALSE
+Dm8b,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Color,Notch Off,N,Color,intrinsic,FALSE
+Dm8a,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Color,Notch Off,N,Color,intrinsic,FALSE
+DmDRA1,Hbn/Opa/Slp,6,0,0,0,0,0,1,Y,Polarization,Notch Off,N,Polarization,intrinsic,FALSE
+DmDRA2,Hbn/Opa/Slp,6,0,0,0,0,0,1,Y,Color,Notch Off,N,Color,intrinsic,FALSE
+Sm03,Hbn/Opa/Slp,6,0,0,1,0,0,0,Y,Color,Notch Off,Y,Color,intrinsic,FALSE
+Dm11,Hbn/Opa/Slp,6,0,0,0,0,1,1,Y,Color,Notch Off,N,Color,intrinsic,FALSE
+Dm1,Hbn/Opa/Slp,6,0,1,0,0,0,0,Y,Motion,Notch Off,N,Motion,intrinsic,FALSE
+Dm4,Hbn/Opa/Slp,6,1,1,0,0,0,0,Y,Luminance,Notch Off,N,Luminance,intrinsic,FALSE
+Dm12,Hbn/Opa/Slp,6,1,1,0,0,0,0,Y,Luminance,Notch Off,N,Luminance,intrinsic,FALSE
+Dm9,Hbn/Opa/Slp,6,1,1,0,0,1,1,Y,Luminance,Notch Off,N,Luminance,intrinsic,FALSE
+Lai,Hbn/Opa/Slp,6,1,0,0,0,0,1,Y,Motion,Notch Off,N,Motion,intrinsic,FALSE
+TmY4,Slp/D,7,0,1,1,1,0,0,Y,Form,Notch On,N,Form,projection,FALSE
+Dm15,Slp/D,7,0,0,0,1,1,0,Y,Motion,Notch Off,N,Motion,intrinsic,FALSE
+Dm3p,Slp/D,7,0,1,1,1,1,0,Y,Form,Notch Off,N,Form,intrinsic,FALSE
+Dm3q,Slp/D,7,1,1,0,0,1,1,Y,Form,Notch Off,N,Form,intrinsic,FALSE
+Dm3v,Slp/D,7,NA,NA,NA,NA,NA,NA,N,Form,Notch Off,N,Form,intrinsic,FALSE
+T1,D/BH-1,8,1,1,1,1,1,1,Y,Motion,Notch Off,N,Motion,projection,FALSE
+Mi15,D/BH-1,8,0,0,0,0,1,1,Y,Luminance,Notch Off,N,Luminance,intrinsic,FALSE
+Sm02,D/BH-1,8,1,1,0,0,0,0,Y,Color,Notch Off,Y,Color,intrinsic,FALSE
+Sm01,D/BH-1,8,1,1,0,0,0,0,Y,Color,Notch Off,Y,Color,intrinsic,FALSE
+Dm2,D/BH-1,8,1,1,1,1,1,1,Y,Luminance,Notch Off,N,Luminance,intrinsic,FALSE

@@ -4,7 +4,7 @@ nextflow.preview.output = true
 // Default parameters
 params.presetf = 'data/viz_preset.csv'
 params.metaf = 'data/viz_meta.csv'
-params.annf = 'data/visual_neurons_20250602.csv'
+params.annf = 'data/visual_neurons_anno.csv'
 params.utilsf = 'src/utils.r'
 params.depth_stats_cppf = 'src/stats/bin/depth_stats.cpp'
 params.combine_scriptf = 'src/stats/bin/combine_results.r'
