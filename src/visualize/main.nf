@@ -4,7 +4,7 @@ nextflow.preview.output = true
 params.presetf = 'data/viz_preset.csv'
 params.metaf = 'data/viz_meta.csv'
 params.annf = 'data/visual_neurons_anno.csv'
-params.tsf = 'data/media-2.csv'
+params.tsf = 'data/P15_tf.csv'
 params.tslutf = 'data/to_selector.csv'
 
 process Visualize {

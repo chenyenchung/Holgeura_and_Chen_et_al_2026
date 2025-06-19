@@ -20,7 +20,7 @@ if (interactive()) {
   argvs$np <- "LOP_R"
   argvs$syn_type <- "post"
   argvs$ann <- "data/visual_neurons_anno.csv"
-  argvs$ts <- "data/media-2.csv"
+  argvs$ts <- "data/P15_tf.csv"
   argvs$meta <- "data/viz_meta.csv"
   argvs$tslut <- "data/to_selector.csv"
   argvs$density <- "pertype"
@@ -66,8 +66,32 @@ color_func <- function() {
 ## (Ozel et al., 2022)
 opc_anno <- fread(argvs$ann)
 np_coord <- fread(syn_path)
-ts <- fread(argvs$ts)
+ts <- fread(argvs$ts, header = TRUE)
 tslut <- fread(argvs$tslut)
+
+## Create mapping from ozel2021_cluster to cell_type
+cluster_to_type <- opc_anno[!is.na(ozel2021_cluster), .(ozel2021_cluster = as.character(ozel2021_cluster), cell_type)]
+cluster_to_type <- unique(cluster_to_type)
+
+## Process P15_tf.csv format
+# The first column contains gene names, rest are cluster IDs
+gene_names <- ts[[1]]
+ts_matrix <- as.matrix(ts[, -1])
+# Convert logical TRUE/FALSE to 1/0
+ts_matrix <- matrix(as.integer(ts_matrix), nrow = nrow(ts_matrix), ncol = ncol(ts_matrix))
+
+# Map cluster IDs in column names to cell types
+col_clusters <- colnames(ts)[2:ncol(ts)]
+col_types <- cluster_to_type[match(col_clusters, ozel2021_cluster), cell_type]
+
+# Create new data table with cell types as columns
+ts_new <- data.table(V1 = gene_names)
+for (i in seq_along(col_types)) {
+  if (!is.na(col_types[i])) {
+    ts_new[[col_types[i]]] <- ts_matrix[, i]
+  }
+}
+ts <- ts_new
 
 ## Validate that all data points fall within specified axis limits
 x_values <- np_coord[[x_axis]]
