@@ -362,6 +362,9 @@ np_coord <- fread(syn_path)
 
 # Apply same filtering as visualization
 filter_func <- get(preset$filter_func)
+np_coord <- filter_type(
+  np_coord, syn_type = argvs$syn_type, sparse_limit = argvs$sparse_limit
+)
 np_coord <- filter_func(np_coord, opc_anno, syn_type = argvs$syn_type)
 
 # Handle highlighting if specified
@@ -378,7 +381,7 @@ if (preset$do_highlight && preset$hl_type == "path") {
 # Split by Notch if required
 if (preset$notch_split) {
   np_coord$notch_ntype <- paste(np_coord$Notch, np_coord$ntype, sep = "_")
-  np_coord_list <- filsplit(np_coord, np_coord$notch_ntype, slimit = argvs$sparse_limit)
+  np_coord_list <- split(np_coord, np_coord$notch_ntype, drop = TRUE)
 } else {
   np_coord_list <- list(all = np_coord)
 }
