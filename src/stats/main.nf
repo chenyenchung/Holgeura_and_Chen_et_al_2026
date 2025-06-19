@@ -119,8 +119,8 @@ process FunctionalEnrichment {
   path utils
 
   output:
-  path 'results/*.pdf', emit: plots
-  path 'results/*.xlsx', emit: stats
+  path '*.pdf', emit: plots
+  path '*.xlsx', emit: stats
 
   script:
   """

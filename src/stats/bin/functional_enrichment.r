@@ -22,14 +22,8 @@ if (file.exists("./utils.r")) {
   source("src/utils.r")
 }
 
-# Set up output directory
-outdir <- "results"
-if (!dir.exists(outdir)) {
-  dir.create(outdir, recursive = TRUE)
-}
-
 # Set up p-value tracking file
-pval_file <- file.path(outdir, "functional_enrichment_pvalues_corrected.xlsx")
+pval_file <- "functional_enrichment_pvalues_corrected.xlsx"
 # Remove existing file to avoid duplicates
 if (file.exists(pval_file)) {
   file.remove(pval_file)
@@ -555,11 +549,11 @@ if (length(notch_plots) > 0) {
   outfn <- "functional_association_notch.pdf"
   wrap_plots(notch_plots, ncol = 3)
   ggsave(
-    file.path(outdir, outfn), 
+    outfn, 
     width = 15, 
     height = 4 * ceiling(length(notch_plots)/3)
   )
-  message(sprintf("Saved Notch plots to: %s", file.path(outdir, outfn)))
+  message(sprintf("Saved Notch plots to: %s", outfn))
 }
 
 # Save temporal plots with hatched patterns
@@ -567,11 +561,11 @@ if (length(hatched_plots) > 0) {
   outfn <- "functional_subsystems_temporal_by_notch_stacked.pdf"
   wrap_plots(hatched_plots, ncol = 2)
   ggsave(
-    file.path(outdir, outfn), 
+    outfn, 
     width = 16, 
     height = 4 * ceiling(length(hatched_plots)/2)
   )
-  message(sprintf("Saved temporal hatched plots to: %s", file.path(outdir, outfn)))
+  message(sprintf("Saved temporal hatched plots to: %s", outfn))
 }
 
 # Create separated plots for comparison
@@ -618,8 +612,8 @@ if (nrow(combined_data_all) > 0) {
       wrap_plots(combined_plots, ncol = 1) +
         plot_layout(guides = 'collect')
     }
-    ggsave(file.path(outdir, outfn), width = 16, height = 8)
-    message(sprintf("Saved separated plots to: %s", file.path(outdir, outfn)))
+    ggsave(outfn, width = 16, height = 8)
+    message(sprintf("Saved separated plots to: %s", outfn))
   }
 }
 
@@ -647,5 +641,5 @@ if (!is.null(pval_summary)) {
 }
 
 message("\nFunctional enrichment analysis complete!")
-message("Results saved to: ", outdir)
+message("Results saved to ./")
 message("Corrected p-values saved to: ", pval_file)
