@@ -68,7 +68,7 @@ scale_color_subsystem <- function() {
 scale_color_type <- function() {
   types <- unique(opc_anno$cell_type)
   hues <- seq(20, 380, length.out = length(types) + 1)[seq_along(types)]
-  palette <- hsv(h = (hues %% 360) / 360, s = 0.5, v = 0.5)
+  palette <- hsv(h = (hues %% 360) / 360, s = 0.5, v = 0.8)
   set.seed(1)
   palette <- sample(palette)
   names(palette) <- types
@@ -252,6 +252,44 @@ filter_subsystem_new <- function(coord, ann, syn_type = "pre") {
   )
   setorder(coord, .row_id)
   coord[, .row_id := NULL]
+  return(coord)
+}
+
+#' Filter coordinates by putative annotations
+filter_putative <- function(coord, ann, syn_type = "pre") {
+  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
+  ann <- ann[putative_OPC == TRUE]
+  coord[, .row_id := .I]
+  coord <- merge(
+    coord,
+    ann[, .(cell_type, Notch, newly_ann, ntype, putative_hl1, putative_hl2)],
+    by.x = by_x,
+    by.y = "cell_type"
+  )
+  setorder(coord, .row_id)
+  coord[, .row_id := NULL]
+  return(coord)
+}
+
+#' Filter coordinates by temporal annotations (all annotated)
+filter_temporal_all <- function(coord, ann, syn_type = "pre") {
+  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
+  ann <- ann[Confident_annotation == "Y"]
+  ann$temporal_label <- factor(
+    ann$temporal_label,
+    levels = unique(ann$temporal_label),
+    labels = unique(ann$temporal_label)
+  )
+  coord[, .row_id := .I]
+  coord <- merge(
+    coord,
+    ann[, .(cell_type, temporal_label, Notch, ntype)],
+    by.x = by_x,
+    by.y = "cell_type"
+  )
+  setorder(coord, .row_id)
+  coord[, .row_id := NULL]
+  
   return(coord)
 }
 

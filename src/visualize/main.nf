@@ -5,6 +5,7 @@ params.presetf = 'data/viz_preset.csv'
 params.metaf = 'data/viz_meta.csv'
 params.annf = 'data/visual_neurons_anno.csv'
 params.tsf = 'data/P15_tf.csv'
+params.camf = 'data/P15_CAM.csv'
 params.tslutf = 'data/to_selector.csv'
 
 process Visualize {
@@ -118,9 +119,9 @@ workflow {
     .combine(channel.fromList(STYPE))
     .combine(channel.fromList(DEN_ALGO))
     
-  def TS_BIN = [file(params.tsf)]
-  def TS_LUT = [file(params.tslutf)]
-  def TS_LABEL = ['selector']
+  def TS_BIN = [file(params.tsf), file(params.camf)]
+  def TS_LUT = [file(params.tslutf), file(params.tslutf)]
+  def TS_LABEL = ['P15_TF', 'P15_CAM']
   g_ch = channel.fromList(TS_BIN)
     .merge(channel.fromList(TS_LUT))
     .merge(channel.fromList(TS_LABEL))
@@ -143,11 +144,14 @@ output {
     path { input -> 
       def subset_dict = [
         'known': 'Previously_known',
-        'new': 'All_confidently_annotated_highlighting_new'
+        'new': 'All_confidently_annotated_highlighting_new',
+        'all': 'All_confidently_annotated',
+        'putative': 'Putative_OPC_types'
       ]
       def color_dict = [
         'temporal': 'Color_by_temporal_origin',
-        'subsystem': 'Color_by_function_subsystem'
+        'subsystem': 'Color_by_function_subsystem',
+        'type': 'Color_by_cell_type'
       ]
       def side = input[0].split('_')[1]
       def ctype = input[1].split('_')[0]

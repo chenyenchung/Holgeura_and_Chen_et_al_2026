@@ -21,7 +21,7 @@ if (interactive()) {
   source("./src/utils.r", chdir = FALSE)
   argvs$np <- "LOP_L"
   argvs$syn_type <- "post"
-  argvs$use_preset <- "subsystem_new"
+  argvs$use_preset <- "type_putative_1"
   argvs$density <- "asis"
   argvs$ann <- "data/visual_neurons_anno.csv"
   argvs$meta <- "data/viz_meta.csv"
@@ -84,6 +84,9 @@ scale_axis_1 <- get(plot_meta$axis_1_func)
 scale_axis_2 <- get(plot_meta$axis_2_func)
 x_axis <- paste(argvs$syn_type, plot_meta$x_axis, sep = "_")
 y_axis <- paste(argvs$syn_type, plot_meta$y_axis, sep = "_")
+if (preset$color_by == "cell_type") {
+  preset$color_by <- paste0(argvs$syn_type, "_type")
+}
 
 ## Filter by annotation and subsample
 np_coord <- filter_type(
@@ -152,8 +155,10 @@ if (preset$notch_split) {
     stop(sprintf("Missing columns for notch_split: %s", paste(missing_notch_cols, collapse=", ")))
   }
   np_coord$notch_ntype <- paste(np_coord$Notch, np_coord$ntype, sep = "_")
+  np_coord$notch_ntype <- sub("^_", "", np_coord$notch_ntype)
   np_coord <- split(np_coord, np_coord$notch_ntype, drop = TRUE)
   np_raw$notch_ntype <- paste(np_raw$Notch, np_raw$ntype, sep = "_")
+  np_raw$notch_ntype <- sub("^_", "", np_raw$notch_ntype)
   np_raw <- split(np_raw, np_raw$notch_ntype, drop = TRUE)
 } else {
   np_coord <- list(all = np_coord)

@@ -17,8 +17,8 @@ if (file.exists("./utils.r")) {
 }
 
 if (interactive()) {
-  argvs$np <- "LOP_R"
-  argvs$syn_type <- "post"
+  argvs$np <- "LO_R"
+  argvs$syn_type <- "pre"
   argvs$ann <- "data/visual_neurons_anno.csv"
   argvs$ts <- "data/P15_tf.csv"
   argvs$meta <- "data/viz_meta.csv"
