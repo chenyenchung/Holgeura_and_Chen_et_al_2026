@@ -1,10 +1,6 @@
 # Consolidated utility functions for flyem analysis
 # This file contains shared utility functions used across multiple R scripts
 
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(data.table))
-
 # ============================================================================
 # PLOTTING UTILITIES
 # ============================================================================
@@ -51,6 +47,22 @@ scale_color_nk2023 <- function() {
 #' Color scale for subsystem annotations
 scale_color_subsystem <- function() {
   f <- scale_color_manual(
+    values = c(
+      Color = "#7FC97F",
+      Object = "#BEAED4",
+      Motion = "#FDC086",
+      Luminance = "#FFFF99",
+      Unannotated = "#386CB0",
+      Polarization = "#F0027F",
+      Form = "#BF5B17"
+    )
+  )
+  return(f)
+}
+
+#' Fill scale for subsystem annotations
+scale_fill_subsystem <- function() {
+  f <- scale_fill_manual(
     values = c(
       Color = "#7FC97F",
       Object = "#BEAED4",

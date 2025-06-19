@@ -108,6 +108,26 @@ process CombineResults {
   """
 }
 
+process FunctionalEnrichment {
+  cpus '1'
+  memory '4GB'
+  time '30m'
+  module 'r/gcc/4.4.0'
+
+  input:
+  path ann
+  path utils
+
+  output:
+  path 'results/*.pdf', emit: plots
+  path 'results/*.xlsx', emit: stats
+
+  script:
+  """
+  functional_enrichment.r --anno ${ann}
+  """
+}
+
 workflow {
   main:
   // Define analysis parameters
@@ -163,10 +183,18 @@ workflow {
     file(params.combine_scriptf)
   )
 
+  // Run functional enrichment analysis
+  functional_ch = FunctionalEnrichment(
+    file(params.annf),
+    file(params.utilsf)
+  )
+
   publish:
   stats_plots = viz_ch
   summary = combined_ch.summary
   csv = combined_ch.csv
+  functional_plots = functional_ch.plots
+  functional_stats = functional_ch.stats
 }
 
 output {
@@ -180,4 +208,6 @@ output {
   }
   summary { path "stats/" }
   csv { path "stats/" }
+  functional_plots { path "stats/functional_enrichment/" }
+  functional_stats { path "stats/functional_enrichment/" }
 }
