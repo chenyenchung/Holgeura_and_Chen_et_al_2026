@@ -102,6 +102,60 @@ process SimilarityTree {
   """
 }
 
+process PartnerExtraction {
+  cpus '2'
+  memory '16GB'
+  time '60m'
+  module 'r/gcc/4.4.0'
+
+  input:
+  path me_l
+  path me_r
+  path lo_l
+  path lo_r
+  path lop_l
+  path lop_r
+  path utils
+
+  output:
+  path 'partner_summary.csv'
+
+  script:
+  """
+  partner_extraction.r \
+    --output partner_summary.csv \
+    --me_l ${me_l} \
+    --me_r ${me_r} \
+    --lo_l ${lo_l} \
+    --lo_r ${lo_r} \
+    --lop_l ${lop_l} \
+    --lop_r ${lop_r}
+  """
+}
+
+process NeuropilPartnerAnalysis {
+  cpus '1'
+  memory '4GB'
+  time '10m'
+  module 'r/gcc/4.4.0'
+
+  input:
+  path partner_data
+  path utils
+  val threshold
+
+  output:
+  path 'neuropil_partners/*.pdf'
+
+  script:
+  """
+  neuropil_partner_analysis.r \
+    --partner_data ${partner_data} \
+    --threshold ${threshold} \
+    --output_dir neuropil_partners
+  """
+}
+
 workflow {
   main:
   def NP = ['ME_L', 'ME_R', 'LOP_L', 'LOP_R', 'LO_L', 'LO_R']
@@ -165,10 +219,28 @@ workflow {
     utils_file
   )
 
+  extraction_ch = PartnerExtraction(
+    file(MAT_PREFIX + 'ME_L_rotated.csv.gz'),
+    file(MAT_PREFIX + 'ME_R_rotated.csv.gz'),
+    file(MAT_PREFIX + 'LO_L_rotated.csv.gz'),
+    file(MAT_PREFIX + 'LO_R_rotated.csv.gz'),
+    file(MAT_PREFIX + 'LOP_L_rotated.csv.gz'),
+    file(MAT_PREFIX + 'LOP_R_rotated.csv.gz'),
+    utils_file
+  )
+
+  partner_ch = NeuropilPartnerAnalysis(
+    extraction_ch,
+    utils_file,
+    0.03
+  )
+
   publish:
   annov = out_ch
   selv = sel_ch
   tree = tree_ch
+  extraction = extraction_ch
+  partners = partner_ch
 }
 
 output {
@@ -202,5 +274,11 @@ output {
   }
   tree {
     path "similarity_trees/"
+  }
+  extraction {
+    path "partner_data/"
+  }
+  partners {
+    path "neuropil_partners/"
   }
 }
