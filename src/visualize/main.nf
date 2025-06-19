@@ -7,6 +7,7 @@ params.annf = 'data/visual_neurons_anno.csv'
 params.tsf = 'data/P15_tf.csv'
 params.camf = 'data/P15_CAM.csv'
 params.tslutf = 'data/to_selector.csv'
+params.distances = 'data/TypeToTypeDistances.csv'
 
 process Visualize {
   cpus '1'
@@ -77,6 +78,30 @@ process VisualizeSelector {
   """
 }
 
+process SimilarityTree {
+  cpus '1'
+  memory '4GB'
+  time '10m'
+  module 'r/gcc/4.4.0'
+
+  input:
+  path distances
+  path ann
+  path utils
+
+  output:
+  path 'similarity_tree.pdf'
+
+  script:
+  """
+  similarity_tree.r \
+    --distances ${distances} \
+    --annotations ${ann} \
+    --utils ${utils} \
+    --output similarity_tree.pdf
+  """
+}
+
 workflow {
   main:
   def NP = ['ME_L', 'ME_R', 'LOP_L', 'LOP_R', 'LO_L', 'LO_R']
@@ -134,9 +159,16 @@ workflow {
     SPARSE_LIMIT
   )
 
+  tree_ch = SimilarityTree(
+    file(params.distances),
+    file(params.annf),
+    utils_file
+  )
+
   publish:
   annov = out_ch
   selv = sel_ch
+  tree = tree_ch
 }
 
 output {
@@ -167,5 +199,8 @@ output {
       def gsel = input[1]
       return "${gsel}/${side}"
     }
+  }
+  tree {
+    path "similarity_trees/"
   }
 }
