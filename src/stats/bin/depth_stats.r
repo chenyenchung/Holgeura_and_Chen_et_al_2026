@@ -331,12 +331,33 @@ if (interactive()) {
 
 Rcpp::sourceCpp(argvs$cppsrc)
 
-# Load plot metadata and presets
-plot_meta <- fread(argvs$meta)[neuropil == argvs$np]
-preset <- fread(argvs$preset)[preset == argvs$use_preset]
+# Load plot metadata and presets with validation
+plot_meta_all <- validate_config_file(
+  argvs$meta,
+  c(
+    "neuropil", "x_axis", "y_axis", "axis_1_func", "axis_2_func", "min1",
+    "max1", "min2", "max2", "zid", "zinvert", "minz", "maxz", "outlayout",
+    "outr1", "outr2", "outd1", "outd2"
+  )
+)
+plot_meta <- plot_meta_all[neuropil == argvs$np]
+if (nrow(plot_meta) == 0) stop(sprintf("No metadata found for neuropil: %s", argvs$np))
+
+preset_all <- validate_config_file(
+  argvs$preset,
+  c(
+    "preset", "palette", "color_guide", "filter_func", "color_by",
+    "notch_split", "do_highlight", "hl_type", "hl_col", "hl_val"
+  )
+)
+preset <- preset_all[preset == argvs$use_preset]
+if (nrow(preset) == 0) stop(sprintf("No preset found: %s", argvs$use_preset))
+
+# Validate that required functions exist
+validate_functions(preset, plot_meta)
 
 # Load annotations and coordinates
-opc_anno <- fread(argvs$ann)
+opc_anno <- validate_config_file(argvs$ann, c("cell_type"))
 np_coord <- fread(syn_path)
 
 # Apply same filtering as visualization

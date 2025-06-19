@@ -81,6 +81,38 @@ scale_color_type <- function() {
 # DATA PROCESSING UTILITIES
 # ============================================================================
 
+#' Validate configuration file and check required columns
+#' @param file_path Path to the configuration file
+#' @param required_cols Vector of required column names
+#' @return Data table with validated content
+validate_config_file <- function(file_path, required_cols) {
+  if (!file.exists(file_path)) stop(sprintf("Config file not found: %s", file_path))
+  data <- fread(file_path)
+  if (nrow(data) == 0) stop(sprintf("Config file is empty: %s", file_path))
+  missing_cols <- setdiff(required_cols, colnames(data))
+  if (length(missing_cols) > 0) stop(sprintf("Missing columns in %s: %s", file_path, paste(missing_cols, collapse=", ")))
+  return(data)
+}
+
+#' Validate that required functions exist
+#' @param preset Preset configuration data
+#' @param plot_meta Plot metadata configuration
+validate_functions <- function(preset, plot_meta) {
+  # Check filter function
+  if (!exists(preset$filter_func, mode="function")) 
+    stop(sprintf("Filter function not found: %s", preset$filter_func))
+  
+  # Check color function  
+  if (!exists(preset$palette, mode="function"))
+    stop(sprintf("Color function not found: %s", preset$palette))
+    
+  # Check axis functions
+  if (!exists(plot_meta$axis_1_func, mode="function"))
+    stop(sprintf("Axis function not found: %s", plot_meta$axis_1_func))
+  if (!exists(plot_meta$axis_2_func, mode="function"))
+    stop(sprintf("Axis function not found: %s", plot_meta$axis_2_func))
+}
+
 #' Random subsample data with optional seed
 #' @param x Data frame or data.table to subsample
 #' @param n Maximum number of rows to keep

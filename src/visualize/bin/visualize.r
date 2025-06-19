@@ -9,32 +9,6 @@ suppressPackageStartupMessages(library(R.utils))
 
 options("ggrastr.default.dpi" = 450)
 
-# Validation functions
-validate_config_file <- function(file_path, required_cols) {
-  if (!file.exists(file_path)) stop(sprintf("Config file not found: %s", file_path))
-  data <- fread(file_path)
-  if (nrow(data) == 0) stop(sprintf("Config file is empty: %s", file_path))
-  missing_cols <- setdiff(required_cols, colnames(data))
-  if (length(missing_cols) > 0) stop(sprintf("Missing columns in %s: %s", file_path, paste(missing_cols, collapse=", ")))
-  return(data)
-}
-
-validate_functions <- function(preset, plot_meta) {
-  # Check filter function
-  if (!exists(preset$filter_func, mode="function")) 
-    stop(sprintf("Filter function not found: %s", preset$filter_func))
-  
-  # Check color function  
-  if (!exists(preset$palette, mode="function"))
-    stop(sprintf("Color function not found: %s", preset$palette))
-    
-  # Check axis functions
-  if (!exists(plot_meta$axis_1_func, mode="function"))
-    stop(sprintf("Axis function not found: %s", plot_meta$axis_1_func))
-  if (!exists(plot_meta$axis_2_func, mode="function"))
-    stop(sprintf("Axis function not found: %s", plot_meta$axis_2_func))
-}
-
 argvs <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
 
 # Source utility functions (soft-linked by Nextflow)

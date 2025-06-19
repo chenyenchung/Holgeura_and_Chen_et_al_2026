@@ -35,8 +35,17 @@ if (interactive()) {
 }
 
 
-## Load plot metadata and presets
-plot_meta <- fread(argvs$meta)[neuropil == argvs$np]
+## Load plot metadata and presets with validation
+plot_meta_all <- validate_config_file(
+  argvs$meta,
+  c(
+    "neuropil", "x_axis", "y_axis", "axis_1_func", "axis_2_func", "min1",
+    "max1", "min2", "max2", "zid", "zinvert", "minz", "maxz", "outlayout",
+    "outr1", "outr2", "outd1", "outd2"
+  )
+)
+plot_meta <- plot_meta_all[neuropil == argvs$np]
+if (nrow(plot_meta) == 0) stop(sprintf("No metadata found for neuropil: %s", argvs$np))
 
 # Generated 
 x_axis <- paste(argvs$syn_type, plot_meta$x_axis, sep = "_")
