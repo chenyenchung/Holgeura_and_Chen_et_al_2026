@@ -129,8 +129,10 @@ workflow {
       channel.fromPath(file(params.presetf))
         .splitCsv(header:true)
         .map { row -> row.preset }
+        .take( 4 )
     )
-
+    
+    
   // Perform statistical analysis
   analysis_ch = DepthStatsAnalysis(
     cond_ch,
@@ -173,9 +175,9 @@ output {
       def np = input[0]
       def preset = input[1]
       def stype = input[2]
-      return "plots/${preset}/${np}_${stype}"
+      return "stats/${preset}/${np}_${stype}"
     }
   }
-  summary {}
-  csv {}
+  summary { path "stats/" }
+  csv { path "stats/" }
 }

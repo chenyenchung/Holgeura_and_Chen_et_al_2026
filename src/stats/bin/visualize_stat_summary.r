@@ -182,8 +182,7 @@ plot_ks_boxplot <- function(data) {
       title = "Subsampled Kolmogorov-Smirnov P-values",
       y = "P-value (median with quartiles)"
     ) +
-    scale_y_continuous(transform = c("log10", "reverse"),
-                       labels = scales::comma) +
+    scale_y_continuous(transform = c("log10", "reverse")) +
     theme_minimal() +
     theme(
       axis.title.x = element_blank(),
@@ -251,8 +250,7 @@ plot_ks_significance_heatmap <- function(data) {
     color_scale = scale_fill_gradient(
       low = "white", high = "red",
       name = "Adjusted\np-value",
-      breaks = -1 * log10(c(0.5, 0.01, 0.001, 0.0001)),
-      labels = function(x) as.character(10 ^ (-x))
+      labels = function(x) paste0("1e-", x)
     ),
     show_values = TRUE,
     value_labels = sig_matrix
@@ -278,9 +276,9 @@ generate_depth_stats_report <- function(test_results, output_prefix) {
   n_comparisons <- nrow(test_results)
   
   # Dynamic sizing for different plot types
-  point_whisker_width <- max(6, n_comparisons * 0.8)
+  point_whisker_width <- max(6, n_comparisons * 1 + 1)
   point_whisker_height <- 6
-  heatmap_size <- max(6, n_groups * 0.6)
+  heatmap_size <- max(6, n_groups * 0.6 + 1)
   
   # Generate 95% CI plot for Wasserstein distances
   cat("Generating Wasserstein CI plot...\n")
