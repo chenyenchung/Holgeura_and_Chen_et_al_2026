@@ -6,7 +6,6 @@ params.metaf = 'data/viz_meta.csv'
 params.annf = 'data/visual_neurons_anno.csv'
 params.tsf = 'data/P15_tf.csv'
 params.camf = 'data/P15_CAM.csv'
-params.tslutf = 'data/to_selector.csv'
 params.distances = 'data/TypeToTypeDistances.csv'
 
 process Visualize {
@@ -51,7 +50,7 @@ process VisualizeSelector {
   module 'r/gcc/4.4.0'
 
   input:
-  tuple val(np), path(syn), val(stype), val(den), path(ts), path(tslut), val(gselection)
+  tuple val(np), path(syn), val(stype), val(den), path(ts), val(gselection)
   path ann
   path meta
   path utils
@@ -68,7 +67,6 @@ process VisualizeSelector {
     --synf ${syn} \
     --syn_type ${stype} \
     --ts ${ts} \
-    --tslut ${tslut} \
     --density ${den} \
     --ann ${ann} \
     --meta ${meta} \
@@ -201,10 +199,8 @@ workflow {
     .combine(channel.fromList(DEN_ALGO))
     
   def TS_BIN = [file(params.tsf), file(params.camf)]
-  def TS_LUT = [file(params.tslutf), file(params.tslutf)]
   def TS_LABEL = ['P15_TF', 'P15_CAM']
   g_ch = channel.fromList(TS_BIN)
-    .merge(channel.fromList(TS_LUT))
     .merge(channel.fromList(TS_LABEL))
   sel_ch = VisualizeSelector(
     scond_ch.combine(g_ch),

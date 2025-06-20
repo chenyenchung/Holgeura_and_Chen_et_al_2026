@@ -305,31 +305,34 @@ filter_temporal_all <- function(coord, ann, syn_type = "pre") {
   return(coord)
 }
 
-#' Default filter for selector analysis
-filter_default <- function(coord, ann, ts, lut, syn_type = "pre") {
+#' Filter coordinates by gene expression data
+filter_geneexp <- function(coord, ann, ts, syn_type = "pre") {
   by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
   
-  # Prepare lookup table for conversion between FlyWire types
-  # and Ozel et al. (2020) types.
-  lut <- subset(lut, ts_type %in% colnames(ts))
+  # Extract gene symbols and convert to logical matrix
   ts_symbols <- ts$V1
+  ts_data <- ts[, -1]  # Remove first column (gene names)
   
-  # Subset selector table to keep only types that we can map
-  ts <- t(ts[, lut$ts_type, with = FALSE]) |>
-    as.data.frame()
-  colnames(ts) <- ts_symbols
-  tlut <- lut$cell_type
-  names(tlut) <- lut$ts_type
-  row.names(ts) <- tlut[row.names(ts)]
-  ts <- ts[, colSums(ts) > 0]
-  ts_symbols <- colnames(ts)
-  ts <- ts == 1
-  ts <- as.data.frame(ts)
-  ts$cell_type <- row.names(ts)
+  # Annotate
+  ann <- ann[Confident_annotation == "Y"]
+  type_lut <- ann$cell_type[!is.na(ann$ozel2021_cluster)]
+  names(type_lut) <- ann$ozel2021_cluster[!is.na(ann$ozel2021_cluster)]
   
-  # Annotate synapses with selector expression status
+  ts_data <- ts_data[, colnames(ts_data) %in% names(type_lut), with = FALSE]
+  colnames(ts_data) <- type_lut[colnames(ts_data)]
+  
+  # Convert to logical and transpose to have cell types as rows
+  ts_mat <- t(ts_data)
+  colnames(ts_mat) <- ts_symbols
+  
+  # Keep only genes with at least one TRUE value
+  ts_mat <- ts_mat[, colSums(ts_mat) > 0, drop = FALSE]
+  ts_mat <- as.data.frame(ts_mat)
+  ts_mat$cell_type <- row.names(ts_mat)
+  
+  # Annotate synapses with gene expression status
   coord[, .row_id := .I]
-  coord <- merge(coord, ts, by.x = by_x, by.y = "cell_type")
+  coord <- merge(coord, ts_mat, by.x = by_x, by.y = "cell_type")
   
   coord <- merge(
     coord,
