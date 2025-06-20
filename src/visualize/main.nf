@@ -237,7 +237,7 @@ workflow {
     channel
       .fromList( ["All", "ME", "LO", "LOP"] )
       .combine(
-        channel.fromList( ["pre", "post"] )
+        channel.fromList( ["pre", "post", "both"] )
       ),
     0.03
   )

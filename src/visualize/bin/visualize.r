@@ -131,7 +131,7 @@ if (preset$do_highlight && preset$hl_type == "path") {
 }
 
 
-np_raw <- np_coord
+np_raw <- copy(np_coord)
 if (grepl("^ME", argvs$np)) {
   np_coord <- rsubsample(
     np_coord, n = argvs$subsample * 4, syn_type = argvs$syn_type
