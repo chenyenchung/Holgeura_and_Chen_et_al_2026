@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(data.table))
 suppressPackageStartupMessages(library(R.utils))
 
@@ -26,23 +25,23 @@ if (interactive()) {
 # Function to process a single neuropil file
 process_neuropil_file <- function(file_path, neuropil_name) {
   cat(sprintf("Processing %s...\n", basename(file_path)))
-  
-  # Load data
   data <- fread(file_path, colClasses = "character")
-  data$connection_score <- as.numeric(data$connection_score)
   
-  # Calculate summary statistics
-  summary_data <- data %>%
-    group_by(pre_type, post_type) %>%
-    summarise(
-      number_of_synapses = sum(connection_score),
-      number_of_neurons = n(),
-      .groups = "drop"
-    ) %>%
-    mutate(neuropil = neuropil_name) %>%
-    select(neuropil, pre_type, post_type, number_of_synapses, number_of_neurons)
+  out <- data[
+    , .N, by = c("pre_pt_root_id", "post_pt_root_id", "pre_type", "post_type")
+  ][pre_type != "" & post_type != ""]
   
-  return(summary_data)
+  # Consider > 4 synapses per pair to be real
+  to_keep <- out[
+   , .(nSynapse = sum(N)),  by = c("pre_pt_root_id", "post_pt_root_id")
+  ][nSynapse > 4]
+  
+  out <- merge(out, to_keep, by = c("pre_pt_root_id", "post_pt_root_id"))
+  out <- out[
+    , .(neuropil = neuropil_name, nSynapse = sum(N), nNeuron = .N),
+    by = c("pre_type", "post_type")
+  ]
+  return(out)
 }
 
 # Function to combine bilateral neuropil data
@@ -53,16 +52,16 @@ combine_bilateral_neuropil <- function(left_file, right_file, neuropil_name) {
   left_data <- process_neuropil_file(left_file, neuropil_name)
   right_data <- process_neuropil_file(right_file, neuropil_name)
   
-  # Combine and sum the data
-  combined_data <- rbind(left_data, right_data) %>%
-    group_by(neuropil, pre_type, post_type) %>%
-    summarise(
-      number_of_synapses = sum(number_of_synapses),
-      number_of_neurons = sum(number_of_neurons),
-      .groups = "drop"
-    )
+  out <- rbind(left_data, right_data)
+  out <- out[
+    , .(
+      neuropil = neuropil_name,
+      nSynapse = sum(nSynapse), nNeuron = sum(nNeuron)
+    ),
+    by = c("pre_type", "post_type")
+  ]
   
-  return(combined_data)
+  return(out)
 }
 
 cat("Starting partner extraction...\n")
@@ -88,13 +87,10 @@ for (neuropil_name in names(neuropils)) {
 # Combine all neuropil data
 final_data <- do.call(rbind, all_data)
 
-# Reorder columns to match specification: neuropil, pre, post, number_of_synapses, number_of_neurons
-final_data <- final_data %>%
-  select(neuropil, pre = pre_type, post = post_type, number_of_synapses, number_of_neurons) %>%
-  arrange(neuropil, pre, post)
-
+# Reorder columns to match specification: neuropil, pre, post, nSynapse, nNeuron
+final_data <- final_data[ , .(neuropil, pre_type, post_type, nSynapse, nNeuron)]
 # Write output
-write.csv(final_data, argvs$output, row.names = FALSE)
+fwrite(final_data, argvs$output, row.names = FALSE)
 
 cat(sprintf("Partner extraction complete! Output saved to: %s\n", argvs$output))
 cat(sprintf("Total rows: %d\n", nrow(final_data)))

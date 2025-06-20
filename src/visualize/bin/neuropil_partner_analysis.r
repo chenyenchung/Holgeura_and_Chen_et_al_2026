@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
-suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(ggrepel))
+suppressPackageStartupMessages(library(data.table))
 suppressPackageStartupMessages(library(R.utils))
 
 argvs <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
@@ -16,7 +16,8 @@ if (interactive()) {
   source("./src/utils.r", chdir = FALSE)
   argvs$partner_data <- "partner_summary.csv"
   argvs$threshold <- 0.03
-  argvs$output_dir <- "neuropil_partners"
+  argvs$syn <- "pre"
+  argvs$np <- "All"
 } else {
   argvs$threshold <- as.numeric(argvs$threshold)
 }
@@ -27,83 +28,81 @@ types_of_interest <- c("Tm5f", "Tm8a", "Li06", "TmY10", "TmY11", "Sm03", "Tm5d",
 
 # Load partner data
 cat("Loading partner data...\n")
-partner_data <- read.csv(argvs$partner_data, colClasses = "character")
-partner_data$number_of_synapses <- as.numeric(partner_data$number_of_synapses)
-partner_data$number_of_neurons <- as.numeric(partner_data$number_of_neurons)
+partner_data <- fread(argvs$partner_data)
 
 # Function to analyze partners for a neuropil using synapse count
-analyze_neuropil_partners_synapses <- function(data, neuropil_name, types_of_interest, threshold) {
-  # Filter for types of interest as presynaptic partners in this neuropil
-  connections <- data %>%
-    filter(neuropil == neuropil_name, pre %in% types_of_interest) %>%
-    group_by(pre, post) %>%
-    summarise(connection_sum = sum(number_of_synapses), .groups = "drop")
+analyze_neuropil_partners_synapses <- function(
+    data, neuropil_name, types_of_interest, syn_type, threshold
+  ) {
+  syn_use <- paste0(syn_type, "_type")
+  partner_use <- ifelse(syn_use == "pre_type", "post_type", "pre_type")
+  
+  if (neuropil_name != "All") {
+    # Filter for types of interest as presynaptic partners in this neuropil
+    connections <- data[
+      neuropil == neuropil_name & get(syn_use) %in% types_of_interest
+    ]
+  } else {
+    connections <- data[
+     get(syn_use) %in% types_of_interest
+    ]
+  }
+
+  setnames(connections, syn_use, "type")
+  setnames(connections, partner_use, "partner")
   
   # Calculate ratios and filter by threshold
-  partner_ratios <- connections %>%
-    group_by(pre) %>%
-    mutate(connection_ratio = connection_sum / sum(connection_sum)) %>%
-    filter(connection_ratio >= threshold)
+  partner_ratios <- connections[
+    , ratio := nSynapse / sum(nSynapse),
+    by = "type"
+  ][, category := fifelse(ratio > argvs$threshold, partner, "Others")][
+    , .(ratio = sum(ratio)), by = c("type", "category")
+  ]
   
-  # Calculate "Others" category
-  others_count <- connections %>%
-    group_by(pre) %>%
-    mutate(connection_ratio = connection_sum / sum(connection_sum)) %>%
-    filter(connection_ratio < threshold) %>%
-    summarize(n = n(), .groups = "drop")
-  
-  others_ratios <- partner_ratios %>%
-    group_by(pre) %>%
-    summarize(connection_ratio = 1 - sum(connection_ratio), .groups = "drop") %>%
-    mutate(post = "Others")
-  
-  # Add count to Others label
-  others_ratios <- left_join(others_ratios, others_count, by = "pre") %>%
-    mutate(
-      post = ifelse(is.na(n), "Others", paste0("Others (", n, ")")),
-      n = NULL
-    )
-  
-  # Combine main partners and others
-  plot_data <- rbind(
-    partner_ratios[, c("pre", "post", "connection_ratio")],
-    others_ratios
-  )
-  
-  return(plot_data)
+  return(partner_ratios)
 }
 
 # Function to create donut plot
-create_donut_plot <- function(plot_data, neuropil_name, types_of_interest, threshold) {
+create_donut_plot <- function(
+    plot_data, neuropil_name, syn_type, threshold
+    ) {
   # Pool all data across types of interest for the neuropil
-  pooled_data <- plot_data %>%
-    group_by(post) %>%
-    summarise(connection_ratio = sum(connection_ratio), .groups = "drop") %>%
-    arrange(desc(connection_ratio)) %>%
-    mutate(
-      ymax = cumsum(connection_ratio),
-      ymin = c(0, head(ymax, n = -1)),
-      y = (ymin + ymax) / 2
-    )
+  type_use <- paste0(syn_type, "_type")
+  pooled_data <- plot_data
+  setorder(pooled_data, type, ratio)
+  
+  this_type <- unique(pooled_data$type)
+  if (length(this_type) > 1) {
+    stop("The plot_data should only contain one type")
+  }
+  
+  pooled_data[ , ymax := cumsum(ratio)][
+    , ymin := c(0, head(ymax, n = -1))
+  ][
+    , y := (ymin + ymax) / 2
+  ]
   
   # Create plot
   p <- ggplot(pooled_data, aes(
-    ymin = ymin, ymax = ymax, group = post, 
-    fill = connection_ratio, xmin = 3, xmax = 12
+    ymin = ymin, ymax = ymax, group = category, 
+    fill = ratio, xmin = 3, xmax = 12
   )) +
     geom_rect(color = "black") +
     geom_label_repel(
       aes(x = 9, y = y,
-          label = paste0(post, ": ", round(connection_ratio * 100, 1), "%")),
+          label = paste0(category, ": ", round(ratio * 100, 1), "%")),
       nudge_x = 5, fill = "white", size = 2
     ) +
     scale_x_continuous(limits = c(0, 18)) +
-    scale_fill_gradient(low = "lightblue", high = "blue",
+    scale_fill_gradient(low = ifelse(syn_type == "pre", "lightblue", "pink"),
+                        high = ifelse(syn_type == "pre", "blue", "#800020"),
                         limits = c(0, NA), labels = scales::percent) +
     labs(
-      title = paste0("Main postsynaptic partners in ", neuropil_name),
-      subtitle = paste0("For selected cell types: ", paste(types_of_interest, collapse = ", "), 
-                       "\n(Partners accounting for < ", threshold * 100, "% are considered others)"),
+      title = paste0("Main ", syn_type,"synaptic partners in ", neuropil_name),
+      subtitle = paste0(this_type,
+                        "\n(Partners accounting for < ",
+                        threshold * 100,
+                        "% are considered others)"),
       fill = "% of connections"
     ) +
     coord_polar(theta = "y") +
@@ -116,26 +115,26 @@ create_donut_plot <- function(plot_data, neuropil_name, types_of_interest, thres
   return(p)
 }
 
-# Create output directory
-if (!dir.exists(argvs$output_dir)) {
-  dir.create(argvs$output_dir, recursive = TRUE)
-}
-
 # Process each neuropil
-neuropil_names <- c("ME", "LO", "LOP")
+cat(sprintf("Processing %s neuropil...\n", argvs$np))
 
-for (neuropil_name in neuropil_names) {
-  cat(sprintf("Processing %s neuropil...\n", neuropil_name))
-  
-  # Analyze partners using synapse count
-  plot_data <- analyze_neuropil_partners_synapses(partner_data, neuropil_name, types_of_interest, argvs$threshold)
-  
+# Analyze partners using synapse count
+plot_data <- analyze_neuropil_partners_synapses(
+  partner_data, argvs$np, types_of_interest, argvs$syn, argvs$threshold
+)
+
+plot_data <- split(plot_data, plot_data$type, drop = TRUE)
+
+for (ntype in names(plot_data)) {
   # Create and save plot
-  p <- create_donut_plot(plot_data, neuropil_name, types_of_interest, argvs$threshold)
+  p <- create_donut_plot(
+    plot_data[[ntype]], argvs$np, argvs$syn, argvs$threshold
+  )
   
-  output_file <- file.path(argvs$output_dir, paste0(neuropil_name, "_partners.pdf"))
+  output_file <- paste(
+    argvs$np, ntype, argvs$syn, "partners.pdf", sep = "_"
+  )
   ggsave(output_file, plot = p, width = 8, height = 6)
-  
   cat(sprintf("Saved %s\n", output_file))
 }
 

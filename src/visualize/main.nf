@@ -142,17 +142,19 @@ process NeuropilPartnerAnalysis {
   input:
   path partner_data
   path utils
+  tuple val(neuropil), val(syn_type)
   val threshold
 
   output:
-  path 'neuropil_partners/*.pdf'
+  tuple val("${neuropil}"), path('*.pdf')
 
   script:
   """
   neuropil_partner_analysis.r \
     --partner_data ${partner_data} \
     --threshold ${threshold} \
-    --output_dir neuropil_partners
+    --np ${neuropil} \
+    --syn ${syn_type}
   """
 }
 
@@ -185,7 +187,7 @@ workflow {
     file(params.presetf),
     utils_file,
     SUBSAMPLE_TO,
-    SPARSE_LIMIT,
+    SPARSE_LIMIT
   )
   
 
@@ -232,6 +234,11 @@ workflow {
   partner_ch = NeuropilPartnerAnalysis(
     extraction_ch,
     utils_file,
+    channel
+      .fromList( ["All", "ME", "LO", "LOP"] )
+      .combine(
+        channel.fromList( ["pre", "post"] )
+      ),
     0.03
   )
 
@@ -279,6 +286,9 @@ output {
     path "partner_data/"
   }
   partners {
-    path "neuropil_partners/"
+    path { input ->
+      def neuropil = input[0]
+      return "neuropil_partners/${neuropil}/"
+    }
   }
 }
