@@ -1,14 +1,21 @@
 #!/usr/bin/env Rscript
 suppressPackageStartupMessages(library(R.utils))
 suppressPackageStartupMessages(library(data.table))
+suppressPackageStartupMessages(library(openxlsx))
 
-#' Combine multiple depth statistics result files
+# Named vector for converting preset names to readable sheet names
+preset_names <- c(
+  "subsystem_known" = "Subsystem Known",
+  "temporal_known" = "Temporal Known"
+)
+
+#' Combine multiple depth statistics result files into Excel workbook
 #' @param pattern Pattern to match result files (default "^results_.*\\.csv$")
-#' @param output_file Output filename for combined results
 #' @param summary_file Output filename for statistical summary
+#' @param excel_file Output filename for Excel file with multiple sheets
 combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
-                                       output_file = "combined_depth_stats_results.csv",
-                                       summary_file = "statistical_summary.txt") {
+                                       summary_file = "statistical_summary.txt",
+                                       excel_file = "combined_depth_stats_results.xlsx") {
   
   # Find all result files
   result_files <- list.files(pattern = pattern)
@@ -17,8 +24,37 @@ combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
     # Combine all results
     all_results <- rbindlist(lapply(result_files, fread), fill = TRUE)
     
-    # Write combined results
-    fwrite(all_results, output_file)
+    # Export to Excel with multiple sheets split by preset
+    if (!is.null(excel_file) && excel_file != "") {
+      # Split data by preset
+      preset_splits <- split(all_results, all_results$preset)
+      
+      # Create workbook
+      wb <- createWorkbook()
+      
+      # Add each preset as a separate sheet
+      for (preset in names(preset_splits)) {
+        # Use readable name if available, otherwise use original
+        sheet_name <- ifelse(preset %in% names(preset_names), 
+                            preset_names[preset], 
+                            preset)
+        
+        # Ensure sheet name is valid (Excel has limitations)
+        sheet_name <- substr(gsub("[^[:alnum:][:space:]]", "_", sheet_name), 1, 31)
+        
+        # Add worksheet
+        addWorksheet(wb, sheet_name)
+        
+        # Write data
+        writeData(wb, sheet_name, preset_splits[[preset]])
+        
+        # Auto-size columns for better readability
+        setColWidths(wb, sheet_name, cols = 1:ncol(preset_splits[[preset]]), widths = "auto")
+      }
+      
+      # Save workbook
+      saveWorkbook(wb, excel_file, overwrite = TRUE)
+    }
     
     # Generate summary statistics
     sink(summary_file)
@@ -68,11 +104,11 @@ combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
     
     sink()
     
-    cat("Combined", nrow(all_results), "results into", output_file, "\n")
+    cat("Combined", nrow(all_results), "results\n")
+    cat("Excel file written to", excel_file, "with", length(preset_splits), "sheets\n")
     cat("Summary written to", summary_file, "\n")
   } else {
     # Create empty files if no results
-    write.csv(data.frame(), output_file, row.names = FALSE)
     writeLines("No results to combine", summary_file)
     cat("No result files found matching pattern:", pattern, "\n")
   }
@@ -86,8 +122,8 @@ argvs <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
 
 # Set defaults
 pattern <- if (is.null(argvs$pattern)) "_depth_stats\\.csv$" else argvs$pattern
-output_file <- if (is.null(argvs$output)) "combined_depth_stats_results.csv" else argvs$output
 summary_file <- if (is.null(argvs$summary)) "statistical_summary.txt" else argvs$summary
+excel_file <- if (is.null(argvs$excel)) "combined_depth_stats_results.xlsx" else argvs$excel
 
 # Run the combination
-combine_depth_stats_results(pattern, output_file, summary_file)
+combine_depth_stats_results(pattern, summary_file, excel_file)

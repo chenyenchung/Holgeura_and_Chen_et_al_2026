@@ -99,8 +99,8 @@ process CombineResults {
   path combine_script
 
   output:
-  path 'combined_depth_stats_results.csv', emit: csv
   path 'statistical_summary.txt', emit: summary
+  path 'combined_depth_stats_results.xlsx', emit: excel
 
   script:
   """
@@ -192,7 +192,7 @@ workflow {
   publish:
   stats_plots = viz_ch
   summary = combined_ch.summary
-  csv = combined_ch.csv
+  excel = combined_ch.excel
   functional_plots = functional_ch.plots
   functional_stats = functional_ch.stats
 }
@@ -207,7 +207,7 @@ output {
     }
   }
   summary { path "stats/" }
-  csv { path "stats/" }
+  excel { path "stats/" }
   functional_plots { path "stats/functional_enrichment/" }
   functional_stats { path "stats/functional_enrichment/" }
 }
