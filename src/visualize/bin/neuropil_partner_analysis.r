@@ -14,9 +14,9 @@ if (file.exists("./utils.r")) {
 ### TODO: Interactive mode for development
 if (interactive()) {
   source("./src/utils.r", chdir = FALSE)
-  argvs$partner_data <- "partner_summary.csv"
+  argvs$partner_data <- "../Flywire_Isabel/partner_data/partner_summary.csv"
   argvs$threshold <- 0.03
-  argvs$syn <- "pre"
+  argvs$syn <- "both"
   argvs$np <- "All"
 } else {
   argvs$threshold <- as.numeric(argvs$threshold)
@@ -34,22 +34,39 @@ partner_data <- fread(argvs$partner_data)
 analyze_neuropil_partners_synapses <- function(
     data, neuropil_name, types_of_interest, syn_type, threshold
   ) {
-  syn_use <- paste0(syn_type, "_type")
-  partner_use <- ifelse(syn_use == "pre_type", "post_type", "pre_type")
-  
-  if (neuropil_name != "All") {
-    # Filter for types of interest as presynaptic partners in this neuropil
-    connections <- data[
-      neuropil == neuropil_name & get(syn_use) %in% types_of_interest
-    ]
+  if (syn_type != "both") {
+    syn_use <- paste0(syn_type, "_type")
+    partner_use <- ifelse(syn_use == "pre_type", "post_type", "pre_type")
+    if (neuropil_name != "All") {
+      # Filter for types of interest as presynaptic partners in this neuropil
+      connections <- data[
+        neuropil == neuropil_name & get(syn_use) %in% types_of_interest
+      ]
+    } else {
+      connections <- data[
+        get(syn_use) %in% types_of_interest
+      ]
+    }
+    
+    setnames(connections, syn_use, "type")
+    setnames(connections, partner_use, "partner")
   } else {
-    connections <- data[
-     get(syn_use) %in% types_of_interest
-    ]
+    connections_com <- copy(data)
+    setnames(connections_com, "pre_type", "type")
+    setnames(connections_com, "post_type", "partner")
+    connections <- copy(data)
+    setnames(connections, "post_type", "type")
+    setnames(connections, "pre_type", "partner")
+    connections <- rbind(connections, connections_com)
+    
+    if (neuropil_name != "All") {
+      connections <- connections[
+        neuropil == neuropil_name & type %in% types_of_interest
+      ]
+    } else {
+      connections <- connections[type %in% types_of_interest]
+    }
   }
-
-  setnames(connections, syn_use, "type")
-  setnames(connections, partner_use, "partner")
   
   # Calculate ratios and filter by threshold
   partner_ratios <- connections[
