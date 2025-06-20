@@ -11,7 +11,7 @@ params.distances = 'data/TypeToTypeDistances.csv'
 process Visualize {
   cpus '1'
   memory '8GB'
-  time '15m'
+  time '30m'
   module 'r/gcc/4.4.0'
 
   input:
