@@ -201,7 +201,7 @@ workflow {
   def TS_BIN = [file(params.tsf), file(params.camf)]
   def TS_LABEL = ['P15_TF', 'P15_CAM']
   g_ch = channel.fromList(TS_BIN)
-    .merge(channel.fromList(TS_LABEL))
+    .combine(channel.fromList(TS_LABEL))
   sel_ch = VisualizeSelector(
     scond_ch.combine(g_ch),
     file(params.annf),
