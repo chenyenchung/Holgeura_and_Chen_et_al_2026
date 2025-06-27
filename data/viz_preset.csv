@@ -1,12 +1,12 @@
-preset,palette,color_guide,filter_func,color_by,notch_split,do_highlight,hl_type,hl_col,hl_val
-temporal_known,scale_color_nk2023,Temporal Origin,filter_temporal_known,temporal_label,TRUE,FALSE,none,none,none
-subsystem_known,scale_color_subsystem,Functional Subsystem,filter_subsystem_known,func,TRUE,FALSE,none,none,none
-temporal_new,scale_color_nk2023,Temporal Origin,filter_temporal_new,temporal_label,TRUE,TRUE,label,newly_ann,Y
-subsystem_new,scale_color_subsystem,Functional Subsystem,filter_subsystem_new,func,TRUE,TRUE,label,newly_ann,Y
-broad_known,scale_color_ih2025,Temporal Window,filter_broad_known,broad_temp,TRUE,FALSE,none,none,none
-broad_new,scale_color_ih2025,Temporal Window,filter_broad_new,broad_temp,TRUE,TRUE,label,newly_ann,Y
-type_putative,scale_color_type,Cell Type,filter_putative,cell_type,TRUE,FALSE,none,none,none
-temporal_all,scale_color_nk2023,Temporal Origin,filter_temporal_all,temporal_label,TRUE,FALSE,none,none,none
-subsystem_all,scale_color_subsystem,Functional Subsystem,filter_subsystem_new,func,TRUE,FALSE,none,none,none
-type_putative_1,scale_color_type,Cell Type,filter_putative,cell_type,TRUE,TRUE,label,putative_hl1,Y
-type_putative_2,scale_color_type,Cell Type,filter_putative,cell_type,TRUE,TRUE,label,putative_hl2,Y
+preset,palette,color_guide,filter_func,color_by,notch_split,do_highlight,hl_type,hl_col,hl_val,known_only
+temporal_known,scale_color_nk2023,Temporal Origin,filter_temporal,temporal_label,TRUE,FALSE,none,none,none,TRUE
+subsystem_known,scale_color_subsystem,Functional Subsystem,filter_subsystem,func,TRUE,FALSE,none,none,none,TRUE
+temporal_new,scale_color_nk2023,Temporal Origin,filter_temporal,temporal_label,TRUE,TRUE,label,newly_ann,Y,FALSE
+subsystem_new,scale_color_subsystem,Functional Subsystem,filter_subsystem,func,TRUE,TRUE,label,newly_ann,Y,FALSE
+broad_known,scale_color_ih2025,Temporal Window,filter_broad,broad_temp,TRUE,FALSE,none,none,none,TRUE
+broad_new,scale_color_ih2025,Temporal Window,filter_broad,broad_temp,TRUE,TRUE,label,newly_ann,Y,FALSE
+type_putative,scale_color_type,Cell Type,filter_putative,cell_type,TRUE,FALSE,none,none,none,FALSE
+temporal_all,scale_color_nk2023,Temporal Origin,filter_temporal_all,temporal_label,TRUE,FALSE,none,none,none,FALSE
+subsystem_all,scale_color_subsystem,Functional Subsystem,filter_subsystem,func,TRUE,FALSE,none,none,none,FALSE
+type_putative_1,scale_color_type,Cell Type,filter_putative,cell_type,TRUE,TRUE,label,putative_hl1,Y,FALSE
+type_putative_2,scale_color_type,Cell Type,filter_putative,cell_type,TRUE,TRUE,label,putative_hl2,Y,FALSE

@@ -45,8 +45,8 @@ process Visualize {
 
 process VisualizeSelector {
   cpus '1'
-  memory '8GB'
-  time '30m'
+  memory '16GB'
+  time '1h'
   module 'r/gcc/4.4.0'
 
   input:
@@ -258,7 +258,8 @@ output {
       def color_dict = [
         'temporal': 'Color_by_temporal_origin',
         'subsystem': 'Color_by_function_subsystem',
-        'type': 'Color_by_cell_type'
+        'type': 'Color_by_cell_type',
+        'broad': 'Color_by_early_late'
       ]
       def side = input[0].split('_')[1]
       def ctype = input[1].split('_')[0]

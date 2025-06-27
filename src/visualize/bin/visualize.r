@@ -51,7 +51,7 @@ preset_all <- validate_config_file(
   argvs$preset,
   c(
      "preset", "palette", "color_guide", "filter_func", "color_by",
-      "notch_split", "do_highlight", "hl_type", "hl_col", "hl_val"
+      "notch_split", "do_highlight", "hl_type", "hl_col", "hl_val", "known_only"
   )
   )
 preset <- preset_all[preset == argvs$use_preset]
@@ -146,6 +146,12 @@ if (grepl("^ME", argvs$np)) {
 if (preset$hl_col == "func") {
   np_coord <- np_coord[func != "Unannotated"]
   np_raw <- np_raw[func != "Unannotated"]
+}
+
+## Apply known_only filtering if specified (after subsampling)
+if (preset$known_only) {
+  np_coord <- np_coord[newly_ann == "N"]
+  np_raw <- np_raw[newly_ann == "N"]
 }
 
 if (preset$notch_split) {

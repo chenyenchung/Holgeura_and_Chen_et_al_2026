@@ -197,8 +197,8 @@ filter_type <- function(x, syn_type, sparse_limit) {
   }
 }
 
-#' Filter coordinates by temporal annotations (new)
-filter_temporal_new <- function(coord, ann, syn_type = "pre") {
+#' Filter coordinates by temporal annotations
+filter_temporal <- function(coord, ann, syn_type = "pre") {
   by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
   ann <- ann[temporal_label != "unknown" & Confident_annotation == "Y"]
   ann$temporal_label <- factor(
@@ -218,22 +218,10 @@ filter_temporal_new <- function(coord, ann, syn_type = "pre") {
   return(coord)
 }
 
-#' Filter coordinates by temporal annotations (known)
-filter_temporal_known <- function(coord, ann, syn_type = "pre") {
-  out <- filter_temporal_new(coord, ann, syn_type)
-  out <- out[newly_ann == "N"]
-  return(out)
-}
 
-#' Filter coordinates by subsystem annotations (known)
-filter_subsystem_known <- function(coord, ann, syn_type = "pre") {
-  out <- filter_subsystem_new(coord, ann, syn_type)
-  out <- out[newly_ann == "N"]
-  return(out)
-}
 
-#' Filter coordinates by subsystem annotations (new)
-filter_subsystem_new <- function(coord, ann, syn_type = "pre") {
+#' Filter coordinates by subsystem annotations
+filter_subsystem <- function(coord, ann, syn_type = "pre") {
   by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
   ann <- ann[func != "unknown" & Confident_annotation == "Y"]
   ann$func <- factor(ann$func)
@@ -249,8 +237,8 @@ filter_subsystem_new <- function(coord, ann, syn_type = "pre") {
   return(coord)
 }
 
-#' Filter coordinates by subsystem annotations (new)
-filter_broad_new <- function(coord, ann, syn_type = "pre") {
+#' Filter coordinates by broad temporal annotations
+filter_broad <- function(coord, ann, syn_type = "pre") {
   by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
   ann <- ann[broad_temp %in% c("Early", "Late") & Confident_annotation == "Y"]
   ann$broad_temp <- factor(ann$broad_temp)
@@ -266,11 +254,6 @@ filter_broad_new <- function(coord, ann, syn_type = "pre") {
   return(coord)
 }
 
-filter_broad_known <- function(coord, ann, syn_type = "pre") {
-  out <- filter_broad_new(coord, ann, syn_type)
-  out <- out[newly_ann == "N"]
-  return(out)
-}
 
 #' Filter coordinates by putative annotations
 filter_putative <- function(coord, ann, syn_type = "pre") {
