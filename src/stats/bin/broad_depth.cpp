@@ -100,12 +100,20 @@ List perform_broad_depth_bootstrap(NumericVector ref_sup_depths,
   double observed_delta_thres = observed_delta_thres_base * coefficient;
   
   // Pre-allocate bootstrap result vectors
-  NumericVector bootstrap_closer_to_superficial(n_bootstrap, 0.0);
-  NumericVector bootstrap_closer_to_deep(n_bootstrap, 0.0);
   NumericVector bootstrap_sup_d(n_bootstrap);
   NumericVector bootstrap_deep_d(n_bootstrap);
   NumericVector bootstrap_delta_thres_base(n_bootstrap);
   NumericVector bootstrap_distance_diff(n_bootstrap);
+  
+  // Pool all groups for bootstrap under null hypothesis
+  std::vector<double> pooled_all;
+  pooled_all.reserve(n_sup + n_deep + n_interest);
+  pooled_all.insert(pooled_all.end(), sup_data.begin(), sup_data.end());
+  pooled_all.insert(pooled_all.end(), deep_data.begin(), deep_data.end());
+  pooled_all.insert(pooled_all.end(), interest_data.begin(), interest_data.end());
+  
+  // Calculate observed test statistic
+  double observed_test_stat = std::abs(observed_distance_diff) - observed_delta_thres;
   
   // Set up random number generator
   std::mt19937 gen;
@@ -116,17 +124,26 @@ List perform_broad_depth_bootstrap(NumericVector ref_sup_depths,
     gen.seed(rd());
   }
   
-  // Set up distributions for bootstrap sampling
-  std::uniform_int_distribution<int> dist_sup(0, n_sup - 1);
-  std::uniform_int_distribution<int> dist_deep(0, n_deep - 1);
-  std::uniform_int_distribution<int> dist_interest(0, n_interest - 1);
+  // Set up distribution for bootstrap sampling from pooled data
+  std::uniform_int_distribution<int> dist_pooled(0, static_cast<int>(pooled_all.size()) - 1);
   
-  // Perform bootstrap iterations
+  // Counter for bootstrap test statistics >= observed
+  int count_extreme = 0;
+  
+  // Perform bootstrap iterations under null hypothesis
   for (int i = 0; i < n_bootstrap; ++i) {
-    // Resample each group with replacement (in-place)
-    bootstrap_sample_inplace(sup_data, work_sup, n_sup, dist_sup, gen);
-    bootstrap_sample_inplace(deep_data, work_deep, n_deep, dist_deep, gen);
-    bootstrap_sample_inplace(interest_data, work_interest, n_interest, dist_interest, gen);
+    // Bootstrap under null: resample from pooled data to original group sizes
+    std::shuffle(pooled_all.begin(), pooled_all.end(), gen);
+    
+    // Split shuffled data back into three groups of original sizes
+    std::vector<double> boot_sup_vec(pooled_all.begin(), pooled_all.begin() + n_sup);
+    std::vector<double> boot_deep_vec(pooled_all.begin() + n_sup, pooled_all.begin() + n_sup + n_deep);
+    std::vector<double> boot_interest_vec(pooled_all.begin() + n_sup + n_deep, pooled_all.end());
+    
+    // Copy to NumericVector for median calculation
+    std::copy(boot_sup_vec.begin(), boot_sup_vec.end(), work_sup.begin());
+    std::copy(boot_deep_vec.begin(), boot_deep_vec.end(), work_deep.begin());
+    std::copy(boot_interest_vec.begin(), boot_interest_vec.end(), work_interest.begin());
     
     // Calculate bootstrap medians
     double boot_median_sup = fast_median(work_sup, 0, n_sup);
@@ -155,23 +172,15 @@ List perform_broad_depth_bootstrap(NumericVector ref_sup_depths,
     bootstrap_delta_thres_base[i] = boot_delta_thres_base_val;
     bootstrap_distance_diff[i] = boot_distance_diff;
     
-    // Check if significantly closer to one reference
-    if (std::abs(boot_distance_diff) > boot_delta_thres) {
-      if (boot_distance_diff > 0) {
-        bootstrap_closer_to_superficial[i] = 1.0;
-      } else {
-        bootstrap_closer_to_deep[i] = 1.0;
-      }
+    // Calculate bootstrap test statistic and compare to observed
+    double boot_test_stat = std::abs(boot_distance_diff) - boot_delta_thres;
+    if (boot_test_stat >= observed_test_stat) {
+      count_extreme++;
     }
   }
   
-  // Calculate p-values using Rcpp sugar
-  double prop_closer_to_superficial = sum(bootstrap_closer_to_superficial) / n_bootstrap;
-  double prop_closer_to_deep = sum(bootstrap_closer_to_deep) / n_bootstrap;
-  
-  // Convert to p-values
-  double p_closer_to_superficial = 1.0 - prop_closer_to_superficial;
-  double p_closer_to_deep = 1.0 - prop_closer_to_deep;
+  // Calculate bootstrap p-value
+  double p_value_exceeds_threshold = static_cast<double>(count_extreme) / n_bootstrap;
   
   // Calculate confidence intervals
   // Clone vectors for sorting (to preserve original bootstrap results)
@@ -197,14 +206,14 @@ List perform_broad_depth_bootstrap(NumericVector ref_sup_depths,
     Named("observed_distance_diff") = observed_distance_diff,
     Named("observed_delta_thres_base") = observed_delta_thres_base,
     Named("observed_delta_thres") = observed_delta_thres,
+    Named("observed_test_statistic") = observed_test_stat,
     Named("bootstrap_distance_diff_median") = sorted_distance_diff[median_idx],
     Named("bootstrap_distance_diff_lower") = sorted_distance_diff[lower_idx],
     Named("bootstrap_distance_diff_upper") = sorted_distance_diff[upper_idx],
     Named("bootstrap_delta_thres_base_median") = sorted_delta_thres[median_idx],
     Named("bootstrap_delta_thres_base_lower") = sorted_delta_thres[lower_idx],
     Named("bootstrap_delta_thres_base_upper") = sorted_delta_thres[upper_idx],
-    Named("p_closer_to_superficial") = p_closer_to_superficial,
-    Named("p_closer_to_deep") = p_closer_to_deep,
+    Named("p_value_exceeds_threshold") = p_value_exceeds_threshold,
     Named("bootstrap_sup_d") = bootstrap_sup_d,
     Named("bootstrap_deep_d") = bootstrap_deep_d,
     Named("bootstrap_delta_thres_base") = bootstrap_delta_thres_base,

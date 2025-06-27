@@ -96,40 +96,62 @@ List quantile_wasserstein_bootstrap(NumericVector sample1,
   size_t n1 = s1.size();
   size_t n2 = s2.size();
   
-  // Bootstrap null distribution
-  std::vector<double> null_stats;
+  // Bootstrap distributions
+  std::vector<double> null_stats;        // For p-value (permutation bootstrap)
+  std::vector<double> bootstrap_stats;   // For CI (non-parametric bootstrap)
   null_stats.reserve(n_bootstrap);
-  
+  bootstrap_stats.reserve(n_bootstrap);
+
   // Set up random number generator
   std::random_device rd;
   std::mt19937 gen(rd());
   
+  // Set up distributions for non-parametric bootstrap
+  std::uniform_int_distribution<size_t> dist_s1(0, n1 - 1);
+  std::uniform_int_distribution<size_t> dist_s2(0, n2 - 1);
+
   for (int b = 0; b < n_bootstrap; ++b) {
-    // Shuffle pooled samples
+    // 1. Permutation bootstrap (for null distribution/p-value)
     std::vector<double> shuffled = pooled;
     std::shuffle(shuffled.begin(), shuffled.end(), gen);
     
-    // Split into two bootstrap samples
-    std::vector<double> boot_s1(shuffled.begin(), shuffled.begin() + n1);
-    std::vector<double> boot_s2(shuffled.begin() + n1, shuffled.end());
+    std::vector<double> perm_s1(shuffled.begin(), shuffled.begin() + n1);
+    std::vector<double> perm_s2(shuffled.begin() + n1, shuffled.end());
     
-    // Compute bootstrap statistic
+    double perm_stat = compute_wasserstein(perm_s1, perm_s2, probs);
+    null_stats.push_back(perm_stat);
+    
+    // 2. Non-parametric bootstrap (for confidence intervals)
+    std::vector<double> boot_s1, boot_s2;
+    boot_s1.reserve(n1);
+    boot_s2.reserve(n2);
+    
+    // Resample s1 with replacement
+    for (size_t i = 0; i < n1; ++i) {
+      boot_s1.push_back(s1[dist_s1(gen)]);
+    }
+    
+    // Resample s2 with replacement
+    for (size_t i = 0; i < n2; ++i) {
+      boot_s2.push_back(s2[dist_s2(gen)]);
+    }
+    
     double boot_stat = compute_wasserstein(boot_s1, boot_s2, probs);
-    null_stats.push_back(boot_stat);
+    bootstrap_stats.push_back(boot_stat);
   }
   
   
-  // Compute confidence intervals
-  std::sort(null_stats.begin(), null_stats.end());
+  // Compute confidence intervals from bootstrap distribution (sampling variability)
+  std::sort(bootstrap_stats.begin(), bootstrap_stats.end());
   
   double offset = (100.0 - conf_int) / 100.0 / 2.0;
   double lower_perc = offset;
   double upper_perc = 1.0 - offset;
   double median_perc = 0.5;
   
-  double boot_median = quantile_sorted(null_stats, median_perc);
-  double boot_lower = quantile_sorted(null_stats, lower_perc);
-  double boot_upper = quantile_sorted(null_stats, upper_perc);
+  double boot_median = quantile_sorted(bootstrap_stats, median_perc);
+  double boot_lower = quantile_sorted(bootstrap_stats, lower_perc);
+  double boot_upper = quantile_sorted(bootstrap_stats, upper_perc);
   
   return List::create(
     Named("observed_statistic") = observed_stat,
