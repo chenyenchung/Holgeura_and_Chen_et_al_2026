@@ -171,7 +171,56 @@ run_all_tests <- function(data, subsys, el_cut) {
     )
   }
   
+  # Broad temporal association test
+  tbl_broad_temp <- table(data$broad_temp, data$is_subsystem)
+  if (nrow(tbl_broad_temp) >= 2 && ncol(tbl_broad_temp) >= 2) {
+    test_obj <- tryCatch(
+      {fisher.test(tbl_broad_temp)}, 
+      error = function(e) {list(p.value = NA)}
+    )
+    results$broad_temp <- list(
+      test = test_obj,
+      n_total = sum(tbl_broad_temp),
+      n_subsys = sum(tbl_broad_temp[, "TRUE"])
+    )
+    record_pval(
+      "Broad_Temp", subsys, results$broad_temp$n_total, 
+      results$broad_temp$n_subsys, "fisher", test_obj$p.value
+    )
+  }
+  
   return(results)
+}
+
+# Prepare data for broad temporal plot
+prepare_broad_temp_plot_data <- function(data, subsys) {
+  broad_temp_stacked_data <- data %>%
+    filter(broad_temp %in% c("Early", "Late")) %>%
+    group_by(broad_temp) %>%
+    summarise(
+      not_in_subsystem = sum(!is_subsystem) / n(),
+      in_subsystem = sum(is_subsystem) / n(),
+      .groups = 'drop'
+    ) %>%
+    tidyr::pivot_longer(
+      cols = c(not_in_subsystem, in_subsystem),
+      names_to = "category",
+      values_to = "prop"
+    ) %>%
+    mutate(
+      category = factor(
+        category, levels = c("not_in_subsystem", "in_subsystem")
+      ),
+      fill_color = factor(
+        case_when(
+          category == "not_in_subsystem" ~ "Not in subsystem",
+          TRUE ~ subsys
+        ),
+        levels = c("Not in subsystem", subsys)
+      )
+    )
+  
+  return(broad_temp_stacked_data)
 }
 
 # Prepare data for Notch plot
@@ -278,6 +327,54 @@ prepare_combined_data <- function(data, subsys) {
     )
   
   return(prop_data)
+}
+
+# Create broad temporal association plot
+create_broad_temp_plot <- function(plot_data, test_results, subsys, pval_df = NULL) {
+  p_value <- ifelse(
+    is.null(test_results$broad_temp$test$p.value), 
+    NA, 
+    test_results$broad_temp$test$p.value
+  )
+  
+  # Get FDR-corrected p-value if available
+  p_fdr <- p_value
+  if (!is.null(pval_df)) {
+    # Find the FDR-corrected p-value for this specific test
+    idx <- which(pval_df$test_type == "Broad_Temp" & pval_df$subsystem == subsys)
+    if (length(idx) > 0) {
+      p_fdr <- pval_df$p_fdr[idx[1]]
+    }
+  }
+  
+  p <- ggplot(plot_data, aes(x = broad_temp, y = prop)) +
+    geom_col(
+      aes(fill = fill_color),
+      position = position_stack(),
+      alpha = 0.8
+    ) +
+    labs(
+      title = subsys,
+      subtitle = paste0("Fisher's Exact Test (FDR) p = ", 
+                       round(p_fdr, 3)),
+      x = "Broad Temporal Window",
+      y = "Proportion of neurons"
+    ) +
+    scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+    scale_fill_manual(values = setNames(
+      c("grey90", scale_fill_subsystem()$palette(0)[[subsys]]),
+      c("Not in subsystem", subsys)
+    )) +
+    theme_minimal() +
+    theme(
+      plot.subtitle = element_text(size = 10, color = "grey50"),
+      legend.position = "none",
+      axis.title.x = element_blank(),
+      axis.text = element_text(size = 14),
+      axis.title = element_text(size = 16)
+    )
+  
+  return(p)
 }
 
 # Create Notch association plot
@@ -426,7 +523,7 @@ if (!file.exists(argvs$anno)) {
 opc_flywire <- fread(argvs$anno)
 
 # Validate required columns
-required_cols <- c("temporal_id", "temporal_label", "func", "Notch")
+required_cols <- c("temporal_id", "temporal_label", "func", "Notch", "broad_temp")
 missing_cols <- setdiff(required_cols, colnames(opc_flywire))
 if (length(missing_cols) > 0) {
   stop(
@@ -439,7 +536,8 @@ if (length(missing_cols) > 0) {
 
 # Filter for neurons with temporal information
 opc_known_tid <- opc_flywire[
-  temporal_id != 0 & Confident_annotation == "Y" & func != "Unannotated"
+  temporal_id != 0 & Confident_annotation == "Y" & func != "Unannotated" & 
+  broad_temp %in% c("Early", "Late")
 ]
 
 message(
@@ -463,6 +561,7 @@ subsystems <- unique(opc_known_tid$func)
 
 # Storage for plots and combined data
 notch_plots <- list()
+broad_temp_plots <- list()
 hatched_plots <- list()
 combined_data_all <- data.frame()
 
@@ -500,6 +599,14 @@ for (subsys in subsystems) {
     }
   }
   
+  # Prepare data for broad temporal plot
+  if (!is.null(test_results$broad_temp)) {
+    broad_temp_plot_data <- prepare_broad_temp_plot_data(opc_known_tid, subsys)
+    if (nrow(broad_temp_plot_data) > 0) {
+      all_plot_data[[subsys]]$broad_temp <- broad_temp_plot_data
+    }
+  }
+  
   # Prepare data for temporal plot with hatched patterns
   temporal_plot_data <- prepare_temporal_plot_data(opc_known_tid, subsys)
   if (nrow(temporal_plot_data) > 0) {
@@ -532,6 +639,13 @@ for (subsys in names(all_test_results)) {
     )
   }
   
+  # Create broad temporal plot
+  if (!is.null(plot_data$broad_temp)) {
+    broad_temp_plots[[subsys]] <- create_broad_temp_plot(
+      plot_data$broad_temp, test_results, subsys, pval_df
+    )
+  }
+  
   # Create temporal plot with FDR-corrected p-values
   if (!is.null(plot_data$temporal)) {
     hatched_plots[[subsys]] <- create_temporal_hatched_plot(
@@ -554,6 +668,18 @@ if (length(notch_plots) > 0) {
     height = 4 * ceiling(length(notch_plots)/3)
   )
   message(sprintf("Saved Notch plots to: %s", outfn))
+}
+
+# Save broad temporal association plots
+if (length(broad_temp_plots) > 0) {
+  outfn <- "functional_association_broad_temporal.pdf"
+  wrap_plots(broad_temp_plots, ncol = 3)
+  ggsave(
+    outfn, 
+    width = 15, 
+    height = 4 * ceiling(length(broad_temp_plots)/3)
+  )
+  message(sprintf("Saved broad temporal plots to: %s", outfn))
 }
 
 # Save temporal plots with hatched patterns
