@@ -44,6 +44,16 @@ scale_color_nk2023 <- function() {
   return(f)
 }
 
+scale_color_ih2025 <- function() {
+  f <- scale_color_manual(
+    values = c(
+      "Early" = "#ADEBB3",
+      "Late" = "#E491A6"
+    )
+  )
+  return(f)
+}
+
 #' Color scale for subsystem annotations
 scale_color_subsystem <- function() {
   f <- scale_color_manual(
@@ -82,7 +92,6 @@ scale_color_type <- function() {
   hues <- seq(20, 380, length.out = length(types) + 1)[seq_along(types)]
   palette <- hsv(h = (hues %% 360) / 360, s = 0.5, v = 0.8)
   set.seed(1)
-  palette <- sample(palette)
   names(palette) <- types
   return(
     scale_color_manual(values = palette)
@@ -211,43 +220,16 @@ filter_temporal_new <- function(coord, ann, syn_type = "pre") {
 
 #' Filter coordinates by temporal annotations (known)
 filter_temporal_known <- function(coord, ann, syn_type = "pre") {
-  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
-  ann <- ann[temporal_label != "unknown" & newly_ann == "N"]
-  ann$temporal_label <- factor(
-    ann$temporal_label,
-    levels = unique(ann$temporal_label),
-    labels = unique(ann$temporal_label)
-  )
-  coord[, .row_id := .I]
-  coord <- merge(
-    coord,
-    ann[, .(cell_type, temporal_label, Notch, ntype)],
-    by.x = by_x,
-    by.y = "cell_type"
-  )
-  setorder(coord, .row_id)
-  coord[, .row_id := NULL]
-  
-  return(coord)
+  out <- filter_temporal_new(coord, ann, syn_type)
+  out <- out[newly_ann == "N"]
+  return(out)
 }
 
 #' Filter coordinates by subsystem annotations (known)
 filter_subsystem_known <- function(coord, ann, syn_type = "pre") {
-  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
-  ann <- ann[func != "unknown" & newly_ann == "N"]
-  ann <- ann[func != "Unannotated"]
-  ann$func <- factor(ann$func)
-  coord[, .row_id := .I]
-  coord <- merge(
-    coord,
-    ann[, .(cell_type, func, Notch, ntype)],
-    by.x = by_x,
-    by.y = "cell_type"
-  )
-  setorder(coord, .row_id)
-  coord[, .row_id := NULL]
-  
-  return(coord)
+  out <- filter_subsystem_new(coord, ann, syn_type)
+  out <- out[newly_ann == "N"]
+  return(out)
 }
 
 #' Filter coordinates by subsystem annotations (new)
@@ -265,6 +247,29 @@ filter_subsystem_new <- function(coord, ann, syn_type = "pre") {
   setorder(coord, .row_id)
   coord[, .row_id := NULL]
   return(coord)
+}
+
+#' Filter coordinates by subsystem annotations (new)
+filter_broad_new <- function(coord, ann, syn_type = "pre") {
+  by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
+  ann <- ann[broad_temp %in% c("Early", "Late") & Confident_annotation == "Y"]
+  ann$broad_temp <- factor(ann$broad_temp)
+  coord[, .row_id := .I]
+  coord <- merge(
+    coord,
+    ann[, .(cell_type, broad_temp, Notch, newly_ann, ntype)],
+    by.x = by_x,
+    by.y = "cell_type"
+  )
+  setorder(coord, .row_id)
+  coord[, .row_id := NULL]
+  return(coord)
+}
+
+filter_broad_known <- function(coord, ann, syn_type = "pre") {
+  out <- filter_broad_new(coord, ann, syn_type)
+  out <- out[newly_ann == "N"]
+  return(out)
 }
 
 #' Filter coordinates by putative annotations

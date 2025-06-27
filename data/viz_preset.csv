@@ -3,6 +3,8 @@ temporal_known,scale_color_nk2023,Temporal Origin,filter_temporal_known,temporal
 subsystem_known,scale_color_subsystem,Functional Subsystem,filter_subsystem_known,func,TRUE,FALSE,none,none,none
 temporal_new,scale_color_nk2023,Temporal Origin,filter_temporal_new,temporal_label,TRUE,TRUE,label,newly_ann,Y
 subsystem_new,scale_color_subsystem,Functional Subsystem,filter_subsystem_new,func,TRUE,TRUE,label,newly_ann,Y
+broad_known,scale_color_ih2025,Temporal Window,filter_broad_known,broad_temp,TRUE,FALSE,none,none,none
+broad_new,scale_color_ih2025,Temporal Window,filter_broad_new,broad_temp,TRUE,TRUE,label,newly_ann,Y
 type_putative,scale_color_type,Cell Type,filter_putative,cell_type,TRUE,FALSE,none,none,none
 temporal_all,scale_color_nk2023,Temporal Origin,filter_temporal_all,temporal_label,TRUE,FALSE,none,none,none
 subsystem_all,scale_color_subsystem,Functional Subsystem,filter_subsystem_new,func,TRUE,FALSE,none,none,none
