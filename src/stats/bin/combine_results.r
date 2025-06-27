@@ -10,7 +10,7 @@ preset_names <- c(
 )
 
 #' Combine multiple depth statistics result files into Excel workbook
-#' @param pattern Pattern to match result files (default "^results_.*\\.csv$")
+#' @param pattern Pattern to match result files (default "^.*\\.csv$")
 #' @param summary_file Output filename for statistical summary
 #' @param excel_file Output filename for Excel file with multiple sheets
 combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
@@ -58,48 +58,129 @@ combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
     
     # Generate summary statistics
     sink(summary_file)
-    cat("Depth Statistics (Wasserstein + KS) Summary\n")
-    cat("============================================\n\n")
     
-    cat("Total comparisons:", nrow(all_results), "\n")
-    cat("Unique neuropils:", length(unique(all_results$neuropil)), "\n")
-    cat("Unique presets:", length(unique(all_results$preset)), "\n")
-    cat("Confidence level:", unique(all_results$conf_level)[1], "%\n")
-    cat("\n")
+    # Determine analysis type based on columns
+    is_broad_depth <- "p_value_exceeds_threshold" %in% colnames(all_results)
     
-    # Wasserstein effect size summary
-    cat("Wasserstein effect size summary:\n")
-    cat("  Min:", round(min(all_results$test_statistic_median, na.rm = TRUE), 4), "\n")
-    cat("  Q1: ", round(quantile(all_results$test_statistic_median, 0.25, na.rm = TRUE), 4), "\n")
-    cat("  Median:", round(median(all_results$test_statistic_median, na.rm = TRUE), 4), "\n")
-    cat("  Q3: ", round(quantile(all_results$test_statistic_median, 0.75, na.rm = TRUE), 4), "\n")
-    cat("  Max:", round(max(all_results$test_statistic_median, na.rm = TRUE), 4), "\n\n")
-    
-    # KS p-value summary if available
-    if ("ks_pval_raw_median" %in% colnames(all_results)) {
-      ks_pvals <- all_results$ks_pval_raw_median
-      valid_ks <- ks_pvals[!is.na(ks_pvals)]
-      if (length(valid_ks) > 0) {
-        cat("KS raw p-value summary:\n")
-        cat("  Min:", round(min(valid_ks), 4), "\n")
-        cat("  Q1: ", round(quantile(valid_ks, 0.25), 4), "\n")
-        cat("  Median:", round(median(valid_ks), 4), "\n")
-        cat("  Q3: ", round(quantile(valid_ks, 0.75), 4), "\n")
-        cat("  Max:", round(max(valid_ks), 4), "\n")
-        cat("KS subsample size:", unique(all_results$ks_subsample_size)[1], "\n")
-        cat("KS iterations:", unique(all_results$ks_n_iterations)[1], "\n\n")
+    if (is_broad_depth) {
+      cat("Broad Depth Analysis Summary\n")
+      cat("===========================\n\n")
+      
+      cat("Total analyses:", nrow(all_results), "\n")
+      cat("Unique neuropils:", length(unique(all_results$neuropil)), "\n")
+      cat("Unique presets:", length(unique(all_results$preset)), "\n")
+      cat("Coefficient:", unique(all_results$coefficient)[1], "\n")
+      cat("Bootstrap iterations:", unique(all_results$n_bootstrap)[1], "\n")
+      cat("Confidence level:", unique(all_results$conf_level)[1], "%\n")
+      cat("\n")
+      
+      # Direction summary
+      direction_counts <- table(all_results$direction)
+      cat("Direction summary:\n")
+      for (dir in names(direction_counts)) {
+        cat("  ", dir, ":", direction_counts[dir], "\n")
       }
-    }
-    
-    # Top effect sizes
-    cat("Top 10 largest Wasserstein effect sizes:\n")
-    top_effects <- all_results[order(-test_statistic_median)][1:min(10, nrow(all_results))]
-    for (i in 1:nrow(top_effects)) {
-      cat(sprintf("  %s vs %s (Wasserstein = %.3f, CI: %.3f-%.3f)\n", 
-                 top_effects$group1[i], top_effects$group2[i], 
-                 top_effects$test_statistic_median[i], 
-                 top_effects$test_statistic_lower[i], 
-                 top_effects$test_statistic_upper[i]))
+      cat("\n")
+      
+      # P-value summary
+      if ("p_value_exceeds_threshold" %in% colnames(all_results)) {
+        p_vals <- all_results$p_value_exceeds_threshold
+        valid_p <- p_vals[!is.na(p_vals)]
+        if (length(valid_p) > 0) {
+          cat("Raw P-value summary:\n")
+          cat("  Min:", round(min(valid_p), 4), "\n")
+          cat("  Median:", round(median(valid_p), 4), "\n")
+          cat("  Max:", round(max(valid_p), 4), "\n")
+          cat("  Significant (raw p < 0.05):", sum(valid_p < 0.05), "/", length(valid_p), "\n\n")
+        }
+      }
+      
+      # FDR corrected p-value summary
+      if ("p_value_fdr" %in% colnames(all_results)) {
+        fdr_vals <- all_results$p_value_fdr
+        valid_fdr <- fdr_vals[!is.na(fdr_vals)]
+        if (length(valid_fdr) > 0) {
+          cat("FDR corrected P-value summary:\n")
+          cat("  Min:", round(min(valid_fdr), 4), "\n")
+          cat("  Median:", round(median(valid_fdr), 4), "\n")
+          cat("  Max:", round(max(valid_fdr), 4), "\n")
+          cat("  Significant (FDR p < 0.05):", sum(valid_fdr < 0.05), "/", length(valid_fdr), "\n\n")
+        }
+      }
+      
+      # Top significant results (prioritize FDR corrected if available)
+      if ("p_value_fdr" %in% colnames(all_results)) {
+        sig_results <- all_results[all_results$p_value_fdr < 0.05 & !is.na(all_results$p_value_fdr), ]
+        p_col <- "p_value_fdr"
+        p_label <- "FDR p"
+      } else {
+        sig_results <- all_results[all_results$p_value_exceeds_threshold < 0.05, ]
+        p_col <- "p_value_exceeds_threshold"
+        p_label <- "raw p"
+      }
+      
+      if (nrow(sig_results) > 0) {
+        cat(sprintf("Significant results (%s < 0.05):\n", p_label))
+        sig_results <- sig_results[order(sig_results[[p_col]]), ]  # Sort by p-value
+        for (i in 1:min(10, nrow(sig_results))) {
+          cat(sprintf("  %s (%s = %.4f, direction = %s, distance_diff = %.3f)\n", 
+                     sig_results$types_of_interest[i], 
+                     p_label,
+                     sig_results[[p_col]][i],
+                     sig_results$direction[i],
+                     sig_results$observed_distance_diff[i]))
+        }
+        cat("\n")
+      }
+      
+    } else {
+      cat("Depth Statistics (Wasserstein + KS) Summary\n")
+      cat("============================================\n\n")
+      
+      cat("Total comparisons:", nrow(all_results), "\n")
+      cat("Unique neuropils:", length(unique(all_results$neuropil)), "\n")
+      cat("Unique presets:", length(unique(all_results$preset)), "\n")
+      cat("Confidence level:", unique(all_results$conf_level)[1], "%\n")
+      cat("\n")
+      
+      # Wasserstein effect size summary
+      if ("test_statistic_median" %in% colnames(all_results)) {
+        cat("Wasserstein effect size summary:\n")
+        cat("  Min:", round(min(all_results$test_statistic_median, na.rm = TRUE), 4), "\n")
+        cat("  Q1: ", round(quantile(all_results$test_statistic_median, 0.25, na.rm = TRUE), 4), "\n")
+        cat("  Median:", round(median(all_results$test_statistic_median, na.rm = TRUE), 4), "\n")
+        cat("  Q3: ", round(quantile(all_results$test_statistic_median, 0.75, na.rm = TRUE), 4), "\n")
+        cat("  Max:", round(max(all_results$test_statistic_median, na.rm = TRUE), 4), "\n\n")
+      }
+      
+      # KS p-value summary if available
+      if ("ks_pval_raw_median" %in% colnames(all_results)) {
+        ks_pvals <- all_results$ks_pval_raw_median
+        valid_ks <- ks_pvals[!is.na(ks_pvals)]
+        if (length(valid_ks) > 0) {
+          cat("KS raw p-value summary:\n")
+          cat("  Min:", round(min(valid_ks), 4), "\n")
+          cat("  Q1: ", round(quantile(valid_ks, 0.25), 4), "\n")
+          cat("  Median:", round(median(valid_ks), 4), "\n")
+          cat("  Q3: ", round(quantile(valid_ks, 0.75), 4), "\n")
+          cat("  Max:", round(max(valid_ks), 4), "\n")
+          cat("KS subsample size:", unique(all_results$ks_subsample_size)[1], "\n")
+          cat("KS iterations:", unique(all_results$ks_n_iterations)[1], "\n\n")
+        }
+      }
+      
+      # Top effect sizes
+      if ("test_statistic_median" %in% colnames(all_results)) {
+        cat("Top 10 largest Wasserstein effect sizes:\n")
+        top_effects <- all_results[order(-test_statistic_median)][1:min(10, nrow(all_results))]
+        for (i in 1:nrow(top_effects)) {
+          cat(sprintf("  %s vs %s (Wasserstein = %.3f, CI: %.3f-%.3f)\n", 
+                     top_effects$group1[i], top_effects$group2[i], 
+                     top_effects$test_statistic_median[i], 
+                     top_effects$test_statistic_lower[i], 
+                     top_effects$test_statistic_upper[i]))
+        }
+      }
     }
     
     sink()

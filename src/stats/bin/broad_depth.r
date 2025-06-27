@@ -10,12 +10,12 @@ perform_broad_depth_analysis <- function(data, ref_superficial, ref_deep,
                                        threshold_type = "variable", seed = NULL) {
   
   ref_sup_data <- data[
-    data$pre_type %in% ref_superficial | data$post_type %in% ref_superficial
+    pre_type %in% ref_superficial | post_type %in% ref_superficial
   ]
   ref_deep_data <- data[
-    data$pre_type %in% ref_deep | data$post_type %in% ref_deep
+    pre_type %in% ref_deep | post_type %in% ref_deep
   ]
-  interest_data <- data[data$group %in% types_of_interest]
+  interest_data <- data[group %in% types_of_interest]
   
   if (nrow(ref_sup_data) == 0 || nrow(ref_deep_data) == 0 || nrow(interest_data) == 0) {
     warning("Insufficient data for one or more groups")
@@ -68,8 +68,7 @@ perform_broad_depth_analysis <- function(data, ref_superficial, ref_deep,
     bootstrap_delta_thres_base_lower = bootstrap_result$bootstrap_delta_thres_base_lower,
     bootstrap_delta_thres_base_upper = bootstrap_result$bootstrap_delta_thres_base_upper,
     coefficient = coefficient,
-    p_closer_to_superficial = bootstrap_result$p_closer_to_superficial,
-    p_closer_to_deep = bootstrap_result$p_closer_to_deep,
+    p_value_exceeds_threshold = bootstrap_result$p_value_exceeds_threshold,
     direction = observed_direction,
     threshold_type = threshold_type,
     conf_level = conf_int,
@@ -87,14 +86,14 @@ if (file.exists("./utils.r")) {
 
 if (interactive()) {
   source("src/utils.r")
-  argvs$np <- "ME_L"
-  argvs$syn_type <- "pre"
-  argvs$use_preset <- "temporal_known"
+  argvs$np <- "LOP_L"
+  argvs$syn_type <- "post"
+  argvs$use_preset <- "subsystem_known"
   argvs$ann <- "data/visual_neurons_anno.csv"
   argvs$meta <- "data/viz_meta.csv"
   argvs$preset <- "data/viz_preset.csv"
   argvs$sparse_limit <- 100L
-  argvs$coefficient <- 0.25
+  argvs$coefficient <- 0.5
   argvs$n_bootstrap <- 1000L
   argvs$conf_int <- 95.0
   argvs$cppsrc <- "src/stats/bin/broad_depth.cpp"
@@ -246,15 +245,20 @@ for (i in names(np_coord_list)) {
     })
     
     # Combine results for this split
-    if (length(split_results) > 0) {
+    if (length(split_results) > 1) {
       split_result_df <- do.call(rbind.data.frame, split_results)
       split_result_df$split <- i
       all_test_results[[i]] <- split_result_df
+    } else if (length(split_results) == 0) {
+      split_result_df <- as.data.frame(split_results[[1]])
+      split_result_df$split <- i
+      all_test_results[[i]] <- split_result_df
+    } else {
+      warning(paste("Insufficient reference groups or groups to test for bootstrap analysis in split:", i))
     }
-  } else {
-    warning(paste("Insufficient reference groups or groups to test for bootstrap analysis in split:", i))
   }
 }
+
 # Combine all results from all splits
 if (length(all_test_results) > 0) {
   result <- do.call(rbind, all_test_results)
@@ -268,6 +272,31 @@ if (length(all_test_results) > 0) {
   }
   if (!"preset" %in% colnames(result)) {
     result$preset <- argvs$use_preset
+  }
+  
+  # Apply FDR correction for multiple testing
+  if (nrow(result) > 1 && "p_value_exceeds_threshold" %in% colnames(result)) {
+    # Extract p-values, handling NAs
+    p_values <- result$p_value_exceeds_threshold
+    valid_indices <- !is.na(p_values)
+    
+    if (sum(valid_indices) > 1) {
+      # Apply FDR correction only to valid p-values
+      valid_p <- p_values[valid_indices]
+      fdr_corrected <- p.adjust(valid_p, method = "fdr")
+      
+      # Initialize corrected p-value columns with NAs
+      result$p_value_fdr <- NA_real_
+      result$significant_fdr <- NA
+      
+      # Fill in corrected values for valid indices
+      result$p_value_fdr[valid_indices] <- fdr_corrected
+      result$significant_fdr[valid_indices] <- fdr_corrected < 0.05
+    } else {
+      # If only one test or no valid p-values, FDR correction is same as original
+      result$p_value_fdr <- result$p_value_exceeds_threshold
+      result$significant_fdr <- !is.na(result$p_value_exceeds_threshold) & result$p_value_exceeds_threshold < 0.05
+    }
   }
 } else {
   result <- NULL
@@ -287,10 +316,17 @@ if (!is.null(result) && nrow(result) > 0) {
   cat("Bootstrap iterations:", unique(result$n_bootstrap), "\n")
   cat("Confidence level:", unique(result$conf_level), "%\n")
   
-  sig_superficial <- result[result$p_closer_to_superficial < 0.05, ]
-  sig_deep <- result[result$p_closer_to_deep < 0.05, ]
-  cat("Significant results closer to superficial (p < 0.05):", nrow(sig_superficial), "\n")
-  cat("Significant results closer to deep (p < 0.05):", nrow(sig_deep), "\n")
+  # Report significance counts
+  if ("p_value_exceeds_threshold" %in% colnames(result)) {
+    valid_p <- !is.na(result$p_value_exceeds_threshold)
+    sig_raw <- sum(result$p_value_exceeds_threshold < 0.05, na.rm = TRUE)
+    cat("Significant results (raw p < 0.05):", sig_raw, "/", sum(valid_p), "\n")
+    
+    if ("p_value_fdr" %in% colnames(result)) {
+      sig_fdr <- sum(result$p_value_fdr < 0.05, na.rm = TRUE)
+      cat("Significant results (FDR corrected p < 0.05):", sig_fdr, "/", sum(valid_p), "\n")
+    }
+  }
   
 } else {
   result <- data.frame(
@@ -315,12 +351,13 @@ if (!is.null(result) && nrow(result) > 0) {
     bootstrap_delta_thres_base_lower = numeric(0),
     bootstrap_delta_thres_base_upper = numeric(0),
     coefficient = numeric(0),
-    p_closer_to_superficial = numeric(0),
-    p_closer_to_deep = numeric(0),
+    p_value_exceeds_threshold = numeric(0),
     direction = character(0),
     threshold_type = character(0),
     conf_level = numeric(0),
     n_bootstrap = integer(0),
+    p_value_fdr = numeric(0),
+    significant_fdr = logical(0),
     split = character(0),
     neuropil = character(0),
     syn_type = character(0),

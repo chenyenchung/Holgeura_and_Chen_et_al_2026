@@ -173,6 +173,29 @@ process BroadDepthAnalysis {
   """
 }
 
+process CombineBroadDepthResults {
+  cpus '1'
+  memory '4GB'
+  time '15m'
+  module 'r/gcc/4.4.0'
+
+  input:
+  path csvs
+  path combine_script
+
+  output:
+  path 'broad_depth_summary.txt', emit: summary
+  path 'combined_broad_depth_results.xlsx', emit: excel
+
+  script:
+  """
+  combine_results.r \
+    --pattern "_broad_depth\\.csv\$" \
+    --summary broad_depth_summary.txt \
+    --excel combined_broad_depth_results.xlsx
+  """
+}
+
 workflow {
   main:
   // Define analysis parameters
@@ -194,7 +217,7 @@ workflow {
       channel.fromPath(file(params.presetf))
         .splitCsv(header:true)
         .map { row -> row.preset }
-        .take( 4 )
+        .take( 6 )
     )
     
     
@@ -248,6 +271,12 @@ workflow {
     SPARSE_LIMIT
   )
 
+  // Combine broad depth results
+  combined_broad_depth_ch = CombineBroadDepthResults(
+    broad_depth_ch.map { it -> it[3] }.collect(),
+    file(params.combine_scriptf)
+  )
+
   publish:
   stats_plots = viz_ch
   summary = combined_ch.summary
@@ -255,6 +284,8 @@ workflow {
   functional_plots = functional_ch.plots
   functional_stats = functional_ch.stats
   broad_depth_results = broad_depth_ch
+  broad_depth_summary = combined_broad_depth_ch.summary
+  broad_depth_excel = combined_broad_depth_ch.excel
 }
 
 output {
@@ -278,4 +309,6 @@ output {
       return "stats/broad_depth/${preset}/${np}_${stype}"
     }
   }
+  broad_depth_summary { path "stats/broad_depth/" }
+  broad_depth_excel { path "stats/broad_depth/" }
 }
