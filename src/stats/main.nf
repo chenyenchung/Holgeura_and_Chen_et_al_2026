@@ -9,13 +9,12 @@ params.utilsf = 'src/utils.r'
 params.depth_stats_cppf = 'src/stats/bin/depth_stats.cpp'
 params.broad_depth_cppf = 'src/stats/bin/broad_depth.cpp'
 params.combine_scriptf = 'src/stats/bin/combine_results.r'
-params.n_quantiles = 100
+params.n_quantiles = 1000
 params.n_bootstrap = 1000
 params.conf_int = 95
 params.ks_subsample_size = 1000
 params.ks_n_iterations = 1000
-params.ks_correction_methods = 'bonferroni'
-params.subsample = 10000
+params.ks_correction_method = 'fdr'
 params.sparse_limit = 100
 params.broad_depth_coefficient = 0.25
 params.broad_depth_n_bootstrap = 1000
@@ -40,7 +39,7 @@ process DepthStatsAnalysis {
   val slimit
   val ks_subsample_size
   val ks_n_iterations
-  val ks_correction_methods
+  val ks_correction_method
 
   output:
   tuple val("${np}"), val("${preset}"), val("${stype}"), 
@@ -64,7 +63,7 @@ process DepthStatsAnalysis {
     --conf_int ${conf_int} \
     --ks_subsample_size ${ks_subsample_size} \
     --ks_n_iterations ${ks_n_iterations} \
-    --ks_correction_methods ${ks_correction_methods}
+    --ks_correction_method ${ks_correction_method}
   """
 }
 
@@ -202,7 +201,6 @@ workflow {
   def NP = ['ME_L', 'ME_R', 'LOP_L', 'LOP_R', 'LO_L', 'LO_R']
   def STYPE = ['pre', 'post']
   def MAT_PREFIX = 'int/idv_mat/'
-  def SUBSAMPLE_TO = params.subsample
   def SPARSE_LIMIT = params.sparse_limit
 
   // Create input channel
@@ -235,7 +233,7 @@ workflow {
     SPARSE_LIMIT,
     params.ks_subsample_size,
     params.ks_n_iterations,
-    params.ks_correction_methods
+    params.ks_correction_method
   )
 
   // Generate visualizations

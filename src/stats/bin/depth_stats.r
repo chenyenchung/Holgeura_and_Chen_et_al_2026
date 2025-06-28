@@ -7,104 +7,17 @@ suppressPackageStartupMessages(library(reshape2))
 suppressPackageStartupMessages(library(Rcpp))
 
 
-#' #' Perform Quantile Wasserstein test between two samples
-#' #' @param sample1 Numeric vector of first sample
-#' #' @param sample2 Numeric vector of second sample
-#' #' @param n_quantiles Number of quantiles to use (default 100)
-#' #' @param n_bootstrap Number of bootstrap iterations (default 1000)
-#' #' @param conf_int Confidence interval percentage (default 95)
-#' #' @return List with test statistic and confidence intervals
-#' quantile_wasserstein_test <- function(sample1, sample2, 
-#'                                       n_quantiles = 100, 
-#'                                       n_bootstrap = 1000,
-#'                                       conf_int = 95) {
-#'   # Input validation
-#'   if (length(sample1) < 10 || length(sample2) < 10) {
-#'     stop("Samples must have at least 10 observations each")
-#'   }
-#'   
-#'   if (conf_int <= 0 || conf_int >= 100) {
-#'     stop("Confidence interval must be between 0 and 100")
-#'   }
-#'   
-#'   # Use C++ implementation
-#'   result <- quantile_wasserstein_bootstrap(sample1, sample2, 
-#'                                            n_quantiles, n_bootstrap, conf_int)
-#'   return(list(
-#'     observed_statistic = result$observed_statistic,
-#'     bootstrap_stats = list(
-#'       median = result$bootstrap_median,
-#'       lower = result$bootstrap_lower,
-#'       upper = result$bootstrap_upper,
-#'       conf_level = result$conf_level
-#'     ),
-#'     null_distribution = result$null_distribution
-#'   ))
-#' }
 
-#' #' Plot quantile differences between two samples
-#' #' @param sample1 Numeric vector of first sample
-#' #' @param sample2 Numeric vector of second sample
-#' #' @param n_quantiles Number of quantiles to use (default 100)
-#' #' @param title Title for the plot
-#' #' @return List of ggplot objects
-#' plot_quantile_differences <- function(sample1, sample2, n_quantiles = 100, 
-#'                                       title = "Quantile Differences") {
-#'   # Generate quantile probabilities
-#'   probs <- seq(1/(n_quantiles+1), n_quantiles/(n_quantiles+1), length.out = n_quantiles)
-#'   
-#'   # Compute quantiles
-#'   q1 <- quantile(sample1, probs = probs, type = 7)
-#'   q2 <- quantile(sample2, probs = probs, type = 7)
-#'   
-#'   # Create data frame for plotting
-#'   plot_data <- data.frame(
-#'     quantile = probs,
-#'     sample1 = q1,
-#'     sample2 = q2,
-#'     difference = q1 - q2,
-#'     abs_diff = abs(q1 - q2)
-#'   )
-#'   
-#'   # Plot quantile functions
-#'   p1 <- ggplot(plot_data, aes(x = quantile)) +
-#'     geom_line(aes(y = sample1, color = "Sample 1"), linewidth = 1) +
-#'     geom_line(aes(y = sample2, color = "Sample 2"), linewidth = 1) +
-#'     labs(
-#'       title = paste(title, "- Quantile Functions"),
-#'       x = "Quantile",
-#'       y = "Value",
-#'       color = "Sample"
-#'     ) +
-#'     theme_minimal() +
-#'     theme(legend.position = "bottom")
-#'   
-#'   # Plot absolute differences
-#'   p2 <- ggplot(plot_data, aes(x = quantile, y = abs_diff)) +
-#'     geom_line(color = "red", linewidth = 1) +
-#'     geom_area(alpha = 0.3, fill = "red") +
-#'     labs(
-#'       title = paste(title, "- Absolute Differences"),
-#'       x = "Quantile",
-#'       y = "Absolute Difference"
-#'     ) +
-#'     theme_minimal()
-#'   
-#'   return(list(quantile_plot = p1, difference_plot = p2))
-#' }
-
-#' Perform pairwise Quantile Wasserstein tests between groups
+#' Compute pairwise quantile Wasserstein distances between groups
 #' @param data Data frame with depth and group columns
 #' @param sparse_limit Minimum number of observations per group
 #' @param n_quantiles Number of quantiles to use (default 100)
 #' @param n_bootstrap Number of bootstrap iterations (default 1000)
 #' @param conf_int Confidence interval percentage (default 95)
-#' @param correction_method Multiple testing correction method (default "bonferroni")
-#' @param use_cpp Use C++ implementation (default TRUE)
-#' @return Data frame with test results
-perform_quantile_wasserstein_tests <- function(data, sparse_limit = 100, 
-                                               n_quantiles = 100, n_bootstrap = 1000,
-                                               conf_int = 95) {
+#' @return Data frame with Wasserstein distance results
+quantile_wasserstein_dist <- function(data, sparse_limit = 100, 
+                                      n_quantiles = 1000, n_bootstrap = 1000,
+                                      conf_int = 95) {
   # Filter groups with sufficient data
   group_counts <- table(data$group)
   valid_groups <- names(group_counts)[group_counts > sparse_limit]
@@ -113,64 +26,33 @@ perform_quantile_wasserstein_tests <- function(data, sparse_limit = 100,
     warning("Less than 2 groups have sufficient data for testing")
     return(data.frame(
       group1 = character(0), group2 = character(0), 
-      test_statistic_median = numeric(0), test_statistic_lower = numeric(0),
-      test_statistic_upper = numeric(0), conf_level = numeric(0)
+      wasserstein_median = numeric(0), wasserstein_lower = numeric(0),
+      wasserstein_upper = numeric(0), conf_level = numeric(0)
     ))
   }
-  
-  # Generate all pairwise combinations
-  combinations <- combn(valid_groups, 2, simplify = FALSE)
   
   # Use C++ implementation for all comparisons
   group_data <- lapply(valid_groups, function(g) {
     data[data$group == g, "depth"][[1]]
   })
   
-  cpp_results <- pairwise_wasserstein_tests(group_data, valid_groups,
-                                            n_quantiles, n_bootstrap, conf_int)
+  cpp_results <- wasserstein_dist_cpp(group_data, valid_groups,
+                                      n_quantiles, n_bootstrap, conf_int)
   
   cpp_results$conf_level <- conf_int
   
   return(cpp_results)
 }
 
-#' #' Compare multiple distributions using Quantile Wasserstein test
-#' #' @param distributions List of numeric vectors
-#' #' @param names Optional vector of names for distributions
-#' #' @param correction_method Multiple testing correction method (default "bonferroni")
-#' #' @param n_quantiles Number of quantiles to use (default 100)
-#' #' @param n_bootstrap Number of bootstrap iterations (default 1000)
-#' #' @param conf_int Confidence interval percentage (default 95)
-#' #' @param use_cpp Use C++ implementation (default TRUE)
-#' #' @return Data frame with pairwise comparison results
-#' compare_multiple_distributions <- function(distributions, names = NULL, 
-#'                                            correction_method = "bonferroni",
-#'                                            n_quantiles = 100, n_bootstrap = 1000,
-#'                                            conf_int = 95) {
-#'   n_dist <- length(distributions)
-#'   
-#'   # Set names if not provided
-#'   if (is.null(names)) {
-#'     names <- paste0("Dist", 1:n_dist)
-#'   }
-#'   
-#'   # Use C++ implementation
-#'   results <- pairwise_wasserstein_tests(distributions, names,
-#'                                         n_quantiles, n_bootstrap, conf_int)
-#'   results$conf_level <- conf_int
-#'   return(results)
-#' }
 
 #' Perform subsampled Kolmogorov-Smirnov test
 #' @param sample1 Numeric vector of first sample
 #' @param sample2 Numeric vector of second sample
 #' @param subsample_size Number of points to subsample from each group (default 1000)
 #' @param n_iterations Number of iterations to perform (default 1000)
-#' @param correction_methods Vector of correction methods to apply
-#' @return List with raw and corrected p-value statistics
+#' @return List with raw p-value statistics
 subsampled_ks_test <- function(sample1, sample2, subsample_size = 1000, 
-                               n_iterations = 1000, 
-                               correction_methods = "bonferroni") {
+                               n_iterations = 1000) {
   
   # Input validation
   if (length(sample1) < 10 || length(sample2) < 10) {
@@ -186,9 +68,18 @@ subsampled_ks_test <- function(sample1, sample2, subsample_size = 1000,
   raw_pvals <- numeric(n_iterations)
   
   for (i in 1:n_iterations) {
-    # Subsample with replacement
-    sub1 <- sample(sample1, size = subsample_size, replace = TRUE)
-    sub2 <- sample(sample2, size = subsample_size, replace = TRUE)
+    # Subsample without replacement (or use full sample if smaller than subsample_size)
+    if (length(sample1) <= subsample_size) {
+      sub1 <- sample1
+    } else {
+      sub1 <- sample(sample1, size = subsample_size, replace = FALSE)
+    }
+    
+    if (length(sample2) <= subsample_size) {
+      sub2 <- sample2
+    } else {
+      sub2 <- sample(sample2, size = subsample_size, replace = FALSE)
+    }
     
     # Perform KS test
     ks_result <- ks.test(sub1, sub2)
@@ -202,20 +93,8 @@ subsampled_ks_test <- function(sample1, sample2, subsample_size = 1000,
     q75 = quantile(raw_pvals, 0.75, na.rm = TRUE)
   )
   
-  # Apply corrections and calculate summary statistics
-  corrected_stats <- list()
-  for (method in correction_methods) {
-    corrected_pvals <- p.adjust(raw_pvals, method = method)
-    corrected_stats[[method]] <- list(
-      median = median(corrected_pvals, na.rm = TRUE),
-      q25 = quantile(corrected_pvals, 0.25, na.rm = TRUE),
-      q75 = quantile(corrected_pvals, 0.75, na.rm = TRUE)
-    )
-  }
-  
   return(list(
     raw_pvals = raw_stats,
-    corrected_pvals = corrected_stats,
     subsample_size = subsample_size,
     n_iterations = n_iterations
   ))
@@ -226,11 +105,11 @@ subsampled_ks_test <- function(sample1, sample2, subsample_size = 1000,
 #' @param sparse_limit Minimum number of observations per group
 #' @param subsample_size Number of points to subsample from each group (default 1000)
 #' @param n_iterations Number of iterations to perform (default 1000)
-#' @param correction_methods Vector of correction methods to apply
+#' @param correction_method Correction method to apply to pairwise comparisons
 #' @return Data frame with KS test results
 perform_subsampled_ks_tests <- function(data, sparse_limit = 100,
                                         subsample_size = 1000, n_iterations = 1000,
-                                        correction_methods = c("bonferroni", "holm", "fdr")) {
+                                        correction_method = "fdr") {
   
   # Filter groups with sufficient data
   group_counts <- table(data$group)
@@ -256,31 +135,39 @@ perform_subsampled_ks_tests <- function(data, sparse_limit = 100,
     
     # Perform subsampled KS test
     ks_result <- subsampled_ks_test(sample1, sample2, subsample_size, 
-                                    n_iterations, correction_methods)
+                                    n_iterations)
     
-    # Create result row for each correction method
-    for (method in correction_methods) {
-      result_row <- data.frame(
-        group1 = group1,
-        group2 = group2,
-        ks_pval_raw_median = ks_result$raw_pvals$median,
-        ks_pval_raw_q25 = ks_result$raw_pvals$q25,
-        ks_pval_raw_q75 = ks_result$raw_pvals$q75,
-        ks_pval_corrected_median = ks_result$corrected_pvals[[method]]$median,
-        ks_pval_corrected_q25 = ks_result$corrected_pvals[[method]]$q25,
-        ks_pval_corrected_q75 = ks_result$corrected_pvals[[method]]$q75,
-        ks_correction_method = method,
-        ks_subsample_size = ks_result$subsample_size,
-        ks_n_iterations = ks_result$n_iterations,
-        stringsAsFactors = FALSE
-      )
-      
-      results_list[[paste(group1, group2, method, sep = "_")]] <- result_row
-    }
+    # Create result row
+    result_row <- data.frame(
+      group1 = group1,
+      group2 = group2,
+      ks_pval_raw_median = ks_result$raw_pvals$median,
+      ks_pval_raw_q25 = ks_result$raw_pvals$q25,
+      ks_pval_raw_q75 = ks_result$raw_pvals$q75,
+      ks_subsample_size = ks_result$subsample_size,
+      ks_n_iterations = ks_result$n_iterations,
+      stringsAsFactors = FALSE
+    )
+    
+    results_list[[paste(group1, group2, sep = "_")]] <- result_row
   }
   
   if (length(results_list) > 0) {
-    return(do.call(rbind, results_list))
+    # Combine all results
+    combined_results <- do.call(rbind, results_list)
+    
+    # Apply multiple testing correction to all summary statistics across pairwise comparisons
+    corrected_median <- p.adjust(combined_results$ks_pval_raw_median, method = correction_method)
+    corrected_q25 <- p.adjust(combined_results$ks_pval_raw_q25, method = correction_method)
+    corrected_q75 <- p.adjust(combined_results$ks_pval_raw_q75, method = correction_method)
+    
+    # Add corrected p-values to results
+    combined_results$ks_pval_corrected_median <- corrected_median
+    combined_results$ks_pval_corrected_q25 <- corrected_q25
+    combined_results$ks_pval_corrected_q75 <- corrected_q75
+    combined_results$ks_correction_method <- correction_method
+    
+    return(combined_results)
   } else {
     return(data.frame())
   }
@@ -313,7 +200,7 @@ if (interactive()) {
   argvs$correction_method <- "bonferroni"
   argvs$ks_subsample_size <- 1000L
   argvs$ks_n_iterations <- 1000L
-  argvs$ks_correction_methods <- "bonferroni"
+  argvs$ks_correction_method <- "fdr"
   argvs$cppsrc <- "./src/stats/bin/depth_stats.cpp"
   syn_path <- file.path("int/idv_mat/", paste0(argvs$np, "_rotated.csv.gz"))
 } else {
@@ -324,7 +211,7 @@ if (interactive()) {
   argvs$correction_method <- if (is.null(argvs$correction_method)) "bonferroni" else argvs$correction_method
   argvs$ks_subsample_size <- if (is.null(argvs$ks_subsample_size)) 1000L else as.integer(argvs$ks_subsample_size)
   argvs$ks_n_iterations <- if (is.null(argvs$ks_n_iterations)) 1000L else as.integer(argvs$ks_n_iterations)
-  argvs$ks_correction_methods <- if (is.null(argvs$ks_correction_methods)) "bonferroni,holm,fdr" else argvs$ks_correction_methods
+  argvs$ks_correction_method <- if (is.null(argvs$ks_correction_method)) "fdr" else argvs$ks_correction_method
   syn_path <- argvs$synf
   argvs$cppsrc <- "./depth_stats.cpp"
 }
@@ -415,8 +302,8 @@ for (i in names(np_coord_list)) {
     test_data$depth <- test_data$depth * -1
   }
   
-  # Perform Quantile Wasserstein tests
-  wasserstein_results <- perform_quantile_wasserstein_tests(
+  # Compute Quantile Wasserstein distances
+  wasserstein_results <- quantile_wasserstein_dist(
     test_data, 
     sparse_limit = argvs$sparse_limit,
     n_quantiles = argvs$n_quantiles,
@@ -434,7 +321,7 @@ for (i in names(np_coord_list)) {
     sparse_limit = argvs$sparse_limit,
     subsample_size = argvs$ks_subsample_size,
     n_iterations = argvs$ks_n_iterations,
-    correction_methods = argvs$ks_correction_method
+    correction_method = argvs$ks_correction_method
   )
   
   # Combine results
@@ -481,7 +368,7 @@ if (length(all_test_results) > 0) {
   cat("Confidence interval:", unique(final_results$conf_level), "%\n")
   
   # Print effect size summary
-  median_effects <- final_results$test_statistic_median
+  median_effects <- final_results$wasserstein_median
   cat("Wasserstein effect size summary:\n")
   cat("  Min:", round(min(median_effects, na.rm = TRUE), 4), "\n")
   cat("  Max:", round(max(median_effects, na.rm = TRUE), 4), "\n")
@@ -505,9 +392,9 @@ if (length(all_test_results) > 0) {
   final_results <- data.frame(
     group1 = logical(0),
     group2 = logical(0),
-    test_statistic_median = logical(0),
-    test_statistic_lower = logical(0),
-    test_statistic_upper = logical(0),
+    wasserstein_median = logical(0),
+    wasserstein_lower = logical(0),
+    wasserstein_upper = logical(0),
     conf_level = logical(0),
     ks_pval_raw_median = logical(0),
     ks_pval_raw_q25 = logical(0),

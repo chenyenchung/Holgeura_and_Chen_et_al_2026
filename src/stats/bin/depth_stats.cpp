@@ -60,7 +60,7 @@ double compute_wasserstein(std::vector<double> sample1,
 // [[Rcpp::export]]
 List quantile_wasserstein_bootstrap(NumericVector sample1, 
                                    NumericVector sample2,
-                                   int n_quantiles = 100,
+                                   int n_quantiles = 1000,
                                    int n_bootstrap = 1000,
                                    double conf_int = 95.0) {
   
@@ -84,22 +84,9 @@ List quantile_wasserstein_bootstrap(NumericVector sample1,
     probs.push_back(static_cast<double>(i) / (n_quantiles + 1));
   }
   
-  // Compute observed test statistic
-  double observed_stat = compute_wasserstein(s1, s2, probs);
-  
-  // Pool samples for bootstrap
-  std::vector<double> pooled;
-  pooled.reserve(s1.size() + s2.size());
-  pooled.insert(pooled.end(), s1.begin(), s1.end());
-  pooled.insert(pooled.end(), s2.begin(), s2.end());
-  
-  size_t n1 = s1.size();
-  size_t n2 = s2.size();
   
   // Bootstrap distributions
-  std::vector<double> null_stats;        // For p-value (permutation bootstrap)
   std::vector<double> bootstrap_stats;   // For CI (non-parametric bootstrap)
-  null_stats.reserve(n_bootstrap);
   bootstrap_stats.reserve(n_bootstrap);
 
   // Set up random number generator
@@ -107,32 +94,22 @@ List quantile_wasserstein_bootstrap(NumericVector sample1,
   std::mt19937 gen(rd());
   
   // Set up distributions for non-parametric bootstrap
-  std::uniform_int_distribution<size_t> dist_s1(0, n1 - 1);
-  std::uniform_int_distribution<size_t> dist_s2(0, n2 - 1);
+  std::uniform_int_distribution<size_t> dist_s1(0, s1.size() - 1);
+  std::uniform_int_distribution<size_t> dist_s2(0, s2.size() - 1);
 
   for (int b = 0; b < n_bootstrap; ++b) {
-    // 1. Permutation bootstrap (for null distribution/p-value)
-    std::vector<double> shuffled = pooled;
-    std::shuffle(shuffled.begin(), shuffled.end(), gen);
-    
-    std::vector<double> perm_s1(shuffled.begin(), shuffled.begin() + n1);
-    std::vector<double> perm_s2(shuffled.begin() + n1, shuffled.end());
-    
-    double perm_stat = compute_wasserstein(perm_s1, perm_s2, probs);
-    null_stats.push_back(perm_stat);
-    
-    // 2. Non-parametric bootstrap (for confidence intervals)
+    // Non-parametric bootstrap (for confidence intervals)
     std::vector<double> boot_s1, boot_s2;
-    boot_s1.reserve(n1);
-    boot_s2.reserve(n2);
+    boot_s1.reserve(s1.size());
+    boot_s2.reserve(s2.size());
     
     // Resample s1 with replacement
-    for (size_t i = 0; i < n1; ++i) {
+    for (size_t i = 0; i < s1.size(); ++i) {
       boot_s1.push_back(s1[dist_s1(gen)]);
     }
     
     // Resample s2 with replacement
-    for (size_t i = 0; i < n2; ++i) {
+    for (size_t i = 0; i < s2.size(); ++i) {
       boot_s2.push_back(s2[dist_s2(gen)]);
     }
     
@@ -154,11 +131,9 @@ List quantile_wasserstein_bootstrap(NumericVector sample1,
   double boot_upper = quantile_sorted(bootstrap_stats, upper_perc);
   
   return List::create(
-    Named("observed_statistic") = observed_stat,
     Named("bootstrap_median") = boot_median,
     Named("bootstrap_lower") = boot_lower,
     Named("bootstrap_upper") = boot_upper,
-    Named("null_distribution") = wrap(null_stats),
     Named("conf_level") = conf_int
   );
 }
@@ -172,11 +147,11 @@ List quantile_wasserstein_bootstrap(NumericVector sample1,
 //' @param conf_int Confidence interval percentage (default 95)
 //' @return DataFrame with test results
 // [[Rcpp::export]]
-DataFrame pairwise_wasserstein_tests(List data_list,
-                                    CharacterVector names,
-                                    int n_quantiles = 100,
-                                    int n_bootstrap = 1000,
-                                    double conf_int = 95.0) {
+DataFrame wasserstein_dist_cpp(List data_list,
+                               CharacterVector names,
+                               int n_quantiles = 1000,
+                               int n_bootstrap = 1000,
+                               double conf_int = 95.0) {
   
   int n_samples = data_list.size();
   if (n_samples < 2) {
@@ -206,8 +181,8 @@ DataFrame pairwise_wasserstein_tests(List data_list,
   return DataFrame::create(
     Named("group1") = wrap(group1_vec),
     Named("group2") = wrap(group2_vec),
-    Named("test_statistic_median") = wrap(median_vec),
-    Named("test_statistic_lower") = wrap(lower_vec),
-    Named("test_statistic_upper") = wrap(upper_vec)
+    Named("wasserstein_median") = wrap(median_vec),
+    Named("wasserstein_lower") = wrap(lower_vec),
+    Named("wasserstein_upper") = wrap(upper_vec)
   );
 }

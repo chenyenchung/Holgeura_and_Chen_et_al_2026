@@ -144,13 +144,22 @@ combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
       cat("\n")
       
       # Wasserstein effect size summary
-      if ("test_statistic_median" %in% colnames(all_results)) {
+      # Check for both naming conventions (wasserstein_* and test_statistic_*)
+      median_col <- if ("wasserstein_median" %in% colnames(all_results)) {
+        "wasserstein_median"
+      } else if ("test_statistic_median" %in% colnames(all_results)) {
+        "test_statistic_median"
+      } else {
+        NULL
+      }
+      
+      if (!is.null(median_col)) {
         cat("Wasserstein effect size summary:\n")
-        cat("  Min:", round(min(all_results$test_statistic_median, na.rm = TRUE), 4), "\n")
-        cat("  Q1: ", round(quantile(all_results$test_statistic_median, 0.25, na.rm = TRUE), 4), "\n")
-        cat("  Median:", round(median(all_results$test_statistic_median, na.rm = TRUE), 4), "\n")
-        cat("  Q3: ", round(quantile(all_results$test_statistic_median, 0.75, na.rm = TRUE), 4), "\n")
-        cat("  Max:", round(max(all_results$test_statistic_median, na.rm = TRUE), 4), "\n\n")
+        cat("  Min:", round(min(all_results[[median_col]], na.rm = TRUE), 4), "\n")
+        cat("  Q1: ", round(quantile(all_results[[median_col]], 0.25, na.rm = TRUE), 4), "\n")
+        cat("  Median:", round(median(all_results[[median_col]], na.rm = TRUE), 4), "\n")
+        cat("  Q3: ", round(quantile(all_results[[median_col]], 0.75, na.rm = TRUE), 4), "\n")
+        cat("  Max:", round(max(all_results[[median_col]], na.rm = TRUE), 4), "\n\n")
       }
       
       # KS p-value summary if available
@@ -170,15 +179,40 @@ combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
       }
       
       # Top effect sizes
-      if ("test_statistic_median" %in% colnames(all_results)) {
+      # Determine column names based on what's available
+      median_col <- if ("wasserstein_median" %in% colnames(all_results)) {
+        "wasserstein_median"
+      } else if ("test_statistic_median" %in% colnames(all_results)) {
+        "test_statistic_median"
+      } else {
+        NULL
+      }
+      
+      lower_col <- if ("wasserstein_lower" %in% colnames(all_results)) {
+        "wasserstein_lower"
+      } else if ("test_statistic_lower" %in% colnames(all_results)) {
+        "test_statistic_lower"
+      } else {
+        NULL
+      }
+      
+      upper_col <- if ("wasserstein_upper" %in% colnames(all_results)) {
+        "wasserstein_upper"
+      } else if ("test_statistic_upper" %in% colnames(all_results)) {
+        "test_statistic_upper"
+      } else {
+        NULL
+      }
+      
+      if (!is.null(median_col) && !is.null(lower_col) && !is.null(upper_col)) {
         cat("Top 10 largest Wasserstein effect sizes:\n")
-        top_effects <- all_results[order(-test_statistic_median)][1:min(10, nrow(all_results))]
+        top_effects <- all_results[order(-all_results[[median_col]])][1:min(10, nrow(all_results))]
         for (i in 1:nrow(top_effects)) {
           cat(sprintf("  %s vs %s (Wasserstein = %.3f, CI: %.3f-%.3f)\n", 
                      top_effects$group1[i], top_effects$group2[i], 
-                     top_effects$test_statistic_median[i], 
-                     top_effects$test_statistic_lower[i], 
-                     top_effects$test_statistic_upper[i]))
+                     top_effects[[median_col]][i], 
+                     top_effects[[lower_col]][i], 
+                     top_effects[[upper_col]][i]))
         }
       }
     }

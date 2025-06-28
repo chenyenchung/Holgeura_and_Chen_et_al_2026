@@ -61,12 +61,16 @@ perform_broad_depth_analysis <- function(data, ref_superficial, ref_deep,
     observed_distance_diff = bootstrap_result$observed_distance_diff,
     observed_delta_thres_base = bootstrap_result$observed_delta_thres_base,
     observed_delta_thres = bootstrap_result$observed_delta_thres,
+    observed_test_statistic = bootstrap_result$observed_test_statistic,
     bootstrap_distance_diff_median = bootstrap_result$bootstrap_distance_diff_median,
     bootstrap_distance_diff_lower = bootstrap_result$bootstrap_distance_diff_lower,
     bootstrap_distance_diff_upper = bootstrap_result$bootstrap_distance_diff_upper,
     bootstrap_delta_thres_base_median = bootstrap_result$bootstrap_delta_thres_base_median,
     bootstrap_delta_thres_base_lower = bootstrap_result$bootstrap_delta_thres_base_lower,
     bootstrap_delta_thres_base_upper = bootstrap_result$bootstrap_delta_thres_base_upper,
+    bootstrap_test_stat_median = bootstrap_result$bootstrap_test_stat_median,
+    bootstrap_test_stat_lower = bootstrap_result$bootstrap_test_stat_lower,
+    bootstrap_test_stat_upper = bootstrap_result$bootstrap_test_stat_upper,
     coefficient = coefficient,
     p_value_exceeds_threshold = bootstrap_result$p_value_exceeds_threshold,
     direction = observed_direction,
@@ -86,7 +90,7 @@ if (file.exists("./utils.r")) {
 
 if (interactive()) {
   source("src/utils.r")
-  argvs$np <- "LOP_L"
+  argvs$np <- "ME_L"
   argvs$syn_type <- "post"
   argvs$use_preset <- "subsystem_known"
   argvs$ann <- "data/visual_neurons_anno.csv"
@@ -344,12 +348,16 @@ if (!is.null(result) && nrow(result) > 0) {
     observed_distance_diff = numeric(0),
     observed_delta_thres_base = numeric(0),
     observed_delta_thres = numeric(0),
+    observed_test_statistic = numeric(0),
     bootstrap_distance_diff_median = numeric(0),
     bootstrap_distance_diff_lower = numeric(0),
     bootstrap_distance_diff_upper = numeric(0),
     bootstrap_delta_thres_base_median = numeric(0),
     bootstrap_delta_thres_base_lower = numeric(0),
     bootstrap_delta_thres_base_upper = numeric(0),
+    bootstrap_test_stat_median = numeric(0),
+    bootstrap_test_stat_lower = numeric(0),
+    bootstrap_test_stat_upper = numeric(0),
     coefficient = numeric(0),
     p_value_exceeds_threshold = numeric(0),
     direction = character(0),
