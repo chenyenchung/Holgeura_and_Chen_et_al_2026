@@ -4,27 +4,14 @@ suppressPackageStartupMessages(library(R.utils))
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(Rcpp))
 
-perform_broad_depth_analysis <- function(data, ref_superficial, ref_deep, 
+perform_broad_depth_analysis <- function(data, ref_sup_depths, ref_deep_depths, 
                                        types_of_interest, coefficient = 0.25,
                                        n_bootstrap = 1000, conf_int = 95,
                                        threshold_type = "variable", seed = NULL) {
   
-  ref_sup_data <- data[
-    pre_type %in% ref_superficial | post_type %in% ref_superficial
-  ]
-  ref_deep_data <- data[
-    pre_type %in% ref_deep | post_type %in% ref_deep
-  ]
   interest_data <- data[group %in% types_of_interest]
   
-  if (nrow(ref_sup_data) == 0 || nrow(ref_deep_data) == 0 || nrow(interest_data) == 0) {
-    warning("Insufficient data for one or more groups")
-    return(NULL)
-  }
-  
   # Extract depth values
-  ref_sup_depths <- ref_sup_data$depth
-  ref_deep_depths <- ref_deep_data$depth
   interest_depths <- interest_data$depth
   
   # Call C++ bootstrap function
@@ -54,8 +41,8 @@ perform_broad_depth_analysis <- function(data, ref_superficial, ref_deep,
     n_ref_superficial = length(ref_superficial),
     n_ref_deep = length(ref_deep),
     n_samples_interest = nrow(interest_data),
-    n_samples_superficial = nrow(ref_sup_data),
-    n_samples_deep = nrow(ref_deep_data),
+    n_samples_superficial = nrow(data_superficial),
+    n_samples_deep = nrow(data_deep),
     observed_sup_d = bootstrap_result$observed_sup_d,
     observed_deep_d = bootstrap_result$observed_deep_d,
     observed_distance_diff = bootstrap_result$observed_distance_diff,
@@ -90,7 +77,7 @@ if (file.exists("./utils.r")) {
 
 if (interactive()) {
   source("src/utils.r")
-  argvs$np <- "ME_L"
+  argvs$np <- "LOP_L"
   argvs$syn_type <- "post"
   argvs$use_preset <- "subsystem_known"
   argvs$ann <- "data/visual_neurons_anno.csv"
@@ -154,6 +141,40 @@ np_coord <- filter_type(
 )
 np_coord <- filter_func(np_coord, opc_anno, syn_type = argvs$syn_type)
 
+# Get reference depths
+available_groups <- unique(
+  c(np_coord$pre_type, np_coord$post_type)
+)
+
+# Define reference groups based on neuropil (keeping existing logic for reference groups)
+if (grepl("^ME_", argvs$np)) {
+  ref_superficial <- grep("^Dm", available_groups, value = TRUE)
+  ref_deep <- grep("^Pm", available_groups, value = TRUE)
+} else if (grepl("^LOP_", argvs$np)) {
+  ref_superficial <- grep("T(4|5)(a|b)$", available_groups, value = TRUE)
+  ref_deep <- grep("T(4|5)(c|d)$", available_groups, value = TRUE)
+} else if (grepl("^LO_", argvs$np)) {
+  ref_superficial <- c("Tm1", "Tm2", "Tm4")
+  ref_deep <- c("Tm20", "Tm5a", "Tm5b", "Tm5c", "Tm5d", "Tm5e", "Tm5f")
+} else {
+  # For other neuropils, use a generic approach or skip analysis
+  ref_superficial <- character(0)
+  ref_deep <- character(0)
+}
+
+ref_superficial <- intersect(ref_superficial, available_groups)
+ref_deep <- intersect(ref_deep, available_groups)
+
+data_superficial <- np_coord[
+  pre_type %in% ref_superficial | post_type %in% ref_superficial
+]
+data_deep <- np_coord[
+  pre_type %in% ref_deep | post_type %in% ref_deep
+]
+
+depths_superficial <- c(data_superficial$pre_rz, data_superficial$post_rz)
+depths_deep <- c(data_deep$pre_rz, data_deep$post_rz)
+
 # Handle highlighting if specified
 if (preset$do_highlight && preset$hl_type == "label") {
   np_coord[, highlight := get(preset$hl_col) == preset$hl_val]
@@ -206,30 +227,6 @@ for (i in names(np_coord_list)) {
     test_data$depth <- test_data$depth * -1
   }
   
-  # Get all available groups from filtered data
-  available_groups <- unique(
-    c(test_data$pre_type, test_data$post_type)
-  )
-  
-  # Define reference groups based on neuropil (keeping existing logic for reference groups)
-  if (grepl("^ME_", argvs$np)) {
-    ref_superficial <- grep("^Dm", available_groups, value = TRUE)
-    ref_deep <- grep("^Pm", available_groups, value = TRUE)
-  } else if (grepl("^LOP_", argvs$np)) {
-    ref_superficial <- grep("T(4|5)(a|b)$", available_groups, value = TRUE)
-    ref_deep <- grep("T(4|5)(c|d)$", available_groups, value = TRUE)
-  } else if (grepl("^LO_", argvs$np)) {
-    ref_superficial <- c("Tm1", "Tm2", "Tm4")
-    ref_deep <- c("Tm20", "Tm5a", "Tm5b", "Tm5c", "Tm5d", "Tm5e", "Tm5f")
-    # Filter to only include available groups
-    ref_superficial <- intersect(ref_superficial, available_groups)
-    ref_deep <- intersect(ref_deep, available_groups)
-  } else {
-    # For other neuropils, use a generic approach or skip analysis
-    ref_superficial <- character(0)
-    ref_deep <- character(0)
-  }
-  
   # Get groups to test
   groups_to_test <- unique(test_data$group)
   
@@ -238,8 +235,8 @@ for (i in names(np_coord_list)) {
     split_results <- lapply(groups_to_test, function(type) {
       out <- perform_broad_depth_analysis(
         test_data,
-        ref_superficial = ref_superficial,
-        ref_deep = ref_deep,
+        ref_sup_depths = depths_superficial,
+        ref_deep_depths = depths_deep,
         types_of_interest = type,
         coefficient = argvs$coefficient,
         n_bootstrap = argvs$n_bootstrap,

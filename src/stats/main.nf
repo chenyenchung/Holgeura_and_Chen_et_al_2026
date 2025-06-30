@@ -16,7 +16,7 @@ params.ks_subsample_size = 1000
 params.ks_n_iterations = 1000
 params.ks_correction_method = 'fdr'
 params.sparse_limit = 100
-params.broad_depth_coefficient = 0.25
+params.broad_depth_coefficient = 0.5
 params.broad_depth_n_bootstrap = 1000
 params.broad_depth_conf_int = 95
 
