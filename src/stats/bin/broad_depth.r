@@ -78,7 +78,7 @@ if (file.exists("./utils.r")) {
 if (interactive()) {
   source("src/utils.r")
   argvs$np <- "LOP_L"
-  argvs$syn_type <- "post"
+  argvs$syn_type <- "pre"
   argvs$use_preset <- "subsystem_known"
   argvs$ann <- "data/visual_neurons_anno.csv"
   argvs$meta <- "data/viz_meta.csv"

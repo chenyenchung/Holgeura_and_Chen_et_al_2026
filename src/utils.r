@@ -47,8 +47,8 @@ scale_color_nk2023 <- function() {
 scale_color_ih2025 <- function() {
   f <- scale_color_manual(
     values = c(
-      "Early" = "#ADEBB3",
-      "Late" = "#E491A6"
+      "Early" = "#79A68C",
+      "Late" = "#7F55A2"
     )
   )
   return(f)
@@ -88,13 +88,10 @@ scale_fill_subsystem <- function() {
 
 #' Color scale for cell types
 scale_color_type <- function() {
-  types <- unique(opc_anno$cell_type)
-  hues <- seq(20, 380, length.out = length(types) + 1)[seq_along(types)]
-  palette <- hsv(h = (hues %% 360) / 360, s = 0.5, v = 0.8)
-  set.seed(1)
-  names(palette) <- types
+  types <- unique(opc_anno$cell_type[opc_anno$putative_OPC])
+
   return(
-    scale_color_manual(values = palette)
+    scale_color_hue(labels = types)
   )
 }
 

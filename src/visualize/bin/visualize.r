@@ -19,7 +19,7 @@ if (file.exists("./utils.r")) {
 ### TODO
 if (interactive()) {
   source("./src/utils.r", chdir = FALSE)
-  argvs$np <- "LOP_L"
+  argvs$np <- "ME_R"
   argvs$syn_type <- "post"
   argvs$use_preset <- "type_putative_1"
   argvs$density <- "asis"
