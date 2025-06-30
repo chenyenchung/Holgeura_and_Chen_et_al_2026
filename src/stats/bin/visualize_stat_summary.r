@@ -122,9 +122,9 @@ plot_wasserstein_ci <- function(data) {
   # Create comparison labels
   data$comparison <- paste(data$group1, "vs", data$group2, sep = "\n")
   
-  p <- ggplot(data, aes(x = comparison, y = test_statistic_median)) +
+  p <- ggplot(data, aes(x = comparison, y = wasserstein_median)) +
     geom_point(size = 2) +
-    geom_errorbar(aes(ymin = test_statistic_lower, ymax = test_statistic_upper),
+    geom_errorbar(aes(ymin = wasserstein_lower, ymax = wasserstein_upper),
                   width = 0.2) +
     scale_y_continuous(limits = c(0, NA)) +
     labs(
@@ -146,7 +146,7 @@ plot_wasserstein_ci <- function(data) {
 #' @return ggplot object
 plot_wasserstein_heatmap <- function(data) {
   # Convert to matrix
-  w_matrix <- pairwise_to_matrix(data, "test_statistic_median")
+  w_matrix <- pairwise_to_matrix(data, "wasserstein_median")
   
   # Create heatmap
   p <- create_matrix_heatmap(
@@ -339,8 +339,8 @@ if (!is.null(argvs$input_file)) {
   test_results <- fread(argvs$input_file)
   
   # Validate required columns
-  required_cols <- c("group1", "group2", "test_statistic_median", 
-                     "test_statistic_lower", "test_statistic_upper")
+  required_cols <- c("group1", "group2", "wasserstein_median", 
+                     "wasserstein_lower", "wasserstein_upper")
   missing_cols <- setdiff(required_cols, colnames(test_results))
   if (length(missing_cols) > 0) {
     stop("Missing required columns: ", paste(missing_cols, collapse = ", "))
@@ -404,7 +404,7 @@ if (!is.null(argvs$input_file)) {
   }
   
   # Wasserstein distance summary
-  effect_sizes <- test_results$test_statistic_median
+  effect_sizes <- test_results$wasserstein_median
   cat("Wasserstein distance range:", round(min(effect_sizes, na.rm = TRUE), 4), "to", 
       round(max(effect_sizes, na.rm = TRUE), 4), "\n")
   
