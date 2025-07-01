@@ -91,7 +91,7 @@ scale_color_type <- function() {
   types <- unique(opc_anno$cell_type[opc_anno$putative_OPC])
 
   return(
-    scale_color_hue(labels = types)
+    scale_color_hue(limits = types)
   )
 }
 

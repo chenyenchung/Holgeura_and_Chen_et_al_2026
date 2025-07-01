@@ -19,9 +19,9 @@ if (file.exists("./utils.r")) {
 ### TODO
 if (interactive()) {
   source("./src/utils.r", chdir = FALSE)
-  argvs$np <- "ME_R"
+  argvs$np <- "LO_R"
   argvs$syn_type <- "post"
-  argvs$use_preset <- "type_putative_1"
+  argvs$use_preset <- "type_putative_2"
   argvs$density <- "asis"
   argvs$ann <- "data/visual_neurons_anno.csv"
   argvs$meta <- "data/viz_meta.csv"
