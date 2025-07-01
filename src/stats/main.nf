@@ -134,7 +134,7 @@ process FunctionalEnrichment {
 process BroadDepthAnalysis {
   cpus '1'
   memory '8GB'
-  time '1h'
+  time '4h'
   module 'r/gcc/4.4.0'
 
   input:
@@ -304,9 +304,9 @@ output {
       def np = input[0]
       def preset = input[1]
       def stype = input[2]
-      return "stats/broad_depth/${preset}/${np}_${stype}"
+      return "stats/deep_superficial/${preset}/${np}_${stype}"
     }
   }
-  broad_depth_summary { path "stats/broad_depth/" }
-  broad_depth_excel { path "stats/broad_depth/" }
+  broad_depth_summary { path "stats/deep_superficial/" }
+  broad_depth_excel { path "stats/deep_superficial/" }
 }
