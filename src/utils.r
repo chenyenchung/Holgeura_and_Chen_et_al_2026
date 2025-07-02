@@ -89,9 +89,22 @@ scale_fill_subsystem <- function() {
 #' Color scale for cell types
 scale_color_type <- function() {
   types <- unique(opc_anno$cell_type[opc_anno$putative_OPC])
+  hue_pal <- function(
+    h = c(0, 360) + 15, c = 100, l = 65, h.start = 0, direction = 1
+  ) {
+    function(n) {
+      if (n == 0) return(character(0))
+      hues <- seq(h[1], h[2], length.out = n + 1)[1:n]
+      hues <- (hues + h.start) %% 360
+      if (direction == -1) hues <- rev(hues)
+      grDevices::hcl(h = hues, c = c, l = l)
+    }
+  }
+  colors <- hue_pal()(length(types))
+  names(colors) <- types
 
   return(
-    scale_color_hue(limits = types)
+    scale_color_manual(values = colors)
   )
 }
 
