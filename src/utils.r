@@ -88,7 +88,7 @@ scale_fill_subsystem <- function() {
 
 #' Color scale for cell types
 scale_color_type <- function() {
-  types <- unique(opc_anno$cell_type[opc_anno$putative_OPC])
+  types <- sort(unique(opc_anno$cell_type[opc_anno$putative_OPC]))
   hue_pal <- function(
     h = c(0, 360) + 15, c = 100, l = 65, h.start = 0, direction = 1
   ) {
