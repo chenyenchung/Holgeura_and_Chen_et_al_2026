@@ -28,15 +28,15 @@ process_neuropil_file <- function(file_path, neuropil_name) {
   data <- fread(file_path, colClasses = "character")
   
   out <- data[
-    , .N, by = c("pre_pt_root_id", "post_pt_root_id", "pre_type", "post_type")
+    , .N, by = c("pre_root_id", "post_root_id", "pre_type", "post_type")
   ][pre_type != "" & post_type != ""]
   
   # Consider > 4 synapses per pair to be real
   to_keep <- out[
-   , .(nSynapse = sum(N)),  by = c("pre_pt_root_id", "post_pt_root_id")
+   , .(nSynapse = sum(N)),  by = c("pre_root_id", "post_root_id")
   ][nSynapse > 4]
   
-  out <- merge(out, to_keep, by = c("pre_pt_root_id", "post_pt_root_id"))
+  out <- merge(out, to_keep, by = c("pre_root_id", "post_root_id"))
   out <- out[
     , .(neuropil = neuropil_name, nSynapse = sum(N), nNeuron = .N),
     by = c("pre_type", "post_type")

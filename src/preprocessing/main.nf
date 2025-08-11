@@ -66,7 +66,7 @@ process RotateNeuropil {
 
 workflow {
   main:
-  SYN_FEATHER = 'data/flywire_synapses_783.feather'
+  SYN_FEATHER = 'data/fafb_v783_princeton_synapse_table.csv.gz'
   SYN_ANN = 'data/connections_princeton_no_threshold.csv.gz'
   TYPE_ANN = 'data/consolidated_cell_types.csv.gz'
   utils_file = file('src/utils.r')

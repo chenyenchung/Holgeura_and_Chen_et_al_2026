@@ -9,14 +9,18 @@ if (file.exists("./utils.r")) {
   source("./utils.r", chdir = FALSE)
 }
 
+if (interactive()) {
+  argvs$syn <- "work/6c/fd9678acb41db6ff64e7b4e93cb2c9/ME_L.csv.gz"
+}
+
 if (is.null(argvs$syn) || !file.exists(argvs$syn)) {
   stop("Cannot find the csv file containing synases.")
 }
 
 np <- fread(argvs$syn)
 np_coord <- rbind(
-  np[, .(x = pre_pt_position_x, y = pre_pt_position_y, z = pre_pt_position_z)],
-  np[, .(x = post_pt_position_x, y = post_pt_position_y, z = post_pt_position_z)]
+  np[, .(x = pre_x, y = pre_y, z = pre_z)],
+  np[, .(x = post_x, y = post_y, z = post_z)]
 )
 
 rotate <- prcomp(np_coord)$x
