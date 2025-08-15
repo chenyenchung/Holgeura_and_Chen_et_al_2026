@@ -158,7 +158,7 @@ Y11,unknown,0,,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE,NA,N,N
 Y12,unknown,0,,NA,NA,NA,NA,NA,NA,N,Motion,,,Motion,,FALSE,NA,N,N
 Y3,unknown,0,,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE,NA,N,N
 Y4,unknown,0,,NA,NA,NA,NA,NA,NA,N,Object,,,Object,,FALSE,NA,N,N
-Li14,Hth,1,Early,0,0,1,1,0,0,Y,Motion,Notch Off,N,Motion,projection,FALSE,69,N,N
+Li14,Hth,1,Early,0,0,1,1,0,0,Y,Motion,Notch Off,N,Motion,projection,FALSE,158,N,N
 Mi1,Hth,1,Early,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,intrinsic,FALSE,142,N,N
 Pm01,Hth,1,Early,0,1,0,0,0,0,Y,Object,Notch Off,N,Object,intrinsic,FALSE,163,N,N
 Pm02,Between Hth & Hth/Opa,1,Early,NA,NA,NA,NA,NA,NA,N,Object,Notch Off,,Object,intrinsic,TRUE,NA,N,N
@@ -177,12 +177,12 @@ Tm1,Hth/Opa,2,Early,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,projection,FALSE,140,
 Tm4,Hth/Opa,2,Early,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,projection,FALSE,125,N,N
 Mi9,Opa/Erm,3,Early,1,1,0,0,1,1,Y,Luminance,Notch Off,N,Luminance,intrinsic,FALSE,33,N,N
 Tm5c,Opa/Erm,3,Early,1,1,1,1,1,1,Y,Color,Notch Off,N,Color,projection,FALSE,34,N,N
-Mi10,Erm/Ey,4,Early,0,1,0,0,0,0,Y,Color,Notch On,N,Color,intrinsic,FALSE,31,N,N
+Mi10,Erm/Ey,4,Early,0,1,0,0,0,0,Y,Color,Notch On,N,Color,intrinsic,FALSE,116,N,N
 Tm27,Erm/Ey,4,Early,0,0,1,1,1,0,Y,Object,Notch On,N,Object,projection,FALSE,67,N,N
 Tm3,Erm/Ey,4,Early,0,1,1,1,1,0,Y,Motion,Notch On,N,Motion,projection,FALSE,126,N,N
-Tm33,Erm/Ey,4,Early,0,0,1,1,0,0,Y,Color,Notch Off,Y,Color,projection,FALSE,26,N,N
+Tm33,Erm/Ey,4,Early,0,0,1,1,0,0,Y,Color,Notch Off,Y,Color,projection,FALSE,41,N,N
 Tm5d,Erm/Ey,4,Early,0,1,0,0,1,0,Y,Color,Notch Off,N,Color,projection,FALSE,55,N,N
-Tm5e,Erm/Ey,4,Early,0,1,0,0,1,0,Y,Color,Notch Off,Y,Color,projection,FALSE,41,N,N
+Tm5e,Erm/Ey,4,Early,0,1,0,0,1,0,Y,Color,Notch Off,Y,Color,projection,FALSE,26,N,N
 Tm9,Erm/Ey,4,Early,0,1,1,0,1,1,Y,Motion,Notch On,N,Motion,projection,FALSE,227,N,N
 TmY3,Erm/Ey,4,Early,0,1,1,1,1,0,Y,Object,Notch On,N,Object,projection,FALSE,119,N,N
 TmY5a,Erm/Ey,4,Early,0,1,0,0,1,0,Y,Object,Notch Off,N,Object,projection,FALSE,42,N,N
@@ -200,7 +200,7 @@ DmDRA1,Hbn/Opa/Slp,6,Late,0,0,0,0,0,1,Y,Polarization,Notch Off,N,Polarization,in
 DmDRA2,Hbn/Opa/Slp,6,Late,0,0,0,0,0,1,Y,Color,Notch Off,N,Color,intrinsic,FALSE,136,N,N
 Lai,Hbn/Opa/Slp,6,Late,1,0,0,0,0,1,Y,Motion,Notch Off,N,Motion,intrinsic,FALSE,145,N,N
 Li06,Hbn/Opa/Slp,6,Late,0,0,0,1,1,0,Y,Color,Notch On,Y,Color,projection,FALSE,69,N,N
-MTe01a,Hbn/Opa/Slp,6,Late,0,0,1,0,0,0,Y,Unannotated,Notch Off,N,Unannotated,projection,FALSE,30,N,N
+MTe01a,Hbn/Opa/Slp,6,Late,0,0,1,1,1,0,Y,Unannotated,Notch Off,N,Unannotated,projection,FALSE,30,N,N
 Sm03,Hbn/Opa/Slp,6,Late,0,0,1,0,0,0,Y,Color,Notch Off,Y,Color,intrinsic,FALSE,38,N,N
 Tm20,Hbn/Opa/Slp,6,Late,0,0,0,0,1,0,Y,Color,Notch On,N,Color,projection,FALSE,61,N,N
 Tm25,Hbn/Opa/Slp,6,Late,0,0,0,1,1,0,Y,Object,Notch On,N,Object,projection,FALSE,71,N,N
