@@ -98,6 +98,25 @@ ts_symbols <- colnames(np_plot)[
   vapply(np_plot, is.logical, logical(1))
 ]
 
+# Generate shared legend once before the loop
+temp_plot <- np_plot |>
+  ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
+  rasterize(geom_point(aes(color = Notch))) +
+  labs(color = "Notch Status") +
+  theme_ih2025() +
+  color_func()
+
+legendsp <- get_plot_component(temp_plot, "guide-box", return_all = TRUE)
+if (is.list(legendsp)) {
+  to_keep <- sapply(legendsp, function(x) "gtable" %in% class(x))
+  legendsp <- legendsp[to_keep]
+  if (length(legendsp) == 1) {
+    legendsp <- legendsp[[1]]
+  } else {
+    stop("Legend extraction error: There is more than 1 item.")
+  }
+}
+
 for (i in ts_symbols) {
   if (!any(npp[[i]])) {
     next
@@ -108,32 +127,48 @@ for (i in ts_symbols) {
     sep = "_"
   )
   
-  np_plot$color_label <- np_plot$Notch
-  np_plot$color_label[!np_plot[[i]]] <- "nil"
+  # Create color labels for Notch On plot
+  np_plot$on_label <- "nil"
+  np_plot$on_label[np_plot[[i]] & np_plot$Notch == "Notch On"] <- "Notch On"
   
-  ## Generate the dot plot
-  dotp <- np_plot |>
-    ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
-    rasterize(geom_point(aes(color = color_label))) +
-    labs(color = "Notch Status") +
-    theme_ih2025() +
-    color_func() +
-    scale_axis_1(limits = c(plot_meta$xmin, plot_meta$xmax)) +
-    scale_axis_2(limits = c(plot_meta$ymin, plot_meta$ymax))
+  # Create color labels for Notch Off plot
+  np_plot$off_label <- "nil"
+  np_plot$off_label[np_plot[[i]] & np_plot$Notch == "Notch Off"] <- "Notch Off"
   
-  ## Extract legends to prevent layout fluctuation
-  legendsp <- get_plot_component(dotp, "guide-box", return_all = TRUE) 
-  dotp <- dotp + theme(legend.position="none")
+  # Check if we have any non-nil labels to plot
+  has_notch_on <- any(np_plot$on_label != "nil")
+  has_notch_off <- any(np_plot$off_label != "nil")
   
-  if (is.list(legendsp)) {
-    ## Drop empty elements
-    to_keep <- sapply(legendsp, function(x) "gtable" %in% class(x))
-    legendsp <- legendsp[to_keep]
-    if (length(legendsp) == 1) {
-      legendsp <- legendsp[[1]]
-    } else {
-      stop("Legend extraction error: There is more than 1 item.")
-    }
+  if (!has_notch_on && !has_notch_off) {
+    message(sprintf("Skipping %s: no expressing synapses in either Notch population", i))
+    next
+  }
+  
+  # Generate plots only if they have data
+  if (has_notch_on) {
+    ## Generate Notch On plot
+    dotp_on <- np_plot |>
+      ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
+      rasterize(geom_point(aes(color = on_label))) +
+      labs(color = "Notch Status") +
+      theme_ih2025() +
+      color_func() +
+      scale_axis_1(limits = c(plot_meta$xmin, plot_meta$xmax)) +
+      scale_axis_2(limits = c(plot_meta$ymin, plot_meta$ymax)) +
+      theme(legend.position="none")
+  }
+  
+  if (has_notch_off) {
+    ## Generate Notch Off plot
+    dotp_off <- np_plot |>
+      ggplot(aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
+      rasterize(geom_point(aes(color = off_label))) +
+      labs(color = "Notch Status") +
+      theme_ih2025() +
+      color_func() +
+      scale_axis_1(limits = c(plot_meta$xmin, plot_meta$xmax)) +
+      scale_axis_2(limits = c(plot_meta$ymin, plot_meta$ymax)) +
+      theme(legend.position="none")
   }
   
   ## Manual calculation and interpolation of density
@@ -195,28 +230,64 @@ for (i in ts_symbols) {
     guides(color = "none")
   
   if (plot_meta$zid == "y") denp <- denp + coord_flip()
-  if (plot_meta$outlayout == "landscape") {
-    outp <- (dotp | denp) +
-      plot_layout(widths = c(plot_meta$outr1, plot_meta$outr2))
-  } else {
-    outp <- (dotp / denp) +
-      plot_layout(heights = c(plot_meta$outr1, plot_meta$outr2))
-  }
-  outp <- outp +
-    plot_annotation(
-      title = i,
-      subtitle = paste0(argvs$syn_type, "synapses")
-    ) & 
-    theme(
-      plot.title = element_text(size = 18, face = "bold"),
-      plot.subtitle = element_text(size = 12, face = "italic")
-    )
   
-  ggsave(
-    plot = outp, filename = paste0(out_prefix, ".pdf"),
-    width = plot_meta$outd1, height = plot_meta$outd2
-  )
-  ggsave(
-    plot = legendsp, paste0(out_prefix, "_legend.pdf")
-  )
+  # Create and save combined plots only for populations with data
+  if (has_notch_on) {
+    # Create combined plots for Notch On
+    if (plot_meta$outlayout == "landscape") {
+      outp_on <- (dotp_on | denp) +
+        plot_layout(widths = c(plot_meta$outr1, plot_meta$outr2))
+    } else {
+      outp_on <- (dotp_on / denp) +
+        plot_layout(heights = c(plot_meta$outr1, plot_meta$outr2))
+    }
+    outp_on <- outp_on +
+      plot_annotation(
+        title = paste(i, "- Notch On"),
+        subtitle = paste0(argvs$syn_type, "synapses")
+      ) & 
+      theme(
+        plot.title = element_text(size = 18, face = "bold"),
+        plot.subtitle = element_text(size = 12, face = "italic")
+      )
+    
+    ggsave(
+      plot = outp_on, filename = paste0(out_prefix, "_NotchOn.pdf"),
+      width = plot_meta$outd1, height = plot_meta$outd2
+    )
+  }
+  
+  if (has_notch_off) {
+    # Create combined plots for Notch Off
+    if (plot_meta$outlayout == "landscape") {
+      outp_off <- (dotp_off | denp) +
+        plot_layout(widths = c(plot_meta$outr1, plot_meta$outr2))
+    } else {
+      outp_off <- (dotp_off / denp) +
+        plot_layout(heights = c(plot_meta$outr1, plot_meta$outr2))
+    }
+    outp_off <- outp_off +
+      plot_annotation(
+        title = paste(i, "- Notch Off"),
+        subtitle = paste0(argvs$syn_type, "synapses")
+      ) & 
+      theme(
+        plot.title = element_text(size = 18, face = "bold"),
+        plot.subtitle = element_text(size = 12, face = "italic")
+      )
+    
+    ggsave(
+      plot = outp_off, filename = paste0(out_prefix, "_NotchOff.pdf"),
+      width = plot_meta$outd1, height = plot_meta$outd2
+    )
+  }
 }
+
+# Save shared legend
+legend_prefix <- paste(
+  argvs$np, argvs$syn_type, argvs$density,
+  sep = "_"
+)
+ggsave(
+  plot = legendsp, paste0(legend_prefix, "_legend.pdf")
+)

@@ -45,8 +45,8 @@ process Visualize {
 
 process VisualizeSelector {
   cpus '1'
-  memory '16GB'
-  time '1h'
+  memory '14GB'
+  time '2h'
   module 'r/gcc/4.4.0'
 
   input:
