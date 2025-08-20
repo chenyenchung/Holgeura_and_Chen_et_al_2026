@@ -4,8 +4,9 @@ nextflow.preview.output = true
 params.presetf = 'data/viz_preset.csv'
 params.metaf = 'data/viz_meta.csv'
 params.annf = 'data/visual_neurons_anno.csv'
-params.tsf = 'data/P15_tf.csv'
+params.tff = 'data/P15_tf.csv'
 params.camf = 'data/P15_CAM.csv'
+params.tsf = 'data/selectors.csv'
 params.distances = 'data/TypeToTypeDistances.csv'
 
 process Visualize {
@@ -198,10 +199,19 @@ workflow {
     .combine(channel.fromList(STYPE))
     .combine(channel.fromList(DEN_ALGO))
     
-  def TS_BIN = [file(params.tsf), file(params.camf)]
-  def TS_LABEL = ['P15_TF', 'P15_CAM']
+  def TS_BIN = [
+    [1, file(params.tff)],
+    [2, file(params.camf)],
+    [3, file(params.tsf)]
+  ]
+  def TS_LABEL = [
+    [1, 'P15_TF'],
+    [2, 'P15_CAM'],
+    [3, "Selector"]
+  ]
   g_ch = channel.fromList(TS_BIN)
-    .combine(channel.fromList(TS_LABEL))
+    .join(channel.fromList(TS_LABEL))
+    .map { v -> v[1..2] }
   sel_ch = VisualizeSelector(
     scond_ch.combine(g_ch),
     file(params.annf),
