@@ -186,9 +186,9 @@ Tm5e,Erm/Ey,4,Early,0,1,0,0,1,0,Y,Color,Notch Off,Y,Color,projection,FALSE,26,N,
 Tm9,Erm/Ey,4,Early,0,1,1,0,1,1,Y,Motion,Notch On,N,Motion,projection,FALSE,227,N,N
 TmY3,Erm/Ey,4,Early,0,1,1,1,1,0,Y,Object,Notch On,N,Object,projection,FALSE,119,N,N
 TmY5a,Erm/Ey,4,Early,0,1,0,0,1,0,Y,Object,Notch Off,N,Object,projection,FALSE,42,N,N
-Dm10,Ey/Hbn,5,Late,0,1,0,0,0,0,Y,Luminance,Notch Off,N,Luminance,intrinsic,FALSE,15,N,N
-Tm2,Ey/Hbn,5,Late,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,projection,FALSE,118,N,N
-Tm21,Ey/Hbn,5,Late,1,1,1,1,1,1,Y,Object,Notch On,N,Object,projection,FALSE,62,N,N
+Dm10,Ey/Hbn,5,Early,0,1,0,0,0,0,Y,Luminance,Notch Off,N,Luminance,intrinsic,FALSE,15,N,N
+Tm2,Ey/Hbn,5,Early,1,1,1,1,1,1,Y,Motion,Notch On,N,Motion,projection,FALSE,118,N,N
+Tm21,Ey/Hbn,5,Early,1,1,1,1,1,1,Y,Object,Notch On,N,Object,projection,FALSE,62,N,N
 Dm1,Hbn/Opa/Slp,6,Late,0,1,0,0,0,0,Y,Motion,Notch Off,N,Motion,intrinsic,FALSE,14,N,N
 Dm11,Hbn/Opa/Slp,6,Late,0,0,0,0,1,1,Y,Color,Notch Off,N,Color,intrinsic,FALSE,136,N,N
 Dm12,Hbn/Opa/Slp,6,Late,1,1,0,0,0,0,Y,Luminance,Notch Off,N,Luminance,intrinsic,FALSE,12,N,N
