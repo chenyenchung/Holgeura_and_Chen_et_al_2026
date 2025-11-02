@@ -17,10 +17,10 @@ if (file.exists("./utils.r")) {
 }
 
 if (interactive()) {
-  argvs$np <- "LO_R"
-  argvs$syn_type <- "pre"
+  argvs$np <- "LOP_L"
+  argvs$syn_type <- "post"
   argvs$ann <- "data/visual_neurons_anno.csv"
-  argvs$ts <- "data/P15_tf.csv"
+  argvs$ts <- "data/P15_CAM.csv"
   argvs$meta <- "data/viz_meta.csv"
   argvs$density <- "asis"
   argvs$subsample <- 10000L
@@ -107,15 +107,15 @@ temp_plot <- np_plot |>
   color_func()
 
 legendsp <- get_plot_component(temp_plot, "guide-box", return_all = TRUE)
-if (is.list(legendsp)) {
-  to_keep <- sapply(legendsp, function(x) "gtable" %in% class(x))
-  legendsp <- legendsp[to_keep]
-  if (length(legendsp) == 1) {
-    legendsp <- legendsp[[1]]
-  } else {
-    stop("Legend extraction error: There is more than 1 item.")
-  }
-}
+# if (is.list(legendsp)) {
+#   to_keep <- sapply(legendsp, function(x) "gtable" %in% class(x))
+#   legendsp <- legendsp[to_keep]
+#   if (length(legendsp) == 1) {
+#     legendsp <- legendsp[[1]]
+#   } else {
+#     stop("Legend extraction error: There is more than 1 item.")
+#   }
+# }
 
 for (i in ts_symbols) {
   if (!any(npp[[i]])) {

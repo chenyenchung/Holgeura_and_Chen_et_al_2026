@@ -88,7 +88,20 @@ scale_fill_subsystem <- function() {
 
 #' Color scale for cell types
 scale_color_type <- function() {
-  types <- sort(unique(opc_anno$cell_type[opc_anno$putative_OPC]))
+  hsort <- function(x) {
+    sort_key <- c(
+      "L", "A", "B", "C", "D", "M", "E", "F", "G", "H", "I", "J", "K",
+      "N", "O", "P", "Q", "R", "T", "S", "U", "V", "W", "X", "Y", "Z"
+    )
+    xl <- split(x, substr(x, 1, 1))
+    xl <- lapply(xl, sort)
+    use_key <- sort_key[sort_key %in% names(xl)]
+    out <- unlist(xl[use_key])
+    return(out)
+  }
+  types <- unique(opc_anno$cell_type[opc_anno$putative_OPC])
+  types <- hsort(types)
+  
   hue_pal <- function(
     h = c(0, 360) + 15, c = 100, l = 65, h.start = 0, direction = 1
   ) {

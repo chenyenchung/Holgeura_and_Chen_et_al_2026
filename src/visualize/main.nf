@@ -13,7 +13,7 @@ process Visualize {
   cpus '1'
   memory '8GB'
   time '30m'
-  module 'r/gcc/4.4.0'
+  module 'r/gcc/4.5.0'
 
   input:
   tuple val(np), path(syn), val(stype), val(preset), val(den)
@@ -48,7 +48,7 @@ process VisualizeSelector {
   cpus '1'
   memory '14GB'
   time '2h'
-  module 'r/gcc/4.4.0'
+  module 'r/gcc/4.5.0'
 
   input:
   tuple val(np), path(syn), val(stype), val(den), path(ts), val(gselection)
@@ -81,7 +81,7 @@ process SimilarityTree {
   cpus '1'
   memory '4GB'
   time '10m'
-  module 'r/gcc/4.4.0'
+  module 'r/gcc/4.5.0'
 
   input:
   path distances
@@ -105,7 +105,7 @@ process PartnerExtraction {
   cpus '2'
   memory '16GB'
   time '60m'
-  module 'r/gcc/4.4.0'
+  module 'r/gcc/4.5.0'
 
   input:
   path me_l
@@ -136,7 +136,7 @@ process NeuropilPartnerAnalysis {
   cpus '1'
   memory '4GB'
   time '10m'
-  module 'r/gcc/4.4.0'
+  module 'r/gcc/4.5.0'
 
   input:
   path partner_data
@@ -161,7 +161,7 @@ workflow {
   main:
   def NP = ['ME_L', 'ME_R', 'LOP_L', 'LOP_R', 'LO_L', 'LO_R']
   def STYPE = ['pre', 'post']
-  def DEN_ALGO = ['asis', 'pertype']
+  def DEN_ALGO = ['asis']
   def MAT_PREFIX = 'int/idv_mat/'
   def SUBSAMPLE_TO = 10000
   def SPARSE_LIMIT = 100
@@ -190,70 +190,70 @@ workflow {
   )
   
 
-  scond_ch = channel
-    .fromList(NP)
-    .map { it ->
-      def synp = MAT_PREFIX + it + '_rotated.csv.gz'
-      return [it, file(synp)]
-    }
-    .combine(channel.fromList(STYPE))
-    .combine(channel.fromList(DEN_ALGO))
-    
-  def TS_BIN = [
-    [1, file(params.tff)],
-    [2, file(params.camf)],
-    [3, file(params.tsf)]
-  ]
-  def TS_LABEL = [
-    [1, 'P15_TF'],
-    [2, 'P15_CAM'],
-    [3, "Selector"]
-  ]
-  g_ch = channel.fromList(TS_BIN)
-    .join(channel.fromList(TS_LABEL))
-    .map { v -> v[1..2] }
-  sel_ch = VisualizeSelector(
-    scond_ch.combine(g_ch),
-    file(params.annf),
-    file(params.metaf),
-    utils_file,
-    SUBSAMPLE_TO,
-    SPARSE_LIMIT
-  )
-
-  tree_ch = SimilarityTree(
-    file(params.distances),
-    file(params.annf),
-    utils_file
-  )
-
-  extraction_ch = PartnerExtraction(
-    file(MAT_PREFIX + 'ME_L_rotated.csv.gz'),
-    file(MAT_PREFIX + 'ME_R_rotated.csv.gz'),
-    file(MAT_PREFIX + 'LO_L_rotated.csv.gz'),
-    file(MAT_PREFIX + 'LO_R_rotated.csv.gz'),
-    file(MAT_PREFIX + 'LOP_L_rotated.csv.gz'),
-    file(MAT_PREFIX + 'LOP_R_rotated.csv.gz'),
-    utils_file
-  )
-
-  partner_ch = NeuropilPartnerAnalysis(
-    extraction_ch,
-    utils_file,
-    channel
-      .fromList( ["All", "ME", "LO", "LOP"] )
-      .combine(
-        channel.fromList( ["pre", "post", "both"] )
-      ),
-    0.03
-  )
+//  scond_ch = channel
+//    .fromList(NP)
+//    .map { it ->
+//      def synp = MAT_PREFIX + it + '_rotated.csv.gz'
+//      return [it, file(synp)]
+//    }
+//    .combine(channel.fromList(STYPE))
+//    .combine(channel.fromList(DEN_ALGO))
+//    
+//  def TS_BIN = [
+//    [1, file(params.tff)],
+//    [2, file(params.camf)],
+//    [3, file(params.tsf)]
+//  ]
+//  def TS_LABEL = [
+//    [1, 'P15_TF'],
+//    [2, 'P15_CAM'],
+//    [3, "Selector"]
+//  ]
+//  g_ch = channel.fromList(TS_BIN)
+//    .join(channel.fromList(TS_LABEL))
+//    .map { v -> v[1..2] }
+//  sel_ch = VisualizeSelector(
+//    scond_ch.combine(g_ch),
+//    file(params.annf),
+//    file(params.metaf),
+//    utils_file,
+//    SUBSAMPLE_TO,
+//    SPARSE_LIMIT
+//  )
+//
+//  tree_ch = SimilarityTree(
+//    file(params.distances),
+//    file(params.annf),
+//    utils_file
+//  )
+//
+//  extraction_ch = PartnerExtraction(
+//    file(MAT_PREFIX + 'ME_L_rotated.csv.gz'),
+//    file(MAT_PREFIX + 'ME_R_rotated.csv.gz'),
+//    file(MAT_PREFIX + 'LO_L_rotated.csv.gz'),
+//    file(MAT_PREFIX + 'LO_R_rotated.csv.gz'),
+//    file(MAT_PREFIX + 'LOP_L_rotated.csv.gz'),
+//    file(MAT_PREFIX + 'LOP_R_rotated.csv.gz'),
+//    utils_file
+//  )
+//
+//  partner_ch = NeuropilPartnerAnalysis(
+//    extraction_ch,
+//    utils_file,
+//    channel
+//      .fromList( ["All", "ME", "LO", "LOP"] )
+//      .combine(
+//        channel.fromList( ["pre", "post", "both"] )
+//      ),
+//    0.03
+//  )
 
   publish:
   annov = out_ch
-  selv = sel_ch
-  tree = tree_ch
-  extraction = extraction_ch
-  partners = partner_ch
+//  selv = sel_ch
+//  tree = tree_ch
+//  extraction = extraction_ch
+//  partners = partner_ch
 }
 
 output {
@@ -279,23 +279,23 @@ output {
       return "${clabel}/${slabel}_${side}"
     }
   }
-  selv {
-    path { input ->
-      def side = input[0].split('_')[1]
-      def gsel = input[1]
-      return "${gsel}/${side}"
-    }
-  }
-  tree {
-    path "similarity_trees/"
-  }
-  extraction {
-    path "partner_data/"
-  }
-  partners {
-    path { input ->
-      def neuropil = input[0]
-      return "neuropil_partners/${neuropil}/"
-    }
-  }
+//  selv {
+//    path { input ->
+//      def side = input[0].split('_')[1]
+//      def gsel = input[1]
+//      return "${gsel}/${side}"
+//    }
+//  }
+//  tree {
+//    path "similarity_trees/"
+//  }
+//  extraction {
+//    path "partner_data/"
+//  }
+//  partners {
+//    path { input ->
+//      def neuropil = input[0]
+//      return "neuropil_partners/${neuropil}/"
+//    }
+//  }
 }

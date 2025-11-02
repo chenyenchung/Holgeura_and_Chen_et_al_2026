@@ -19,9 +19,9 @@ if (file.exists("./utils.r")) {
 ### TODO
 if (interactive()) {
   source("./src/utils.r", chdir = FALSE)
-  argvs$np <- "LO_R"
+  argvs$np <- "LOP_R"
   argvs$syn_type <- "post"
-  argvs$use_preset <- "type_putative"
+  argvs$use_preset <- "type_putative_2"
   argvs$density <- "asis"
   argvs$ann <- "data/visual_neurons_anno.csv"
   argvs$meta <- "data/viz_meta.csv"
@@ -94,6 +94,27 @@ np_coord <- filter_type(
 )
 np_coord <- filter_func(np_coord, opc_anno, syn_type = argvs$syn_type)
 
+color_func <- function() {
+  types <- sort(unique(np_coord$all[[paste(argvs$syn_type, "type", sep = "_")]]))
+  hue_pal <- function(
+    h = c(0, 360) + 15, c = 100, l = 65, h.start = 0, direction = 1
+  ) {
+    function(n) {
+      if (n == 0) return(character(0))
+      hues <- seq(h[1], h[2], length.out = n + 1)[1:n]
+      hues <- (hues + h.start) %% 360
+      if (direction == -1) hues <- rev(hues)
+      grDevices::hcl(h = hues, c = c, l = l)
+    }
+  }
+  colors <- hue_pal()(length(types))
+  names(colors) <- types
+  
+  return(
+    scale_color_manual(values = colors)
+  )
+}
+
 ## Validate that all data points fall within specified axis limits
 x_values <- np_coord[[x_axis]]
 y_values <- np_coord[[y_axis]]
@@ -137,7 +158,7 @@ if (grepl("^ME", argvs$np)) {
     np_coord, n = argvs$subsample * 4, syn_type = argvs$syn_type
   )
 } else {
-  np_coord <- np_coord[!grepl("^(Mi|Dm|Pm)", get(paste0(argvs$syn_type, "_type")))]
+  np_coord <- np_coord[!grepl("^(Mi|Dm|Pm|Sm)", get(paste0(argvs$syn_type, "_type")))]
   np_coord <- rsubsample(
     np_coord, n = argvs$subsample * 2, syn_type = argvs$syn_type
   )
@@ -207,12 +228,15 @@ for (i in names(np_coord)) {
   legendsp <- get_plot_component(dotp, "guide-box", return_all = TRUE) 
   dotp <- dotp + theme(legend.position="none")
   
- if (!inherits(legendsp, "grob")) {
+ if (is.list(legendsp)) {
+   ## Drop empty elements
    to_keep <- sapply(legendsp, function(x) !"zeroGrob" %in% class(x))
-   if (sum(to_keep) != 1) {
-     stop("There should be only 1 legend but ", sum(to_keep), " was found.")
+   legendsp <- legendsp[to_keep]
+   if (length(legendsp) == 1) {
+     legendsp <- legendsp[[1]]
+   } else {
+     stop("Legend extraction error: There is more than 1 item.")
    }
-   legendsp <- legendsp[to_keep][[1]]
  }
   
   ## Manual calculation and interpolation of density
