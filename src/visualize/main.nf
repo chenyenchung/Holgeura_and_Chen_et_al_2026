@@ -1,6 +1,4 @@
 #!/usr/bin/env nextflow
-nextflow.preview.output = true
-
 params.presetf = 'data/viz_preset.csv'
 params.metaf = 'data/viz_meta.csv'
 params.annf = 'data/visual_neurons_anno.csv'

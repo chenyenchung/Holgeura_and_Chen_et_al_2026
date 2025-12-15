@@ -285,7 +285,7 @@ filter_putative <- function(coord, ann, syn_type = "pre") {
   coord[, .row_id := .I]
   coord <- merge(
     coord,
-    ann[, .(cell_type, Notch, newly_ann, ntype, putative_hl1, putative_hl2)],
+    ann[, .(cell_type, Notch, newly_ann, ntype, func, putative_hl1, putative_hl2)],
     by.x = by_x,
     by.y = "cell_type"
   )
