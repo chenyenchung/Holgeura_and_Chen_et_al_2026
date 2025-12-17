@@ -19,7 +19,7 @@ if (file.exists("./utils.r")) {
 ### TODO
 if (interactive()) {
   source("./src/utils.r", chdir = FALSE)
-  argvs$np <- "LO_R"
+  argvs$np <- "ME_R"
   argvs$syn_type <- "post"
   argvs$use_preset <- "type_putative"
   argvs$density <- "asis"
@@ -98,20 +98,6 @@ np_coord <- filter_func(np_coord, opc_anno, syn_type = argvs$syn_type)
 x_values <- np_coord[[x_axis]]
 y_values <- np_coord[[y_axis]]
 
-# Check X axis bounds
-x_out_of_bounds <- sum(x_values < plot_meta$xmin | x_values > plot_meta$xmax, na.rm = TRUE)
-if (x_out_of_bounds > 0) {
-  stop(sprintf("ERROR: %d data points fall outside X-axis limits [%.2f, %.2f]. Check plot_meta boundaries for %s.", 
-               x_out_of_bounds, plot_meta$xmin, plot_meta$xmax, argvs$np))
-}
-
-# Check Y axis bounds  
-y_out_of_bounds <- sum(y_values < plot_meta$ymin | y_values > plot_meta$ymax, na.rm = TRUE)
-if (y_out_of_bounds > 0) {
-  stop(sprintf("ERROR: %d data points fall outside Y-axis limits [%.2f, %.2f]. Check plot_meta boundaries for %s.", 
-               y_out_of_bounds, plot_meta$ymin, plot_meta$ymax, argvs$np))
-}
-
 if (preset$do_highlight && preset$hl_type == "label") {
   if (!preset$hl_col %in% colnames(np_coord)) {
     stop(sprintf("Highlight column not found in data: %s", preset$hl_col))
@@ -182,6 +168,21 @@ for (i in names(np_coord)) {
     sep = "_"
   )
   
+  if (grepl("reverse", plot_meta$axis_1_func)) {
+    min1 <- plot_meta$max1
+    max1 <- plot_meta$min1
+    plot_meta$min1 <- min1
+    plot_meta$max1 <- max1
+  }
+  if (grepl("reverse", plot_meta$axis_2_func)) {
+    min2 <- plot_meta$max2
+    max2 <- plot_meta$min2
+    plot_meta$min2 <- min2
+    plot_meta$max2 <- max2
+  }
+  
+  
+  
   ## Generate the dot plot
   if (preset$do_highlight) {
     dotp <- np_coord[[i]] |>
@@ -199,8 +200,8 @@ for (i in names(np_coord)) {
   dotp <- dotp +
     labs(color = preset$color_guide) +
     theme_ih2025() +
-    scale_axis_1(limits = c(plot_meta$xmin, plot_meta$xmax)) +
-    scale_axis_2(limits = c(plot_meta$ymin, plot_meta$ymax)) +
+    scale_axis_1(limits = c(plot_meta$min1, plot_meta$max1)) +
+    scale_axis_2(limits = c(plot_meta$min2, plot_meta$max2)) +
     color_func()
   
   ## Extract legends to prevent layout fluctuation

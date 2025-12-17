@@ -72,20 +72,6 @@ ts <- fread(argvs$ts, header = TRUE)
 x_values <- np_coord[[x_axis]]
 y_values <- np_coord[[y_axis]]
 
-# Check X axis bounds
-x_out_of_bounds <- sum(x_values < plot_meta$xmin | x_values > plot_meta$xmax, na.rm = TRUE)
-if (x_out_of_bounds > 0) {
-  stop(sprintf("ERROR: %d data points fall outside X-axis limits [%.2f, %.2f]. Check plot_meta boundaries for %s.", 
-               x_out_of_bounds, plot_meta$xmin, plot_meta$xmax, argvs$np))
-}
-
-# Check Y axis bounds  
-y_out_of_bounds <- sum(y_values < plot_meta$ymin | y_values > plot_meta$ymax, na.rm = TRUE)
-if (y_out_of_bounds > 0) {
-  stop(sprintf("ERROR: %d data points fall outside Y-axis limits [%.2f, %.2f]. Check plot_meta boundaries for %s.", 
-               y_out_of_bounds, plot_meta$ymin, plot_meta$ymax, argvs$np))
-}
-
 # Annotate and filter to keep only annotated synapses
 np_coord <- filter_type(
   np_coord, syn_type = argvs$syn_type, sparse_limit = argvs$sparse_limit
@@ -144,6 +130,20 @@ for (i in ts_symbols) {
     next
   }
   
+  if (grepl("reverse", plot_meta$axis_1_func)) {
+    min1 <- plot_meta$max1
+    max1 <- plot_meta$min1
+    plot_meta$min1 <- min1
+    plot_meta$max1 <- max1
+  }
+  if (grepl("reverse", plot_meta$axis_2_func)) {
+    min2 <- plot_meta$max2
+    max2 <- plot_meta$min2
+    plot_meta$min2 <- min2
+    plot_meta$max2 <- max2
+  }
+  
+  
   # Generate plots only if they have data
   if (has_notch_on) {
     ## Generate Notch On plot
@@ -153,8 +153,8 @@ for (i in ts_symbols) {
       labs(color = "Notch Status") +
       theme_ih2025() +
       color_func() +
-      scale_axis_1(limits = c(plot_meta$xmin, plot_meta$xmax)) +
-      scale_axis_2(limits = c(plot_meta$ymin, plot_meta$ymax)) +
+      scale_axis_1(limits = c(plot_meta$min1, plot_meta$max1)) +
+      scale_axis_2(limits = c(plot_meta$min2, plot_meta$max2)) +
       theme(legend.position="none")
   }
   
@@ -166,8 +166,8 @@ for (i in ts_symbols) {
       labs(color = "Notch Status") +
       theme_ih2025() +
       color_func() +
-      scale_axis_1(limits = c(plot_meta$xmin, plot_meta$xmax)) +
-      scale_axis_2(limits = c(plot_meta$ymin, plot_meta$ymax)) +
+      scale_axis_1(limits = c(plot_meta$min1, plot_meta$max1)) +
+      scale_axis_2(limits = c(plot_meta$min2, plot_meta$max2)) +
       theme(legend.position="none")
   }
   

@@ -319,32 +319,32 @@ filter_temporal_all <- function(coord, ann, syn_type = "pre") {
 #' Filter coordinates by gene expression data
 filter_geneexp <- function(coord, ann, ts, syn_type = "pre") {
   by_x <- ifelse(syn_type == "pre", "pre_type", "post_type")
-  
+
   # Extract gene symbols and convert to logical matrix
   ts_symbols <- ts$V1
   ts_data <- ts[, -1]  # Remove first column (gene names)
-  
+
   # Annotate
   ann <- ann[Confident_annotation == "Y"]
   type_lut <- ann$cell_type[!is.na(ann$ozel2021_cluster)]
   names(type_lut) <- ann$ozel2021_cluster[!is.na(ann$ozel2021_cluster)]
-  
+
   ts_data <- ts_data[, colnames(ts_data) %in% names(type_lut), with = FALSE]
   colnames(ts_data) <- type_lut[colnames(ts_data)]
-  
+
   # Convert to logical and transpose to have cell types as rows
   ts_mat <- t(ts_data)
   colnames(ts_mat) <- ts_symbols
-  
+
   # Keep only genes with at least one TRUE value
   ts_mat <- ts_mat[, colSums(ts_mat) > 0, drop = FALSE]
   ts_mat <- as.data.frame(ts_mat)
   ts_mat$cell_type <- row.names(ts_mat)
-  
+
   # Annotate synapses with gene expression status
   coord[, .row_id := .I]
   coord <- merge(coord, ts_mat, by.x = by_x, by.y = "cell_type")
-  
+
   coord <- merge(
     coord,
     ann[, .(cell_type, func, Notch, newly_ann, ntype)],
