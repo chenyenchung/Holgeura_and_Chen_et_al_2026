@@ -353,6 +353,60 @@ filter_geneexp <- function(coord, ann, ts, syn_type = "pre") {
   )
   setorder(coord, .row_id)
   coord[, .row_id := NULL]
-  
+
+  return(coord)
+}
+
+#' Filter coordinates for LC/LPLC upstream partners
+#' @param coord Synapse coordinate data (from rotated matrices)
+#' @param ann Annotation data (visual_neurons_anno.csv)
+#' @param partner_summary Presynaptic partner data (lc_lplc_presynaptic_partners.csv)
+#' @param target_lc_lplc Specific LC/LPLC type to filter for
+#' @param syn_type "pre" or "post" (default "pre" for upstream)
+#' @return Filtered coordinates with contribution_score column
+filter_lc_lplc_upstream <- function(coord, ann, partner_summary,
+                                     target_lc_lplc, syn_type = "pre") {
+  # Filter for target LC/LPLC type
+  target_partners <- partner_summary[post_type == target_lc_lplc]
+
+  # Calculate contribution scores (connectivity fraction)
+  target_partners[, contribution_score := connected_neuron_count / total_neuron_count]
+
+  # Create lookup: pre_type -> contribution_score
+  score_lookup <- target_partners[, .(pre_type, contribution_score)]
+
+  # Determine which column to filter on
+  type_col <- paste0(syn_type, "_type")
+
+  # Filter coordinates to keep only upstream partners
+  coord <- coord[get(type_col) %in% score_lookup$pre_type]
+
+  # Add row ID for order preservation
+  coord[, .row_id := .I]
+
+  # Merge with contribution scores
+  coord <- merge(
+    coord,
+    score_lookup,
+    by.x = type_col,
+    by.y = "pre_type",
+    all.x = TRUE
+  )
+
+  # Merge with annotations (for compatibility with existing viz system)
+  if (nrow(ann) > 0) {
+    coord <- merge(
+      coord,
+      ann[, .(cell_type, func, temporal_label, Notch, ntype)],
+      by.x = type_col,
+      by.y = "cell_type",
+      all.x = TRUE
+    )
+  }
+
+  # Restore order and clean up
+  setorder(coord, .row_id)
+  coord[, .row_id := NULL]
+
   return(coord)
 }
