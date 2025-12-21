@@ -1,5 +1,4 @@
 #!/usr/bin/env nextflow
-nextflow.preview.output = true
 
 // Default parameters
 params.presetf = 'data/viz_preset.csv'
@@ -9,6 +8,7 @@ params.utilsf = 'src/utils.r'
 params.depth_stats_cppf = 'src/stats/bin/depth_stats.cpp'
 params.broad_depth_cppf = 'src/stats/bin/broad_depth.cpp'
 params.combine_scriptf = 'src/stats/bin/combine_results.r'
+params.ref_groupsf = 'data/reference_groups.csv'
 params.n_quantiles = 1000
 params.n_bootstrap = 1000
 params.conf_int = 95
@@ -23,8 +23,8 @@ params.broad_depth_conf_int = 95
 process DepthStatsAnalysis {
   cpus '1'
   memory '8GB'
-  time '1h'
-  module 'r/gcc/4.4.0'
+  time '3h'
+  module 'r/gcc/4.5.0'
 
   input:
   tuple val(np), path(syn), val(stype), val(preset)
@@ -71,7 +71,7 @@ process VisualizeStatSummary {
   cpus '1'
   memory '8GB'
   time '30m'
-  module 'r/gcc/4.4.0'
+  module 'r/gcc/4.5.0'
 
   input:
   tuple val(np), val(preset), val(stype), path(results_csv)
@@ -95,7 +95,7 @@ process CombineResults {
   cpus '1'
   memory '4GB'
   time '15m'
-  module 'r/gcc/4.4.0'
+  module 'r/gcc/4.5.0'
 
   input:
   path csvs
@@ -115,7 +115,7 @@ process FunctionalEnrichment {
   cpus '1'
   memory '4GB'
   time '30m'
-  module 'r/gcc/4.4.0'
+  module 'r/gcc/4.5.0'
 
   input:
   path ann
@@ -134,8 +134,8 @@ process FunctionalEnrichment {
 process BroadDepthAnalysis {
   cpus '1'
   memory '8GB'
-  time '4h'
-  module 'r/gcc/4.4.0'
+  time '8h'
+  module 'r/gcc/4.5.0'
 
   input:
   tuple val(np), path(syn), val(stype), val(preset)
@@ -144,13 +144,14 @@ process BroadDepthAnalysis {
   path presetf
   path utils
   path cppsrc
+  path ref_groups
   val coefficient
   val n_bootstrap
   val conf_int
   val slimit
 
   output:
-  tuple val("${np}"), val("${preset}"), val("${stype}"), 
+  tuple val("${np}"), val("${preset}"), val("${stype}"),
         path('*.csv')
 
   script:
@@ -165,6 +166,7 @@ process BroadDepthAnalysis {
     --preset ${presetf} \
     --utils ${utils} \
     --cppsrc ${cppsrc} \
+    --ref_groups ${ref_groups} \
     --sparse_limit ${slimit} \
     --coefficient ${coefficient} \
     --n_bootstrap ${n_bootstrap} \
@@ -176,7 +178,7 @@ process CombineBroadDepthResults {
   cpus '1'
   memory '4GB'
   time '15m'
-  module 'r/gcc/4.4.0'
+  module 'r/gcc/4.5.0'
 
   input:
   path csvs
@@ -215,7 +217,7 @@ workflow {
       channel.fromPath(file(params.presetf))
         .splitCsv(header:true)
         .map { row -> row.preset }
-        .take( 6 )
+        .take( 8 )
     )
     
     
@@ -263,6 +265,7 @@ workflow {
     file(params.presetf),
     file(params.utilsf),
     file(params.broad_depth_cppf),
+    file(params.ref_groupsf),
     params.broad_depth_coefficient,
     params.broad_depth_n_bootstrap,
     params.broad_depth_conf_int,
