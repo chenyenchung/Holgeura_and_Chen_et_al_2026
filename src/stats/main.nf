@@ -217,7 +217,7 @@ workflow {
       channel.fromPath(file(params.presetf))
         .splitCsv(header:true)
         .map { row -> row.preset }
-        .take( 8 )
+        .take( 11 )
     )
     
     

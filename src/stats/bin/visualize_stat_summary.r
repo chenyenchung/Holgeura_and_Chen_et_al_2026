@@ -284,14 +284,14 @@ generate_depth_stats_report <- function(test_results, output_prefix) {
   cat("Generating Wasserstein CI plot...\n")
   ci_plot <- plot_wasserstein_ci(test_results)
   ci_file <- paste0(output_prefix, "_wasserstein_ci.pdf")
-  ggsave(plot = ci_plot, filename = ci_file, width = point_whisker_width, height = point_whisker_height, dpi = 300)
+  ggsave(plot = ci_plot, filename = ci_file, width = point_whisker_width, height = point_whisker_height, dpi = 300, limitsize = FALSE)
   generated_files <- c(generated_files, ci_file)
   
   # Generate Wasserstein distance heatmap
   cat("Generating Wasserstein heatmap...\n")
   w_heatmap <- plot_wasserstein_heatmap(test_results)
   w_file <- paste0(output_prefix, "_wasserstein_heatmap.pdf")
-  ggsave(plot = w_heatmap, filename = w_file, width = heatmap_size + 1, height = heatmap_size, dpi = 300)
+  ggsave(plot = w_heatmap, filename = w_file, width = heatmap_size + 1, height = heatmap_size, dpi = 300, limitsize = FALSE)
   generated_files <- c(generated_files, w_file)
   
   # Generate K-S plots if data is available
@@ -299,7 +299,7 @@ generate_depth_stats_report <- function(test_results, output_prefix) {
     cat("Generating K-S boxplot...\n")
     ks_boxplot <- plot_ks_boxplot(test_results)
     ks_file <- paste0(output_prefix, "_ks_boxplot.pdf")
-    ggsave(plot = ks_boxplot, filename = ks_file, width = point_whisker_width, height = point_whisker_height, dpi = 300)
+    ggsave(plot = ks_boxplot, filename = ks_file, width = point_whisker_width, height = point_whisker_height, dpi = 300, limitsize = FALSE)
     generated_files <- c(generated_files, ks_file)
     
     if ("ks_pval_corrected_median" %in% colnames(test_results)) {
@@ -307,7 +307,7 @@ generate_depth_stats_report <- function(test_results, output_prefix) {
       ks_heatmap <- plot_ks_significance_heatmap(test_results)
       if (!is.null(ks_heatmap)) {
         ks_hm_file <- paste0(output_prefix, "_ks_significance_heatmap.pdf")
-        ggsave(plot = ks_heatmap, filename = ks_hm_file, width = heatmap_size + 1, height = heatmap_size, dpi = 300)
+        ggsave(plot = ks_heatmap, filename = ks_hm_file, width = heatmap_size + 1, height = heatmap_size, dpi = 300, limitsize = FALSE)
         generated_files <- c(generated_files, ks_hm_file)
       }
     }

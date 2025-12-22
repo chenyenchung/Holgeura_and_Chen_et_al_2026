@@ -81,7 +81,21 @@ combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
         cat("  ", dir, ":", direction_counts[dir], "\n")
       }
       cat("\n")
-      
+
+      # Neuron count summary
+      if ("n_neurons_interest" %in% colnames(all_results)) {
+        cat("Neuron count summary:\n")
+        cat("  Interest - Min:", min(all_results$n_neurons_interest, na.rm = TRUE),
+            "Median:", median(all_results$n_neurons_interest, na.rm = TRUE),
+            "Max:", max(all_results$n_neurons_interest, na.rm = TRUE), "\n")
+        cat("  Superficial - Min:", min(all_results$n_neurons_superficial, na.rm = TRUE),
+            "Median:", median(all_results$n_neurons_superficial, na.rm = TRUE),
+            "Max:", max(all_results$n_neurons_superficial, na.rm = TRUE), "\n")
+        cat("  Deep - Min:", min(all_results$n_neurons_deep, na.rm = TRUE),
+            "Median:", median(all_results$n_neurons_deep, na.rm = TRUE),
+            "Max:", max(all_results$n_neurons_deep, na.rm = TRUE), "\n\n")
+      }
+
       # P-value summary
       if ("p_value_exceeds_threshold" %in% colnames(all_results)) {
         p_vals <- all_results$p_value_exceeds_threshold
@@ -107,7 +121,36 @@ combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
           cat("  Significant (FDR p < 0.05):", sum(valid_fdr < 0.05), "/", length(valid_fdr), "\n\n")
         }
       }
-      
+
+      # Observed bias_ratio summary
+      if ("observed_bias_ratio" %in% colnames(all_results)) {
+        bias_vals <- all_results$observed_bias_ratio
+        valid_bias <- bias_vals[!is.na(bias_vals)]
+        if (length(valid_bias) > 0) {
+          coeff <- unique(all_results$coefficient)[1]
+          cat("Observed bias_ratio summary:\n")
+          cat("  Min:", round(min(valid_bias), 4), "\n")
+          cat("  Median:", round(median(valid_bias), 4), "\n")
+          cat("  Max:", round(max(valid_bias), 4), "\n")
+          cat("  |bias_ratio| > coefficient (", coeff, "):",
+              sum(abs(valid_bias) > coeff), "/", length(valid_bias), "\n\n")
+        }
+      }
+
+      # Bias ratio p-value summary
+      if ("p_value_bias_ratio" %in% colnames(all_results)) {
+        bias_p_vals <- all_results$p_value_bias_ratio
+        valid_bias_p <- bias_p_vals[!is.na(bias_p_vals)]
+        if (length(valid_bias_p) > 0) {
+          cat("Bias ratio P-value summary:\n")
+          cat("  Min:", round(min(valid_bias_p), 4), "\n")
+          cat("  Median:", round(median(valid_bias_p), 4), "\n")
+          cat("  Max:", round(max(valid_bias_p), 4), "\n")
+          cat("  Significant (bias ratio p < 0.05):",
+              sum(valid_bias_p < 0.05), "/", length(valid_bias_p), "\n\n")
+        }
+      }
+
       # Top significant results (prioritize FDR corrected if available)
       if ("p_value_fdr" %in% colnames(all_results)) {
         sig_results <- all_results[all_results$p_value_fdr < 0.05 & !is.na(all_results$p_value_fdr), ]
@@ -123,11 +166,12 @@ combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
         cat(sprintf("Significant results (%s < 0.05):\n", p_label))
         sig_results <- sig_results[order(sig_results[[p_col]]), ]  # Sort by p-value
         for (i in 1:min(10, nrow(sig_results))) {
-          cat(sprintf("  %s (%s = %.4f, direction = %s, distance_diff = %.3f)\n", 
-                     sig_results$types_of_interest[i], 
+          cat(sprintf("  %s (%s = %.4f, direction = %s, bias_ratio = %.3f, distance_diff = %.3f)\n",
+                     sig_results$types_of_interest[i],
                      p_label,
                      sig_results[[p_col]][i],
                      sig_results$direction[i],
+                     sig_results$observed_bias_ratio[i],
                      sig_results$observed_distance_diff[i]))
         }
         cat("\n")
@@ -144,22 +188,13 @@ combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
       cat("\n")
       
       # Wasserstein effect size summary
-      # Check for both naming conventions (wasserstein_* and test_statistic_*)
-      median_col <- if ("wasserstein_median" %in% colnames(all_results)) {
-        "wasserstein_median"
-      } else if ("test_statistic_median" %in% colnames(all_results)) {
-        "test_statistic_median"
-      } else {
-        NULL
-      }
-      
-      if (!is.null(median_col)) {
+      if ("wasserstein_median" %in% colnames(all_results)) {
         cat("Wasserstein effect size summary:\n")
-        cat("  Min:", round(min(all_results[[median_col]], na.rm = TRUE), 4), "\n")
-        cat("  Q1: ", round(quantile(all_results[[median_col]], 0.25, na.rm = TRUE), 4), "\n")
-        cat("  Median:", round(median(all_results[[median_col]], na.rm = TRUE), 4), "\n")
-        cat("  Q3: ", round(quantile(all_results[[median_col]], 0.75, na.rm = TRUE), 4), "\n")
-        cat("  Max:", round(max(all_results[[median_col]], na.rm = TRUE), 4), "\n\n")
+        cat("  Min:", round(min(all_results$wasserstein_median, na.rm = TRUE), 4), "\n")
+        cat("  Q1: ", round(quantile(all_results$wasserstein_median, 0.25, na.rm = TRUE), 4), "\n")
+        cat("  Median:", round(median(all_results$wasserstein_median, na.rm = TRUE), 4), "\n")
+        cat("  Q3: ", round(quantile(all_results$wasserstein_median, 0.75, na.rm = TRUE), 4), "\n")
+        cat("  Max:", round(max(all_results$wasserstein_median, na.rm = TRUE), 4), "\n\n")
       }
       
       # KS p-value summary if available
@@ -179,40 +214,17 @@ combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
       }
       
       # Top effect sizes
-      # Determine column names based on what's available
-      median_col <- if ("wasserstein_median" %in% colnames(all_results)) {
-        "wasserstein_median"
-      } else if ("test_statistic_median" %in% colnames(all_results)) {
-        "test_statistic_median"
-      } else {
-        NULL
-      }
-      
-      lower_col <- if ("wasserstein_lower" %in% colnames(all_results)) {
-        "wasserstein_lower"
-      } else if ("test_statistic_lower" %in% colnames(all_results)) {
-        "test_statistic_lower"
-      } else {
-        NULL
-      }
-      
-      upper_col <- if ("wasserstein_upper" %in% colnames(all_results)) {
-        "wasserstein_upper"
-      } else if ("test_statistic_upper" %in% colnames(all_results)) {
-        "test_statistic_upper"
-      } else {
-        NULL
-      }
-      
-      if (!is.null(median_col) && !is.null(lower_col) && !is.null(upper_col)) {
+      if ("wasserstein_median" %in% colnames(all_results) &&
+          "wasserstein_lower" %in% colnames(all_results) &&
+          "wasserstein_upper" %in% colnames(all_results)) {
         cat("Top 10 largest Wasserstein effect sizes:\n")
-        top_effects <- all_results[order(-all_results[[median_col]])][1:min(10, nrow(all_results))]
+        top_effects <- all_results[order(-all_results$wasserstein_median)][1:min(10, nrow(all_results))]
         for (i in 1:nrow(top_effects)) {
-          cat(sprintf("  %s vs %s (Wasserstein = %.3f, CI: %.3f-%.3f)\n", 
-                     top_effects$group1[i], top_effects$group2[i], 
-                     top_effects[[median_col]][i], 
-                     top_effects[[lower_col]][i], 
-                     top_effects[[upper_col]][i]))
+          cat(sprintf("  %s vs %s (Wasserstein = %.3f, CI: %.3f-%.3f)\n",
+                     top_effects$group1[i], top_effects$group2[i],
+                     top_effects$wasserstein_median[i],
+                     top_effects$wasserstein_lower[i],
+                     top_effects$wasserstein_upper[i]))
         }
       }
     }

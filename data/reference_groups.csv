@@ -1,0 +1,7 @@
+neuropil,ref_superficial,ref_deep,pattern_type,description
+ME_L,^Dm,^Pm,regex,Medulla left: Dm types mark superficial layers; Pm types mark deep layers
+ME_R,^Dm,^Pm,regex,Medulla right: Dm types mark superficial layers; Pm types mark deep layers
+LOP_L,T(4|5)(a|b)$,T(4|5)(c|d)$,regex,Lobula plate left: T4/T5a/b are superficial; T4/T5c/d are deep
+LOP_R,T(4|5)(a|b)$,T(4|5)(c|d)$,regex,Lobula plate right: T4/T5a/b are superficial; T4/T5c/d are deep
+LO_L,Tm1;Tm2;Tm4,Tm20;Tm5a;Tm5b;Tm5c;Tm5d;Tm5e;Tm5f,exact,Lobula left: Tm1/2/4 are superficial; Tm20/5* are deep
+LO_R,Tm1;Tm2;Tm4,Tm20;Tm5a;Tm5b;Tm5c;Tm5d;Tm5e;Tm5f,exact,Lobula right: Tm1/2/4 are superficial; Tm20/5* are deep

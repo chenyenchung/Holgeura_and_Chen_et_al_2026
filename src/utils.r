@@ -121,6 +121,73 @@ scale_color_type <- function() {
   )
 }
 
+#' Color scale for developmental origins (Version A - origin-level)
+#' Used for Slp/Dll comparison and mega plot
+scale_color_dev_origin <- function() {
+  f <- scale_color_manual(
+    name = "Developmental Origin",
+    values = c(
+      "Slp" = "#E41A1C",           # Red
+      "Dll" = "#377EB8",           # Blue
+      "tOPC" = "#4DAF4A",          # Green
+      "vtIPC" = "#984EA3",         # Purple
+      "central_brain" = "#FF7F00", # Orange
+      "unknown" = "#A65628",       # Brown
+      "non_partner" = "grey92"     # Light grey
+    )
+  )
+  return(f)
+}
+
+#' Color scale for temporal origins (Version B)
+#' Maps upstream neuron temporal windows to developmental categories
+scale_color_temporal_origin <- function() {
+  f <- scale_color_manual(
+    name = "Upstream Temporal Origin",
+    values = c(
+      "early_temporal" = "#79A68C",   # Green
+      "mid_temporal" = "#EFA900",     # Orange
+      "late_temporal" = "#7F55A2",    # Purple
+      "unknown_temporal" = "#A65628", # Brown
+      "non_partner" = "grey92"        # Light grey
+    )
+  )
+  return(f)
+}
+
+#' Color scale for LC/LPLC types (Version A - shaded by specific type)
+#' Generates gradient shades of a base color for each LC/LPLC type
+#' @param lc_lplc_types Vector of LC/LPLC type names
+#' @param base_color Base color for the gradient (hex code)
+#' @return ggplot scale_color_manual object
+scale_color_lc_lplc_shaded <- function(lc_lplc_types, base_color) {
+  # Generate shades using colorRampPalette
+  n_types <- length(lc_lplc_types)
+
+  # Convert hex to RGB
+  base_rgb <- col2rgb(base_color) / 255
+
+  # Create lighter and darker versions
+  light_rgb <- pmin(base_rgb * 1.3 + 0.3, 1)
+  dark_rgb <- pmax(base_rgb * 0.7, 0)
+
+  light_hex <- rgb(light_rgb[1], light_rgb[2], light_rgb[3])
+  dark_hex <- rgb(dark_rgb[1], dark_rgb[2], dark_rgb[3])
+
+  # Generate gradient
+  colors <- colorRampPalette(c(light_hex, base_color, dark_hex))(n_types)
+
+  # Create color map
+  color_map <- setNames(colors, lc_lplc_types)
+  color_map["non_partner"] <- "grey92"
+
+  f <- scale_color_manual(
+    name = "LC/LPLC Type",
+    values = color_map
+  )
+  return(f)
+}
+
 # ============================================================================
 # DATA PROCESSING UTILITIES
 # ============================================================================
@@ -285,7 +352,7 @@ filter_putative <- function(coord, ann, syn_type = "pre") {
   coord[, .row_id := .I]
   coord <- merge(
     coord,
-    ann[, .(cell_type, Notch, newly_ann, ntype, func, putative_hl1, putative_hl2)],
+    ann[, .(cell_type, Notch, newly_ann, ntype, func, putative_hl1, putative_hl2, putative_hl3)],
     by.x = by_x,
     by.y = "cell_type"
   )

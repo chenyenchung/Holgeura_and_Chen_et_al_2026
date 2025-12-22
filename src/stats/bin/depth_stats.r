@@ -213,7 +213,26 @@ if (interactive()) {
   argvs$ks_n_iterations <- if (is.null(argvs$ks_n_iterations)) 1000L else as.integer(argvs$ks_n_iterations)
   argvs$ks_correction_method <- if (is.null(argvs$ks_correction_method)) "fdr" else argvs$ks_correction_method
   syn_path <- argvs$synf
-  argvs$cppsrc <- "./depth_stats.cpp"
+
+  # Robust file path resolution for C++ source
+  if (is.null(argvs$cppsrc)) {
+    # Try multiple potential paths
+    candidates <- c(
+      "./depth_stats.cpp",
+      "src/stats/bin/depth_stats.cpp"
+    )
+    found <- candidates[file.exists(candidates)][1]
+    if (is.na(found)) {
+      stop("Cannot find depth_stats.cpp in expected locations: ",
+           paste(candidates, collapse=", "))
+    }
+    argvs$cppsrc <- found
+  }
+}
+
+# Verify C++ source file exists before sourcing
+if (!file.exists(argvs$cppsrc)) {
+  stop(sprintf("C++ source file not found: %s", argvs$cppsrc))
 }
 
 Rcpp::sourceCpp(argvs$cppsrc)
@@ -275,6 +294,11 @@ if (preset$notch_split) {
 
 # Calculate Quantile Wasserstein distance for each split
 all_test_results <- list()
+
+# If grouping by cell_type, we need to decide whether it is pre- or post.
+if (preset$color_by == "cell_type") {
+  preset$color_by <- paste(argvs$syn_type, "type", sep = "_")
+}
 
 for (i in names(np_coord_list)) {
   current_data <- np_coord_list[[i]]

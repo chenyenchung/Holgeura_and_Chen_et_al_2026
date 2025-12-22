@@ -4,26 +4,52 @@ suppressPackageStartupMessages(library(R.utils))
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(Rcpp))
 
-perform_broad_depth_analysis <- function(data, ref_sup_depths, ref_deep_depths, 
-                                       types_of_interest, coefficient = 0.25,
+perform_broad_depth_analysis <- function(data, ref_sup_mapping, ref_deep_mapping,
+                                       types_of_interest, coefficient = 0.5,
                                        n_bootstrap = 1000, conf_int = 95,
-                                       threshold_type = "variable", seed = NULL) {
-  
+                                       seed = NULL, syn_type = "pre",
+                                       ref_superficial, ref_deep,
+                                       data_superficial, data_deep) {
+
   interest_data <- data[group %in% types_of_interest]
-  
-  # Extract depth values
-  interest_depths <- interest_data$depth
-  
-  # Call C++ bootstrap function
-  bootstrap_result <- perform_broad_depth_bootstrap(
-    ref_sup_depths = ref_sup_depths,
-    ref_deep_depths = ref_deep_depths,
-    interest_depths = interest_depths,
+
+  # Prepare interest group neuron mapping
+  # For interest group: only one role (pre or post depending on syn_type)
+  interest_col <- if (syn_type == "pre") "pre_root_id" else "post_root_id"
+  depth_col <- "depth"  # Already set to correct depth in test_data
+
+  interest_data_prep <- interest_data[, .(
+    neuron_id = get(interest_col),
+    depth = get(depth_col)
+  )]
+  setorder(interest_data_prep, neuron_id)
+  interest_neuron_info <- interest_data_prep[, .N, by = neuron_id]
+  interest_neuron_info[, start_idx := c(0, cumsum(N[-.N]))]
+
+  interest_mapping <- list(
+    depths = interest_data_prep$depth,
+    neuron_starts = interest_neuron_info$start_idx,
+    neuron_counts = interest_neuron_info$N
+  )
+
+  # Call C++ neuron-level bootstrap function
+  bootstrap_result <- perform_broad_depth_bootstrap_neuron_level(
+    ref_sup_depths = ref_sup_mapping$depths,
+    ref_sup_neuron_starts = as.integer(ref_sup_mapping$neuron_starts),
+    ref_sup_neuron_counts = as.integer(ref_sup_mapping$neuron_counts),
+
+    ref_deep_depths = ref_deep_mapping$depths,
+    ref_deep_neuron_starts = as.integer(ref_deep_mapping$neuron_starts),
+    ref_deep_neuron_counts = as.integer(ref_deep_mapping$neuron_counts),
+
+    interest_depths = interest_mapping$depths,
+    interest_neuron_starts = as.integer(interest_mapping$neuron_starts),
+    interest_neuron_counts = as.integer(interest_mapping$neuron_counts),
+
     coefficient = coefficient,
     n_bootstrap = n_bootstrap,
     conf_int = conf_int,
-    threshold_type = threshold_type,
-    seed = seed
+    seed = if (is.null(seed)) NULL else as.integer(seed)
   )
   
   # Determine observed direction based on bootstrap results
@@ -43,12 +69,16 @@ perform_broad_depth_analysis <- function(data, ref_sup_depths, ref_deep_depths,
     n_samples_interest = nrow(interest_data),
     n_samples_superficial = nrow(data_superficial),
     n_samples_deep = nrow(data_deep),
+    n_neurons_interest = bootstrap_result$n_neurons_interest,
+    n_neurons_superficial = bootstrap_result$n_neurons_sup,
+    n_neurons_deep = bootstrap_result$n_neurons_deep,
     observed_sup_d = bootstrap_result$observed_sup_d,
     observed_deep_d = bootstrap_result$observed_deep_d,
     observed_distance_diff = bootstrap_result$observed_distance_diff,
     observed_delta_thres_base = bootstrap_result$observed_delta_thres_base,
     observed_delta_thres = bootstrap_result$observed_delta_thres,
     observed_test_statistic = bootstrap_result$observed_test_statistic,
+    observed_bias_ratio = bootstrap_result$observed_bias_ratio,
     bootstrap_distance_diff_median = bootstrap_result$bootstrap_distance_diff_median,
     bootstrap_distance_diff_lower = bootstrap_result$bootstrap_distance_diff_lower,
     bootstrap_distance_diff_upper = bootstrap_result$bootstrap_distance_diff_upper,
@@ -58,10 +88,13 @@ perform_broad_depth_analysis <- function(data, ref_sup_depths, ref_deep_depths,
     bootstrap_test_stat_median = bootstrap_result$bootstrap_test_stat_median,
     bootstrap_test_stat_lower = bootstrap_result$bootstrap_test_stat_lower,
     bootstrap_test_stat_upper = bootstrap_result$bootstrap_test_stat_upper,
+    bootstrap_bias_ratio_median = bootstrap_result$bootstrap_bias_ratio_median,
+    bootstrap_bias_ratio_lower = bootstrap_result$bootstrap_bias_ratio_lower,
+    bootstrap_bias_ratio_upper = bootstrap_result$bootstrap_bias_ratio_upper,
     coefficient = coefficient,
     p_value_exceeds_threshold = bootstrap_result$p_value_exceeds_threshold,
+    p_value_bias_ratio = bootstrap_result$p_value_bias_ratio,
     direction = observed_direction,
-    threshold_type = threshold_type,
     conf_level = conf_int,
     n_bootstrap = n_bootstrap
   )
@@ -74,12 +107,15 @@ argvs <- commandArgs(trailingOnly = TRUE, asValues = TRUE)
 if (file.exists("./utils.r")) {
   source("./utils.r", chdir = FALSE)
 }
+if (file.exists("./src/utils.r")) {
+  source("src/utils.r", chdir = FALSE)
+}
 
 if (interactive()) {
   source("src/utils.r")
-  argvs$np <- "LOP_L"
+  argvs$np <- "LO_L"
   argvs$syn_type <- "pre"
-  argvs$use_preset <- "subsystem_known"
+  argvs$use_preset <- "type_putative"
   argvs$ann <- "data/visual_neurons_anno.csv"
   argvs$meta <- "data/viz_meta.csv"
   argvs$preset <- "data/viz_preset.csv"
@@ -91,21 +127,36 @@ if (interactive()) {
   syn_path <- file.path("int/idv_mat/", paste0(argvs$np, "_rotated.csv.gz"))
 } else {
   argvs$sparse_limit <- as.integer(argvs$sparse_limit)
-  argvs$coefficient <- if (is.null(argvs$coefficient)) 0.25 else as.numeric(argvs$coefficient)
+  argvs$coefficient <- if (is.null(argvs$coefficient)) 0.5 else as.numeric(argvs$coefficient)
   argvs$n_bootstrap <- if (is.null(argvs$n_bootstrap)) 1000L else as.integer(argvs$n_bootstrap)
   argvs$conf_int <- if (is.null(argvs$conf_int)) 95.0 else as.numeric(argvs$conf_int)
   syn_path <- argvs$synf
-  if (is.null(argvs$cppsrc)) argvs$cppsrc <- "./broad_depth.cpp"
   if (is.null(argvs$preset)) argvs$preset <- "./viz_preset.csv"
   if (is.null(argvs$use_preset)) stop("use_preset parameter is required")
+
+  # Robust file path resolution for C++ source
+  if (is.null(argvs$cppsrc)) {
+    # Try multiple potential paths
+    candidates <- c(
+      "./broad_depth.cpp",
+      "src/stats/bin/broad_depth.cpp"
+    )
+    found <- candidates[file.exists(candidates)][1]
+    if (is.na(found)) {
+      stop("Cannot find broad_depth.cpp in expected locations: ",
+           paste(candidates, collapse=", "))
+    }
+    argvs$cppsrc <- found
+  }
+}
+
+# Verify C++ source file exists before sourcing
+if (!file.exists(argvs$cppsrc)) {
+  stop(sprintf("C++ source file not found: %s", argvs$cppsrc))
 }
 
 # Compile C++ source
-if (file.exists(argvs$cppsrc)) {
-  Rcpp::sourceCpp(argvs$cppsrc)
-} else {
-  stop(sprintf("C++ source file not found: %s", argvs$cppsrc))
-}
+Rcpp::sourceCpp(argvs$cppsrc)
 
 plot_meta_all <- validate_config_file(
   argvs$meta,
@@ -134,6 +185,9 @@ validate_functions(preset, plot_meta)
 opc_anno <- validate_config_file(argvs$ann, c("cell_type"))
 np_coord <- fread(syn_path)
 
+# Store unfiltered copy for reference group calculation
+np_coord_unfiltered <- copy(np_coord)
+
 # Apply same filtering as visualization
 filter_func <- get(preset$filter_func)
 np_coord <- filter_type(
@@ -146,34 +200,130 @@ available_groups <- unique(
   c(np_coord$pre_type, np_coord$post_type)
 )
 
-# Define reference groups based on neuropil (keeping existing logic for reference groups)
-if (grepl("^ME_", argvs$np)) {
-  ref_superficial <- grep("^Dm", available_groups, value = TRUE)
-  ref_deep <- grep("^Pm", available_groups, value = TRUE)
-} else if (grepl("^LOP_", argvs$np)) {
-  ref_superficial <- grep("T(4|5)(a|b)$", available_groups, value = TRUE)
-  ref_deep <- grep("T(4|5)(c|d)$", available_groups, value = TRUE)
-} else if (grepl("^LO_", argvs$np)) {
-  ref_superficial <- c("Tm1", "Tm2", "Tm4")
-  ref_deep <- c("Tm20", "Tm5a", "Tm5b", "Tm5c", "Tm5d", "Tm5e", "Tm5f")
+# Load reference groups from configuration file
+ref_groups_file <- if (!is.null(argvs$ref_groups)) {
+  argvs$ref_groups
+} else if (file.exists("data/reference_groups.csv")) {
+  "data/reference_groups.csv"
+} else if (file.exists("../data/reference_groups.csv")) {
+  "../data/reference_groups.csv"
 } else {
-  # For other neuropils, use a generic approach or skip analysis
-  ref_superficial <- character(0)
-  ref_deep <- character(0)
+  NULL
 }
 
-ref_superficial <- intersect(ref_superficial, available_groups)
-ref_deep <- intersect(ref_deep, available_groups)
+if (!is.null(ref_groups_file) && file.exists(ref_groups_file)) {
+  # Load reference groups from CSV
+  ref_groups_config <- fread(ref_groups_file)
+  ref_config <- ref_groups_config[neuropil == argvs$np]
 
-data_superficial <- np_coord[
+  if (nrow(ref_config) > 0) {
+    # Apply pattern based on type
+    if (ref_config$pattern_type == "regex") {
+      ref_superficial <- grep(ref_config$ref_superficial, available_groups, value = TRUE)
+      ref_deep <- grep(ref_config$ref_deep, available_groups, value = TRUE)
+    } else if (ref_config$pattern_type == "exact") {
+      ref_superficial <- intersect(
+        strsplit(ref_config$ref_superficial, ";")[[1]],
+        available_groups
+      )
+      ref_deep <- intersect(
+        strsplit(ref_config$ref_deep, ";")[[1]],
+        available_groups
+      )
+    } else {
+      warning("Unknown pattern_type in reference_groups.csv: ", ref_config$pattern_type)
+      ref_superficial <- character(0)
+      ref_deep <- character(0)
+    }
+  } else {
+    warning("No reference groups found for neuropil: ", argvs$np)
+    ref_superficial <- character(0)
+    ref_deep <- character(0)
+  }
+} else {
+  # Fallback to hardcoded reference groups with deprecation warning
+  warning("Reference groups configuration file not found. Using hardcoded values. ",
+          "Please create data/reference_groups.csv for future analyses.")
+
+  if (grepl("^ME_", argvs$np)) {
+    ref_superficial <- grep("^Dm", available_groups, value = TRUE)
+    ref_deep <- grep("^Pm", available_groups, value = TRUE)
+  } else if (grepl("^LOP_", argvs$np)) {
+    ref_superficial <- grep("T(4|5)(a|b)$", available_groups, value = TRUE)
+    ref_deep <- grep("T(4|5)(c|d)$", available_groups, value = TRUE)
+  } else if (grepl("^LO_", argvs$np)) {
+    ref_superficial <- c("Tm1", "Tm2", "Tm4")
+    ref_deep <- c("Tm20", "Tm5a", "Tm5b", "Tm5c", "Tm5d", "Tm5e", "Tm5f")
+  } else {
+    # For other neuropils, use a generic approach or skip analysis
+    ref_superficial <- character(0)
+    ref_deep <- character(0)
+  }
+}
+
+# Log reference group composition for validation
+if (length(ref_superficial) > 0 || length(ref_deep) > 0) {
+  cat(sprintf("\n=== Reference Groups for %s (syn_type=%s) ===\n", argvs$np, argvs$syn_type))
+  cat(sprintf("Superficial (%d types): %s\n",
+              length(ref_superficial),
+              paste(sort(ref_superficial), collapse=", ")))
+  cat(sprintf("Deep (%d types): %s\n",
+              length(ref_deep),
+              paste(sort(ref_deep), collapse=", ")))
+  cat("==========================================\n\n")
+}
+
+# Helper function to create neuron-to-synapse mapping for neuron-level bootstrap
+prepare_neuron_depth_mapping <- function(data, neuron_types, syn_type) {
+  # For reference groups: combine pre & post neurons
+  # Create "pre_<root_id>" and "post_<root_id>" to distinguish same neuron in different roles
+
+  # Collect all neurons and their synapses' depths
+  pre_part <- data[pre_type %in% neuron_types, .(
+    neuron_id = paste0("pre_", pre_root_id),
+    depth = pre_rz
+  )]
+  post_part <- data[post_type %in% neuron_types, .(
+    neuron_id = paste0("post_", post_root_id),
+    depth = post_rz
+  )]
+  all_data <- rbind(pre_part, post_part)
+
+  # Sort by neuron_id to group synapses from same neuron
+  setorder(all_data, neuron_id)
+
+  # Create neuron grouping info: for each unique neuron, where its synapses start and how many
+  neuron_info <- all_data[, .N, by = neuron_id]
+  neuron_info[, start_idx := c(0, cumsum(N[-.N]))]  # 0-based indexing for C++
+
+  return(list(
+    depths = all_data$depth,
+    neuron_starts = neuron_info$start_idx,
+    neuron_counts = neuron_info$N
+  ))
+}
+
+# Use unfiltered data for reference groups
+# Reference types are selected landmarks and should include ALL their connections
+data_superficial <- np_coord_unfiltered[
   pre_type %in% ref_superficial | post_type %in% ref_superficial
 ]
-data_deep <- np_coord[
+data_deep <- np_coord_unfiltered[
   pre_type %in% ref_deep | post_type %in% ref_deep
 ]
 
-depths_superficial <- c(data_superficial$pre_rz, data_superficial$post_rz)
-depths_deep <- c(data_deep$pre_rz, data_deep$post_rz)
+# Apply z-axis inversion BEFORE creating neuron mappings
+# This ensures reference depths match the coordinate system used for test data
+if (plot_meta$zinvert) {
+  data_superficial$pre_rz <- data_superficial$pre_rz * -1
+  data_superficial$post_rz <- data_superficial$post_rz * -1
+  data_deep$pre_rz <- data_deep$pre_rz * -1
+  data_deep$post_rz <- data_deep$post_rz * -1
+}
+
+# Create neuron-level mappings for reference groups
+ref_sup_mapping <- prepare_neuron_depth_mapping(data_superficial, ref_superficial, argvs$syn_type)
+ref_deep_mapping <- prepare_neuron_depth_mapping(data_deep, ref_deep, argvs$syn_type)
 
 # Handle highlighting if specified
 if (preset$do_highlight && preset$hl_type == "label") {
@@ -197,6 +347,11 @@ if (preset$notch_split) {
 # Perform broad depth analysis for each split
 all_test_results <- list()
 
+# If grouping by cell_type, we need to decide whether it is pre- or post.
+if (preset$color_by == "cell_type") {
+  preset$color_by <- paste(argvs$syn_type, "type", sep = "_")
+}
+
 for (i in names(np_coord_list)) {
   current_data <- np_coord_list[[i]]
   
@@ -211,6 +366,8 @@ for (i in names(np_coord_list)) {
       group = get(preset$color_by),
       pre_type,
       post_type,
+      pre_root_id,
+      post_root_id,
       depth = get(paste(argvs$syn_type, "rz", sep = "_"))
     )]
   } else {
@@ -218,6 +375,8 @@ for (i in names(np_coord_list)) {
       group = get(preset$color_by),
       pre_type,
       post_type,
+      pre_root_id,
+      post_root_id,
       depth = get(paste(argvs$syn_type, "rz", sep = "_"))
     )]
   }
@@ -235,13 +394,18 @@ for (i in names(np_coord_list)) {
     split_results <- lapply(groups_to_test, function(type) {
       out <- perform_broad_depth_analysis(
         test_data,
-        ref_sup_depths = depths_superficial,
-        ref_deep_depths = depths_deep,
+        ref_sup_mapping = ref_sup_mapping,
+        ref_deep_mapping = ref_deep_mapping,
         types_of_interest = type,
         coefficient = argvs$coefficient,
         n_bootstrap = argvs$n_bootstrap,
-        conf_int = argvs$conf_int
-      ) 
+        conf_int = argvs$conf_int,
+        syn_type = argvs$syn_type,
+        ref_superficial = ref_superficial,
+        ref_deep = ref_deep,
+        data_superficial = data_superficial,
+        data_deep = data_deep
+      )
       return(out)
     })
     
@@ -250,7 +414,7 @@ for (i in names(np_coord_list)) {
       split_result_df <- do.call(rbind.data.frame, split_results)
       split_result_df$split <- i
       all_test_results[[i]] <- split_result_df
-    } else if (length(split_results) == 0) {
+    } else if (length(split_results) == 1) {
       split_result_df <- as.data.frame(split_results[[1]])
       split_result_df$split <- i
       all_test_results[[i]] <- split_result_df
@@ -275,28 +439,56 @@ if (length(all_test_results) > 0) {
     result$preset <- argvs$use_preset
   }
   
-  # Apply FDR correction for multiple testing
-  if (nrow(result) > 1 && "p_value_exceeds_threshold" %in% colnames(result)) {
-    # Extract p-values, handling NAs
-    p_values <- result$p_value_exceeds_threshold
-    valid_indices <- !is.na(p_values)
-    
-    if (sum(valid_indices) > 1) {
-      # Apply FDR correction only to valid p-values
-      valid_p <- p_values[valid_indices]
-      fdr_corrected <- p.adjust(valid_p, method = "fdr")
-      
-      # Initialize corrected p-value columns with NAs
-      result$p_value_fdr <- NA_real_
-      result$significant_fdr <- NA
-      
-      # Fill in corrected values for valid indices
-      result$p_value_fdr[valid_indices] <- fdr_corrected
-      result$significant_fdr[valid_indices] <- fdr_corrected < 0.05
+  # Apply FDR correction for multiple testing, per-split
+  # This ensures each split (e.g., Off_Interneurons vs On_Interneurons) is corrected independently
+  if ("p_value_exceeds_threshold" %in% colnames(result)) {
+    # Initialize FDR columns
+    result$p_value_fdr <- NA_real_
+    result$significant_fdr <- NA
+
+    # Split results by the 'split' column to apply FDR correction within each split
+    if ("split" %in% colnames(result)) {
+      split_groups <- split(result, result$split)
+
+      # Apply FDR correction to each split separately
+      result_list <- lapply(split_groups, function(split_df) {
+        p_values <- split_df$p_value_exceeds_threshold
+        valid_indices <- !is.na(p_values)
+
+        if (sum(valid_indices) > 1) {
+          # Multiple valid p-values: apply FDR correction
+          valid_p <- p_values[valid_indices]
+          fdr_corrected <- p.adjust(valid_p, method = "fdr")
+
+          # Fill in corrected values
+          split_df$p_value_fdr[valid_indices] <- fdr_corrected
+          split_df$significant_fdr[valid_indices] <- fdr_corrected < 0.05
+        } else if (sum(valid_indices) == 1) {
+          # Single valid p-value: FDR correction equals raw p-value
+          split_df$p_value_fdr[valid_indices] <- p_values[valid_indices]
+          split_df$significant_fdr[valid_indices] <- p_values[valid_indices] < 0.05
+        }
+        # If no valid p-values (sum == 0), leave as NA (already initialized)
+
+        return(split_df)
+      })
+
+      # Recombine all splits
+      result <- do.call(rbind, result_list)
     } else {
-      # If only one test or no valid p-values, FDR correction is same as original
-      result$p_value_fdr <- result$p_value_exceeds_threshold
-      result$significant_fdr <- !is.na(result$p_value_exceeds_threshold) & result$p_value_exceeds_threshold < 0.05
+      # No split column - apply FDR to entire dataset
+      p_values <- result$p_value_exceeds_threshold
+      valid_indices <- !is.na(p_values)
+
+      if (sum(valid_indices) > 1) {
+        valid_p <- p_values[valid_indices]
+        fdr_corrected <- p.adjust(valid_p, method = "fdr")
+        result$p_value_fdr[valid_indices] <- fdr_corrected
+        result$significant_fdr[valid_indices] <- fdr_corrected < 0.05
+      } else if (sum(valid_indices) == 1) {
+        result$p_value_fdr[valid_indices] <- p_values[valid_indices]
+        result$significant_fdr[valid_indices] <- p_values[valid_indices] < 0.05
+      }
     }
   }
 } else {
@@ -340,12 +532,16 @@ if (!is.null(result) && nrow(result) > 0) {
     n_samples_interest = integer(0),
     n_samples_superficial = integer(0),
     n_samples_deep = integer(0),
+    n_neurons_interest = integer(0),
+    n_neurons_superficial = integer(0),
+    n_neurons_deep = integer(0),
     observed_sup_d = numeric(0),
     observed_deep_d = numeric(0),
     observed_distance_diff = numeric(0),
     observed_delta_thres_base = numeric(0),
     observed_delta_thres = numeric(0),
     observed_test_statistic = numeric(0),
+    observed_bias_ratio = numeric(0),
     bootstrap_distance_diff_median = numeric(0),
     bootstrap_distance_diff_lower = numeric(0),
     bootstrap_distance_diff_upper = numeric(0),
@@ -355,10 +551,13 @@ if (!is.null(result) && nrow(result) > 0) {
     bootstrap_test_stat_median = numeric(0),
     bootstrap_test_stat_lower = numeric(0),
     bootstrap_test_stat_upper = numeric(0),
+    bootstrap_bias_ratio_median = numeric(0),
+    bootstrap_bias_ratio_lower = numeric(0),
+    bootstrap_bias_ratio_upper = numeric(0),
     coefficient = numeric(0),
     p_value_exceeds_threshold = numeric(0),
+    p_value_bias_ratio = numeric(0),
     direction = character(0),
-    threshold_type = character(0),
     conf_level = numeric(0),
     n_bootstrap = integer(0),
     p_value_fdr = numeric(0),
