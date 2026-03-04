@@ -23,6 +23,17 @@ combine_depth_stats_results <- function(pattern = "^.*\\.csv$",
   if (length(result_files) > 0) {
     # Combine all results
     all_results <- rbindlist(lapply(result_files, fread), fill = TRUE)
+
+    all_results <- all_results[, c(
+      "types_of_interest", "observed_bias_ratio", "p_value_bias_ratio", "p_value_fdr",
+      "split", "syn_type", "observed_sup_d", "observed_deep_d", "observed_distance_diff",
+      "observed_delta_thres_base", "bootstrap_distance_diff_median", "bootstrap_distance_diff_lower",
+      "bootstrap_distance_diff_upper", "bootstrap_delta_thres_base_median",
+      "bootstrap_delta_thres_base_lower", "bootstrap_delta_thres_base_upper",
+      "bootstrap_bias_ratio_median", "bootstrap_bias_ratio_lower", "bootstrap_bias_ratio_upper",
+      "neuropil", "preset"
+    )]
+    print(head(all_results))
     
     # Export to Excel with multiple sheets split by preset
     if (!is.null(excel_file) && excel_file != "") {

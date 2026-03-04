@@ -127,8 +127,8 @@ scale_color_dev_origin <- function() {
   f <- scale_color_manual(
     name = "Developmental Origin",
     values = c(
-      "Slp" = "#E41A1C",           # Red
-      "Dll" = "#377EB8",           # Blue
+      "tOPC (Slp)" = "#E41A1C",           # Red
+      "tOPC (Dll)" = "#377EB8",           # Blue
       "tOPC" = "#4DAF4A",          # Green
       "vtIPC" = "#984EA3",         # Purple
       "central_brain" = "#FF7F00", # Orange

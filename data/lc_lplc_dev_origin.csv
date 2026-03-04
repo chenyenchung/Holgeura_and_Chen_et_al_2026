@@ -1,0 +1,18 @@
+lc_lplc_type,dev_origin,dev_order
+LC6,tOPC (Slp),3
+LC9,tOPC (Slp),3
+LC10a,tOPC (Slp),3
+LC11,tOPC (Dll),2
+LC21,tOPC (Dll),2
+LC13,tOPC (Unknown),4
+LC15,tOPC (Unknown),4
+LC16,tOPC (Unknown),4
+LC24,tOPC (Unknown),4
+LC26,tOPC (Unknown),4
+LC4,vtIPC,5
+LC12,vtIPC,5
+LC17,vtIPC,5
+LPLC1,central_brain,6
+LPLC2,central_brain,6
+LPLC4,central_brain,6
+LPLC22,central_brain,6

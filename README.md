@@ -1,5 +1,9 @@
 # FlyWire Visual System Connectome Analysis
 
+> Temporal and Notch identity determine layer targeting and synapse location of medulla neurons
+I. Holguera, Y-C. Chen, Y-C-D. Chen, F. Simon, A.G. Gaffney, J.D. Rodas, S. Córdoba, C. Desplan
+You can find the manuscript associated with the analysis in [preprint](https://doi.org/10.1101/2025.01.06.631439).
+
 This repository analyzes how connectivity in the fly visual system is associated with their developmental origin using FlyWire connectome.
 
 ## Overview

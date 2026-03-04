@@ -197,6 +197,28 @@ process CombineBroadDepthResults {
   """
 }
 
+process CombineBroadDepthResultsLight {
+  cpus '1'
+  memory '4GB'
+  time '15m'
+  module 'r/gcc/4.5.0'
+
+  input:
+  path csvs
+  path combine_script
+
+  output:
+  path 'broad_depth_summary_light.txt', emit: summary
+  path 'combined_broad_depth_results_light.xlsx', emit: excel
+
+  script:
+  """
+  combine_results_light.r \
+    --pattern "_broad_depth\\.csv\$" \
+    --summary broad_depth_summary_light.txt \
+    --excel combined_broad_depth_results_light.xlsx
+  """
+}
 workflow {
   main:
   // Define analysis parameters
@@ -222,34 +244,34 @@ workflow {
     
     
   // Perform statistical analysis
-  analysis_ch = DepthStatsAnalysis(
-    cond_ch,
-    file(params.annf),
-    file(params.metaf),
-    file(params.presetf),
-    file(params.utilsf),
-    file(params.depth_stats_cppf),
-    params.n_quantiles,
-    params.n_bootstrap,
-    params.conf_int,
-    SPARSE_LIMIT,
-    params.ks_subsample_size,
-    params.ks_n_iterations,
-    params.ks_correction_method
-  )
+//  analysis_ch = DepthStatsAnalysis(
+//    cond_ch,
+//    file(params.annf),
+//    file(params.metaf),
+//    file(params.presetf),
+//    file(params.utilsf),
+//    file(params.depth_stats_cppf),
+//    params.n_quantiles,
+//    params.n_bootstrap,
+//    params.conf_int,
+//    SPARSE_LIMIT,
+//    params.ks_subsample_size,
+//    params.ks_n_iterations,
+//    params.ks_correction_method
+//  )
 
   // Generate visualizations
-  viz_ch = VisualizeStatSummary(
-    analysis_ch,
-    file(params.metaf),
-    file(params.utilsf)
-  )
+//  viz_ch = VisualizeStatSummary(
+//    analysis_ch,
+//    file(params.metaf),
+//    file(params.utilsf)
+//  )
 
   // Combine all results
-  combined_ch = CombineResults(
-    analysis_ch.map { it -> it[3] }.collect(),
-    file(params.combine_scriptf)
-  )
+//  combined_ch = CombineResults(
+//    analysis_ch.map { it -> it[3] }.collect(),
+//    file(params.combine_scriptf)
+//  )
 
   // Run functional enrichment analysis
   functional_ch = FunctionalEnrichment(
@@ -278,28 +300,34 @@ workflow {
     file(params.combine_scriptf)
   )
 
+  combined_broad_depth_light_ch = CombineBroadDepthResultsLight(
+    broad_depth_ch.map { it -> it[3] }.collect(),
+    file(params.combine_scriptf)
+  )
+
   publish:
-  stats_plots = viz_ch
-  summary = combined_ch.summary
-  excel = combined_ch.excel
+//  stats_plots = viz_ch
+//  summary = combined_ch.summary
+//  excel = combined_ch.excel
   functional_plots = functional_ch.plots
   functional_stats = functional_ch.stats
   broad_depth_results = broad_depth_ch
   broad_depth_summary = combined_broad_depth_ch.summary
   broad_depth_excel = combined_broad_depth_ch.excel
+  broad_depth_excel_light = combined_broad_depth_light_ch.excel
 }
 
 output {
-  stats_plots {
-    path { input ->
-      def np = input[0]
-      def preset = input[1]
-      def stype = input[2]
-      return "stats/${preset}/${np}_${stype}"
-    }
-  }
-  summary { path "stats/" }
-  excel { path "stats/" }
+//  stats_plots {
+//    path { input ->
+//      def np = input[0]
+//      def preset = input[1]
+//      def stype = input[2]
+//      return "stats/${preset}/${np}_${stype}"
+//    }
+//  }
+//  summary { path "stats/" }
+//  excel { path "stats/" }
   functional_plots { path "stats/functional_enrichment/" }
   functional_stats { path "stats/functional_enrichment/" }
   broad_depth_results {
@@ -312,4 +340,5 @@ output {
   }
   broad_depth_summary { path "stats/deep_superficial/" }
   broad_depth_excel { path "stats/deep_superficial/" }
+  broad_depth_excel_light { path "stats/deep_superficial/" }
 }

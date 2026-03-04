@@ -113,7 +113,7 @@ if (file.exists("./src/utils.r")) {
 
 if (interactive()) {
   source("src/utils.r")
-  argvs$np <- "LO_L"
+  argvs$np <- "LOP_L"
   argvs$syn_type <- "pre"
   argvs$use_preset <- "type_putative"
   argvs$ann <- "data/visual_neurons_anno.csv"
@@ -197,7 +197,7 @@ np_coord <- filter_func(np_coord, opc_anno, syn_type = argvs$syn_type)
 
 # Get reference depths
 available_groups <- unique(
-  c(np_coord$pre_type, np_coord$post_type)
+  c(np_coord_unfiltered$pre_type, np_coord_unfiltered$post_type)
 )
 
 # Load reference groups from configuration file

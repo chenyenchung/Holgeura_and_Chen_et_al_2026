@@ -2,3 +2,4 @@ data/*.gz
 data/flywire_synapses_783.feather
 int
 .Rproj.user
+custom
