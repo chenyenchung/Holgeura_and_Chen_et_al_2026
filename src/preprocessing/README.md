@@ -43,6 +43,32 @@ Divides data into separate files by brain region
 - **SplitNeuropil**: 8GB RAM
 - **RotateNeuropil**: 4GB RAM
 
+## Demo Dataset Generation
+
+To generate a smaller raw input set that still runs the full preprocessing
+workflow and produces standard `*_rotated.csv.gz` outputs:
+
+```bash
+python src/preprocessing/bin/make_demo_data.py \
+  --syn data/fafb_v783_princeton_synapse_table.csv.gz \
+  --ann data/connections_princeton_no_threshold.csv.gz \
+  --types data/consolidated_cell_types.csv.gz \
+  --outdir data/demo_data \
+  --seed 1 \
+  --me-count 50000 \
+  --lo-count 25000 \
+  --lop-count 25000
+```
+
+Then run preprocessing against demo inputs:
+
+```bash
+nextflow run src/preprocessing/main.nf \
+  --synf data/demo_data/fafb_v783_princeton_synapse_table.csv.gz \
+  --annf data/demo_data/connections_princeton_no_threshold.csv.gz \
+  --typef data/demo_data/consolidated_cell_types.csv.gz
+```
+
 ## Data Source
 
 The initial synapse data comes from the FlyWire connectome project:

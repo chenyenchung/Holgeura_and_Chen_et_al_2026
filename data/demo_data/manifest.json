@@ -1,0 +1,52 @@
+{
+  "seed": 1,
+  "targets": {
+    "ME_L": 50000,
+    "ME_R": 50000,
+    "LO_L": 25000,
+    "LO_R": 25000,
+    "LOP_L": 25000,
+    "LOP_R": 25000
+  },
+  "source_counts": {
+    "ME_L": 11522674,
+    "LOP_L": 1925884,
+    "LO_L": 5129328,
+    "LO_R": 5201331,
+    "LOP_R": 2650285,
+    "ME_R": 12326797
+  },
+  "sampled_synapse_counts": {
+    "ME_L": 50000,
+    "ME_R": 50000,
+    "LO_L": 25000,
+    "LO_R": 25000,
+    "LOP_L": 25000,
+    "LOP_R": 25000
+  },
+  "written_synapse_counts": {
+    "ME_L": 50000,
+    "ME_R": 50000,
+    "LO_L": 25000,
+    "LO_R": 25000,
+    "LOP_L": 25000,
+    "LOP_R": 25000
+  },
+  "annotation_rows_written": 186878,
+  "annotation_rows_by_neuropil": {
+    "ME_L": 46633,
+    "LOP_L": 22712,
+    "LO_L": 23797,
+    "LOP_R": 23060,
+    "ME_R": 46893,
+    "LO_R": 23783
+  },
+  "types_rows_written": 78395,
+  "unique_sampled_pairs": 191967,
+  "unique_sampled_root_ids": 78583,
+  "files": {
+    "syn": "/scratch/ycc520/flyem/data/demo_data/fafb_v783_princeton_synapse_table.csv.gz",
+    "ann": "/scratch/ycc520/flyem/data/demo_data/connections_princeton_no_threshold.csv.gz",
+    "types": "/scratch/ycc520/flyem/data/demo_data/consolidated_cell_types.csv.gz"
+  }
+}

@@ -1,6 +1,10 @@
 #!/usr/env/bin nextflow
 nextflow.preview.output = true
 
+params.synf = 'data/fafb_v783_princeton_synapse_table.csv.gz'
+params.annf = 'data/connections_princeton_no_threshold.csv.gz'
+params.typef = 'data/consolidated_cell_types.csv.gz'
+
 process AnnotateNeuropil {
   cpus '1'
   memory '64GB'
@@ -66,11 +70,13 @@ process RotateNeuropil {
 
 workflow {
   main:
-  SYN_FEATHER = 'data/fafb_v783_princeton_synapse_table.csv.gz'
-  SYN_ANN = 'data/connections_princeton_no_threshold.csv.gz'
-  TYPE_ANN = 'data/consolidated_cell_types.csv.gz'
   utils_file = file('src/utils.r')
-  syn_ch = AnnotateNeuropil(file(SYN_FEATHER), file(SYN_ANN), file(TYPE_ANN), utils_file)
+  syn_ch = AnnotateNeuropil(
+    file(params.synf),
+    file(params.annf),
+    file(params.typef),
+    utils_file
+  )
   npl_ch = SplitNeuropil(syn_ch, utils_file).flatten()
     | map { it -> [it, utils_file] }
     | RotateNeuropil
