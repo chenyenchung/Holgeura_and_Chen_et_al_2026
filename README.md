@@ -8,7 +8,7 @@ This repository analyzes how connectivity in the fly visual system is associated
 
 ## Overview
 
-The analysis pipeline consists of three main modules:
+The analysis pipeline consists of four main modules:
 
 ### 1. Data Preparation (src/preprocessing/)
 
@@ -29,6 +29,12 @@ The analysis pipeline consists of three main modules:
 - Create trees showing which cell types are most similar in their connectivity patterns
 - Generates donut charts showing the partners of neuronal types of interest
 - Highlights synapses from neuron expressing specific genes
+
+### 4. Selector Depth Bootstrap Analysis (src/selector_test/)
+
+- Tests terminal selector genes for superficial vs deep depth bias in ME_R, LO_R, and LOP_R neuropils
+- Runs neuron-level bootstrap analysis for both presynaptic and postsynaptic compartments
+- Outputs FDR-corrected statistics with combined CSV and Excel summaries
 
 ## System Requirement
 
@@ -98,3 +104,4 @@ citation guidelines and cite the applicable primary papers:
 - **Demo data**: A subset data from FlyWire for demo runs to test the codebase.
 
 For detailed information about each module, see the individual README files in the `src/` subdirectories.
+For top-level manual/helper scripts in `src/`, see `src/README.md`.
